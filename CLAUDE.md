@@ -17,6 +17,8 @@ game.html         모눈 회피 게임 (단일 파일, 자기완결형)
 assets/
   style.css       모든 페이지의 디자인
   site.js         메뉴·헤더·푸터 생성
+  tasks.js        리마인더 업무 목록 (reminder.html과 index.html이 함께 씀)
+  favicon.svg     탭 아이콘
   kang.png        인물 일러스트
 tools/
   build-preview.py  미리보기 파일 생성 스크립트
@@ -31,6 +33,14 @@ preview*.html     생성물. 직접 고치지 말 것 (아래 참고)
 
 **디자인은 `assets/style.css` 한 곳에서만 고친다.**
 HTML의 인라인 `style=` 사용은 섹션 배경색(`background:var(--paper-2)`) 정도로 제한한다.
+
+**리마인더 업무 목록은 `assets/tasks.js`에서만 고친다.**
+`TASKS`(특정 달)와 `MONTHLY`(매달 반복)를 reminder.html과 index.html이 함께 쓴다.
+어느 한쪽 HTML에 목록을 복사해 두지 말 것. 홈 미리보기는 이 목록에서 자동으로 뽑는다.
+
+**누를 수 없는 카드는 `<a>`가 아니라 `<article class="work">`로 쓴다.**
+링크할 곳이 생기기 전까지 `href="#"`를 두지 않는다. 호버 효과는 `a.work`에만 걸려 있어서,
+`article`로 두면 눌릴 것처럼 보이지 않는다.
 
 **새 페이지를 만들 때는 기존 페이지를 복사한다.**
 `<head>` 구성, `site-header`/`site-footer` 자리, 맨 아래 `<script src="assets/site.js">`를 그대로 유지한다.
@@ -71,13 +81,14 @@ CSS·JS·이미지를 한 파일에 밀어 넣은 생성물이다. 원본을 고
 - 서버가 없다. 폼 전송·알림·DB가 필요하면 외부 서비스(구글 폼, Supabase 등)를 붙인다.
 - `localStorage`는 반드시 try/catch로 감싼다. 차단 환경에서 페이지가 죽으면 안 된다.
 - 리마인더의 `.ics` 생성은 브라우저에서 Blob으로 만든다. 서버를 쓰지 않는다.
+  `DTSTAMP`는 UTC에 `Z`를 붙이고, `SUMMARY`·`DESCRIPTION`은 쉼표·세미콜론·역슬래시를 이스케이프해야 한다(RFC 5545).
 - 게임(`game.html`)은 다른 페이지와 디자인 체계가 다르다(모눈종이 컨셉). 의도된 것이니 통일하지 말 것.
 
 ## 자주 하는 작업
 
 - **이번 주 도구 갱신** → `index.html`의 `.week` 블록과 `news.html`의 `.work.now` 카드
 - **도구 추가** → `news.html`의 `#archive`에 `.work` 카드 복사, 대표 항목이면 `index.html`에도
-- **리마인더 항목 추가** → `reminder.html`의 `TASKS` 배열에 `{ m, d, t, p }` 한 줄
+- **리마인더 항목 추가** → `assets/tasks.js`의 `TASKS` 배열에 `{ m, d, t, p }` 한 줄
 - **메뉴 추가** → `assets/site.js`의 `SITE.menu`
 
 ## 배포

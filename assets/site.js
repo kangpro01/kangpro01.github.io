@@ -40,7 +40,7 @@ const SITE = {
 (function(){
   const here = (location.pathname.split('/').pop() || 'index.html');
   const isOn = f => f.split('#')[0] === here;
-  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
   /* ── 상단 바 ── */
   let nav = '<nav class="gnb"><div class="wrap">'

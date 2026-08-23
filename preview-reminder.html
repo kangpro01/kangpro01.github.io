@@ -9,6 +9,7 @@
 <meta property="og:description" content="총무 업무의 월별 할 일. 캘린더에 담아 알림으로 받으세요.">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%0A%20%20%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23333132%22/%3E%0A%20%20%3Cpath%20d%3D%22M9%2010.5h14v12%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223.4%22/%3E%0A%3C/svg%3E%0A">
 <style>
 
 :root{
@@ -153,7 +154,8 @@ section{padding:78px 0}
   border:1px solid var(--rule);border-radius:14px;padding:26px 24px;display:block;background:var(--paper);
   transition:border-color .2s ease,transform .15s ease,box-shadow .2s ease;
 }
-.work:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.06)}
+/* 호버 반응은 실제로 눌리는 카드(a.work)에만. article.work는 읽기 전용입니다. */
+a.work:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.06)}
 .work.now{border:1.5px dashed var(--ink);background:var(--paper-2)}
 .work.now .cut{background:var(--ink);color:#fff;border-radius:999px;padding:2px 10px}
 .work-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -162,7 +164,7 @@ section{padding:78px 0}
   background-image:linear-gradient(var(--marker),var(--marker));
   background-repeat:no-repeat;background-size:0% 40%;background-position:0 80%;transition:background-size .3s ease;
 }
-.work:hover h3{background-size:100% 40%}
+a.work:hover h3{background-size:100% 40%}
 .cut{flex:none;font-family:var(--fs-num);font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
 .work dl{margin:14px 0 0;display:grid;grid-template-columns:52px 1fr;gap:5px 12px;font-size:14px}
 .work dt{color:var(--ink-2);font-size:12px;padding-top:2px}
@@ -196,7 +198,7 @@ section{padding:78px 0}
 .band .btn:hover{background:var(--hover);color:#fff}
 
 /* ══ 푸터 ══ */
-footer{border-top:1px solid var(--rule);padding:26px 0 96px;font-size:12px;color:var(--ink-2);font-family:var(--fs-num)}
+footer{border-top:1px solid var(--rule);padding:26px 0 32px;font-size:12px;color:var(--ink-2);font-family:var(--fs-num)}
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 
 /* ══ 모바일 하단 고정 버튼 ══ */
@@ -213,6 +215,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   .steps .step + .step{border-left:0;border-top:1px solid var(--rule)}
   .gnb .btn{padding:8px 14px;font-size:12.5px}
   section{padding:56px 0}
+  footer{padding-bottom:96px}   /* 하단 고정 버튼에 가리지 않게 */
 }
 a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media (max-width:1080px){.menu{gap:26px}}
@@ -222,7 +225,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .menu > li > a::after{transition:none}
   .sub{transition:none}
   html{scroll-behavior:auto}
-  .btn:hover,.work:hover{transform:none}
+  .btn:hover,a.work:hover{transform:none}
 }
 
 
@@ -434,7 +437,7 @@ const SITE = {
 (function(){
   const here = (location.pathname.split('/').pop() || 'index.html');
   const isOn = f => f.split('#')[0] === here;
-  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
   /* ── 상단 바 ── */
   let nav = '<nav class="gnb"><div class="wrap">'
@@ -501,8 +504,12 @@ const SITE = {
 </script>
 <script>
 /* ══════════════════════════════════════════════════════════
-   업무 목록 — 여기만 고치면 화면과 캘린더 파일에 함께 반영됩니다
-   m : 월(1~12), d : 권장 시작일, t : 제목, p : 설명
+   업무 목록 — reminder.html과 index.html이 함께 씁니다.
+   여기만 고치면 두 페이지와 캘린더 파일에 모두 반영됩니다.
+
+   TASKS   : 특정 달에만 하는 일
+             m = 월(1~12), d = 권장 시작일, t = 제목, p = 설명
+   MONTHLY : 매달 반복되는 일 (m 없음)
    ══════════════════════════════════════════════════════════ */
 const TASKS = [
   { m:1,  d:5,  t:'연간 예산 집행계획 수립',      p:'작년 집행 내역을 기준으로 항목별 한도를 잡습니다.' },
@@ -533,15 +540,16 @@ const TASKS = [
   { m:12, d:20, t:'연간 결산 및 이관 준비',       p:'담당이 바뀌어도 돌아가게 문서를 정리합니다.' }
 ];
 
-/* 매달 반복되는 일 — d는 권장일 */
 const MONTHLY = [
+  { d:5,  t:'정기 방역 입회',        p:'완료 확인서를 받아 보관합니다.' },
+  { d:10, t:'관리비·청구 내역 확인', p:'전월 대비 급증 항목만 훑어도 충분합니다.' },
   { d:25, t:'주차 이용 집계·정산',   p:'말일 전에 미리 돌려두면 마감이 밀리지 않습니다.' },
   { d:25, t:'사무용품 재고 확인',    p:'떨어지고 나서 주문하면 항상 늦습니다.' },
-  { d:28, t:'월간 운영 리포트 작성', p:'서식은 자료실에 있습니다. 숫자만 갈아 끼우십시오.' },
-  { d:5,  t:'정기 방역 입회',        p:'완료 확인서를 받아 보관합니다.' },
-  { d:10, t:'관리비·청구 내역 확인', p:'전월 대비 급증 항목만 훑어도 충분합니다.' }
+  { d:28, t:'월간 운영 리포트 작성', p:'서식은 자료실에 있습니다. 숫자만 갈아 끼우십시오.' }
 ];
 
+</script>
+<script>
 (function(){
   const NOW = new Date();
   const CUR = NOW.getMonth() + 1;
@@ -560,6 +568,18 @@ const MONTHLY = [
 
   /* ── 캘린더 파일 만들기 ── */
   const pad = n => String(n).padStart(2,'0');
+
+  /* 캘린더 규격(RFC 5545)상 쉼표·세미콜론·역슬래시는 그대로 쓸 수 없습니다.
+     이스케이프하지 않으면 설명이 중간에서 잘리는 앱이 있습니다. */
+  const esc = s => String(s == null ? '' : s)
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r?\n/g, '\\n');
+
+  /* 만든 시각은 UTC로 적고 끝에 Z를 붙여야 합니다. */
+  const STAMP = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+
   function vevent(t, yearly){
     const y = NOW.getFullYear();
     const m = yearly ? t.m : CUR;
@@ -568,15 +588,15 @@ const MONTHLY = [
     return [
       'BEGIN:VEVENT',
       'UID:' + uid,
-      'DTSTAMP:' + dt + 'T090000',
+      'DTSTAMP:' + STAMP,
       'DTSTART;VALUE=DATE:' + dt,
-      'SUMMARY:' + t.t,
-      'DESCRIPTION:' + (t.p || ''),
+      'SUMMARY:' + esc(t.t),
+      'DESCRIPTION:' + esc(t.p),
       'RRULE:FREQ=' + (yearly ? 'YEARLY' : 'MONTHLY'),
       'BEGIN:VALARM',
       'TRIGGER:-P1D',
       'ACTION:DISPLAY',
-      'DESCRIPTION:' + t.t,
+      'DESCRIPTION:' + esc(t.t),
       'END:VALARM',
       'END:VEVENT'
     ].join('\r\n');

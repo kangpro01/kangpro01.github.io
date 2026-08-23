@@ -6,6 +6,9 @@
 <title>모눈 회피 — 120초 생존</title>
 <meta name="description" content="방향키와 손가락으로 총알을 피하는 120초 생존 게임. 기록은 초 단위로 남습니다.">
 
+<!-- 파비콘: 이 파일 하나로 열리도록 외부 파일 대신 직접 넣습니다 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317211C'/%3E%3Cpath d='M9 10.5h14v12' fill='none' stroke='%23E9EDE8' stroke-width='3.4'/%3E%3C/svg%3E">
+
 <!-- 한글 폰트: 인터넷이 안 되면 시스템 폰트로 자동 대체됩니다 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 
@@ -435,7 +438,6 @@ function burstParts(x,y,n,col,pw){
    6. 패턴 디렉터 — 시간이 갈수록 조여옵니다
    ══════════════════════════════════════════════ */
 const timers = {rain:0, aim:0, burst:0, wall:0, spin:0, seek:0, laser:0};
-function diff(){ return LEVELS[lvl].m; }          // 10초마다 계단식으로 상승
 
 function edgePoint(){
   const s = (Math.random()*4)|0;

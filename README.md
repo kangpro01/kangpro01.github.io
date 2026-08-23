@@ -17,7 +17,7 @@
 | 색·글씨·여백 | `assets/style.css`의 `:root` |
 | 이번 주 진행 상황 | `index.html`의 `.week`, `news.html`의 `.work.now` |
 | 도구 추가 | `news.html`의 `#archive` |
-| 리마인더 항목 | `reminder.html`의 `TASKS` |
+| 리마인더 항목 | `assets/tasks.js`의 `TASKS` |
 
 원본을 고친 뒤 미리보기 파일을 다시 만들려면:
 
