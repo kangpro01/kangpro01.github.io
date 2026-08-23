@@ -1,0 +1,13 @@
+{
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "liveServer.settings.root": "/",
+  "search.exclude": {
+    "preview.html": true,
+    "preview-reminder.html": true
+  }
+}

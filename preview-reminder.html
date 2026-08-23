@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>업무 리마인더 — 일 줄이는 강프로</title>
+<meta name="description" content="총무 업무의 월별 할 일과 매달 반복되는 일. 캘린더에 담아 알림으로 받으세요.">
+<meta property="og:title" content="업무 리마인더 — 일 줄이는 강프로">
+<meta property="og:description" content="총무 업무의 월별 할 일. 캘린더에 담아 알림으로 받으세요.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+
+:root{
+  /* 메인 컬러 — Black  HEX #333132 / RGB 51,49,50 / PANTONE P 179-15C */
+  --ink:#333132;        /* 브랜드 블랙 (기준색) */
+  --ink-2:#6B696A;      /* 60% */
+  --ink-3:#9A9899;      /* 40% — 라벨용 */
+  --hover:#4A4849;      /* 버튼 호버 */
+  --paper:#FFFFFF;
+  --paper-2:#F5F4F4;    /* 기준색 4% */
+  --marker:#E7E5E5;     /* 형광펜 자리 — 회색 하이라이트 */
+  --rule:#E3E1E2;
+  --fs:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Malgun Gothic',sans-serif;
+  --fs-num:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --wrap:1000px;
+  --gnb:62px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:var(--gnb)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--fs);line-height:1.7;letter-spacing:-.01em;padding-bottom:0}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+
+/* ══ 상단 고정 메뉴 ══ */
+.gnb{
+  position:sticky;top:0;z-index:50;height:var(--gnb);
+  background:rgba(255,255,255,.88);backdrop-filter:saturate(180%) blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.gnb .wrap{
+  max-width:none;height:100%;padding:0 clamp(18px,3.5vw,40px);
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.logo{
+  font-size:22px;font-weight:900;letter-spacing:.05em;line-height:1;
+  white-space:nowrap;margin-right:8px;color:var(--ink);
+  font-family:var(--fs);
+}
+.logo:hover{opacity:.62}
+.menu{
+  display:flex;align-items:center;gap:clamp(26px,4.4vw,56px);
+  font-size:14px;font-weight:600;color:var(--ink-2);letter-spacing:-.005em;
+  list-style:none;margin:0;padding:0;
+}
+.menu > li{position:relative}
+.menu > li > a{position:relative;padding:4px 0;display:inline-block}
+.menu em{font-style:normal;font-size:9px;color:var(--ink-3);margin-left:2px;vertical-align:2px}
+.menu a::after{
+  content:'';position:absolute;left:0;right:0;bottom:-2px;height:1.5px;
+  background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .22s ease;
+}
+.menu > li > a:hover{color:var(--ink)}
+.menu > li > a:hover::after{transform:scaleX(1)}
+
+/* 하위 메뉴 */
+.sub{
+  position:absolute;top:100%;left:-16px;padding-top:14px;min-width:212px;
+  opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s;
+}
+.has-sub:hover .sub,.has-sub:focus-within .sub{opacity:1;visibility:visible;transform:none}
+.sub ul{
+  list-style:none;margin:0;padding:9px;background:var(--ink);border-radius:12px;
+  box-shadow:0 14px 34px rgba(51,49,50,.22);
+}
+.sub a{
+  display:block;color:#CFCDCE;font-size:13.5px;font-weight:600;
+  padding:9px 13px;border-radius:7px;white-space:nowrap;transition:background .15s ease,color .15s ease;
+}
+.sub a:hover{background:rgba(255,255,255,.11);color:#fff}
+
+/* 햄버거 + 드로어 */
+.gnb-right{display:flex;align-items:center;gap:10px}
+.burger{
+  display:none;width:38px;height:38px;border:1px solid var(--rule);border-radius:9px;
+  background:var(--paper);cursor:pointer;padding:0;
+  flex-direction:column;align-items:center;justify-content:center;gap:5px;
+}
+.burger span{display:block;width:16px;height:1.6px;background:var(--ink);transition:transform .2s ease,opacity .2s ease}
+.burger[aria-expanded="true"] span:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger[aria-expanded="true"] span:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+.drawer{
+  position:fixed;left:0;right:0;top:var(--gnb);bottom:0;z-index:45;
+  background:var(--ink);overflow-y:auto;
+}
+.drawer-in{padding:22px 24px 40px}
+.drawer a{display:block;color:#E6E4E5;font-size:17px;font-weight:700;letter-spacing:-.03em;padding:11px 0}
+.drawer a:hover{color:#fff}
+.drawer p{
+  margin:24px 0 4px;font-family:var(--fs-num);font-size:11px;letter-spacing:.18em;
+  color:#8A8889;font-weight:700;
+}
+.btn{
+  display:inline-block;background:var(--ink);color:#fff;border-radius:999px;
+  padding:9px 18px;font-size:13px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;
+  transition:transform .12s ease,background .2s ease;
+}
+.btn:hover{background:var(--hover);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+.btn.lg{padding:15px 30px;font-size:15px}
+@media (max-width:760px){.menu{display:none}}
+
+/* ══ 히어로 ══ */
+.hero{text-align:center;padding:64px 0 72px}
+.portrait{
+  display:block;margin:0 auto 12px;width:clamp(92px,15vw,128px);height:auto;
+  animation:portraitIn .7s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes portraitIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+h1{margin:0;font-size:clamp(38px,8.4vw,72px);font-weight:900;letter-spacing:-.028em;line-height:1.06}
+.hero .sub{margin:22px auto 0;font-size:clamp(15px,3.8vw,18px);color:var(--ink-2);max-width:32em;font-weight:500}
+.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+
+.hero .sub b{color:var(--ink);font-weight:800}
+
+/* ══ 숫자 띠 ══ */
+.facts{background:var(--paper-2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.facts .wrap{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding-top:26px;padding-bottom:26px}
+.facts div + div{border-left:1px solid var(--rule)}
+.facts dt{font-size:12px;color:var(--ink-2);margin-bottom:4px}
+.facts dd{margin:0;font-family:var(--fs-num);font-size:clamp(22px,5.2vw,30px);font-weight:700;letter-spacing:-.03em}
+.facts dd span{font-family:var(--fs);font-size:12.5px;font-weight:600;color:var(--ink-2);margin-left:3px}
+
+/* ══ 섹션 공통 ══ */
+section{padding:78px 0}
+.sec-head{text-align:center;margin-bottom:40px}
+.sec-head .tag{font-family:var(--fs-num);font-size:11.5px;letter-spacing:.18em;color:var(--ink-3);font-weight:700}
+.sec-head h2{margin:10px 0 0;font-size:clamp(24px,5.6vw,34px);font-weight:900;letter-spacing:-.045em;line-height:1.25}
+.sec-head p{margin:12px 0 0;font-size:14.5px;color:var(--ink-2)}
+
+/* ══ 이런 분께 ══ */
+.needs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.need{border:1px solid var(--rule);border-radius:14px;padding:26px 22px;background:var(--paper)}
+.need .n{font-family:var(--fs-num);font-size:12px;color:var(--ink-3);font-weight:700}
+.need h3{margin:10px 0 8px;font-size:17px;font-weight:800;letter-spacing:-.03em;line-height:1.4}
+.need p{margin:0;font-size:14px;color:var(--ink-2)}
+
+/* ══ 없앤 일 카드 ══ */
+.works{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.work{
+  border:1px solid var(--rule);border-radius:14px;padding:26px 24px;display:block;background:var(--paper);
+  transition:border-color .2s ease,transform .15s ease,box-shadow .2s ease;
+}
+.work:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.06)}
+.work.now{border:1.5px dashed var(--ink);background:var(--paper-2)}
+.work.now .cut{background:var(--ink);color:#fff;border-radius:999px;padding:2px 10px}
+.work-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.work h3{
+  margin:0;font-size:18.5px;font-weight:800;letter-spacing:-.035em;
+  background-image:linear-gradient(var(--marker),var(--marker));
+  background-repeat:no-repeat;background-size:0% 40%;background-position:0 80%;transition:background-size .3s ease;
+}
+.work:hover h3{background-size:100% 40%}
+.cut{flex:none;font-family:var(--fs-num);font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+.work dl{margin:14px 0 0;display:grid;grid-template-columns:52px 1fr;gap:5px 12px;font-size:14px}
+.work dt{color:var(--ink-2);font-size:12px;padding-top:2px}
+.work dd{margin:0}
+.tags{margin:14px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.tag-s{font-family:var(--fs-num);font-size:11px;color:var(--ink-2);border:1px solid var(--rule);border-radius:999px;padding:2px 9px}
+
+/* ══ 일하는 방식 ══ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.step{padding:30px 24px;position:relative}
+.step + .step{border-left:1px solid var(--rule)}
+.step b{font-family:var(--fs-num);font-size:12px;color:var(--ink-3)}
+.step h3{margin:8px 0 8px;font-size:18px;font-weight:800;letter-spacing:-.03em}
+.step p{margin:0;font-size:14px;color:var(--ink-2)}
+
+/* ══ 딴짓 ══ */
+.play{
+  border:1px solid var(--ink);border-radius:14px;padding:30px;display:flex;
+  align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:var(--paper-2);
+  transition:background .2s ease;
+}
+.play:hover{background:var(--paper)}
+.play h3{margin:0 0 6px;font-size:20px;font-weight:800;letter-spacing:-.035em}
+.play p{margin:0;font-size:14px;color:var(--ink-2);max-width:34em}
+
+/* ══ 문의 밴드 ══ */
+.band{background:var(--ink);color:#fff;text-align:center;padding:76px 0}
+.band h2{margin:0;font-size:clamp(24px,5.6vw,34px);font-weight:900;letter-spacing:-.045em;line-height:1.3}
+.band p{margin:14px 0 0;color:#B0AEAF;font-size:15px}
+.band .btn{background:#fff;color:var(--ink);margin-top:28px}
+.band .btn:hover{background:var(--hover);color:#fff}
+
+/* ══ 푸터 ══ */
+footer{border-top:1px solid var(--rule);padding:26px 0 96px;font-size:12px;color:var(--ink-2);font-family:var(--fs-num)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+/* ══ 모바일 하단 고정 버튼 ══ */
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-top:1px solid var(--rule);
+}
+.dock .btn{display:block;text-align:center;padding:14px}
+@media (max-width:760px){
+  .burger{display:flex}
+  .dock{display:block}
+  .needs,.works,.steps{grid-template-columns:1fr}
+  .steps .step + .step{border-left:0;border-top:1px solid var(--rule)}
+  .gnb .btn{padding:8px 14px;font-size:12.5px}
+  section{padding:56px 0}
+}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media (max-width:1080px){.menu{gap:26px}}
+@media (min-width:761px){.drawer{display:none!important}}
+@media (prefers-reduced-motion:reduce){
+  .portrait{animation:none}
+  .menu > li > a::after{transition:none}
+  .sub{transition:none}
+  html{scroll-behavior:auto}
+  .btn:hover,.work:hover{transform:none}
+}
+
+
+/* ══ 서브페이지 머리말 ══ */
+.page-head{border-bottom:1px solid var(--rule);padding:56px 0 40px}
+.page-head .tag{font-family:var(--fs-num);font-size:11.5px;letter-spacing:.18em;color:var(--ink-3);font-weight:700}
+.page-head h1{margin:10px 0 0;font-size:clamp(30px,6.4vw,46px);letter-spacing:-.035em;line-height:1.15}
+.page-head p{margin:14px 0 0;font-size:15.5px;color:var(--ink-2);max-width:34em}
+
+/* 현재 보고 있는 메뉴 */
+.menu > li > a.on{color:var(--ink)}
+.menu > li > a.on::after{transform:scaleX(1)}
+.drawer a.on{color:#fff;text-decoration:underline;text-underline-offset:5px}
+
+/* 홈의 길잡이 카드 */
+.guide{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.guide a{
+  border:1px solid var(--rule);border-radius:14px;padding:26px 24px;background:var(--paper);
+  transition:border-color .2s ease,transform .15s ease,box-shadow .2s ease;
+}
+.guide a:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 26px rgba(51,49,50,.07)}
+.guide h3{margin:0 0 8px;font-size:19px;font-weight:800;letter-spacing:-.035em}
+.guide p{margin:0;font-size:14px;color:var(--ink-2)}
+.guide .more{display:inline-block;margin-top:14px;font-size:13px;font-weight:800}
+@media (max-width:760px){.guide{grid-template-columns:1fr}}
+
+
+/* ══ 홈: 이번 주 배너 ══ */
+.week{
+  background:var(--ink);color:#fff;border-radius:18px;padding:clamp(26px,4vw,38px);
+  display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,38px);align-items:start;
+}
+.week-no{font-family:var(--fs-num);font-size:clamp(40px,9vw,62px);font-weight:800;line-height:.88;letter-spacing:-.04em}
+.week-no small{
+  display:block;font-family:var(--fs);font-size:11px;font-weight:700;
+  letter-spacing:.2em;color:#918F90;margin-bottom:10px;
+}
+.week h2{margin:0 0 8px;font-size:clamp(20px,4.4vw,27px);font-weight:900;letter-spacing:-.04em;line-height:1.3}
+.week p{margin:0;color:#B6B4B5;font-size:15px;max-width:36em}
+.week dl{margin:18px 0 0;display:grid;grid-template-columns:56px 1fr;gap:5px 14px;font-size:14px}
+.week dt{color:#918F90;font-size:12px;padding-top:2px}
+.week dd{margin:0;color:#EDECEC}
+.days{display:flex;gap:6px;margin-top:22px;align-items:center}
+.days i{display:block;width:clamp(26px,5vw,40px);height:5px;border-radius:3px;background:rgba(255,255,255,.2)}
+.days i.on{background:#fff}
+.days b{font-family:var(--fs-num);font-size:11px;color:#918F90;font-weight:600;margin-left:8px}
+@media (max-width:620px){.week{grid-template-columns:1fr;gap:16px}}
+
+/* ══ 좌우 배치 섹션 머리 ══ */
+.sec-head.row{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  text-align:left;gap:16px;flex-wrap:wrap;
+}
+.sec-head.row > div{flex:1 1 auto}
+.more-link{font-size:13.5px;font-weight:800;white-space:nowrap;border-bottom:2px solid var(--ink);padding-bottom:1px}
+
+/* ══ 한 줄 목록 ══ */
+.mini{border-top:1px solid var(--rule)}
+.mini a{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  border-bottom:1px solid var(--rule);padding:17px 2px;
+  font-size:16px;font-weight:700;letter-spacing:-.025em;transition:padding .18s ease;
+}
+.mini a:hover{padding-left:8px}
+.mini span{font-family:var(--fs-num);font-size:12.5px;color:var(--ink-3);font-weight:600}
+
+/* ══ 아래 딴짓 한 줄 ══ */
+.attic-line{
+  text-align:center;padding:34px 0 0;font-size:14px;color:var(--ink-2);
+}
+.attic-line a{font-weight:800;color:var(--ink);border-bottom:1.5px solid var(--ink)}
+
+
+/* ══ 업무 리마인더 ══ */
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:0 0 8px;margin-bottom:22px;scrollbar-width:thin}
+.tabs button{
+  flex:none;font-family:var(--fs);font-size:13.5px;font-weight:700;letter-spacing:-.02em;
+  border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);
+  border-radius:999px;padding:8px 15px;cursor:pointer;transition:all .15s ease;
+}
+.tabs button:hover{border-color:var(--ink);color:var(--ink)}
+.tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tabs button.now{box-shadow:0 0 0 3px rgba(51,49,50,.1)}
+
+.tasks{border-top:1px solid var(--ink)}
+.task{display:flex;gap:14px;align-items:flex-start;border-bottom:1px solid var(--rule);padding:16px 2px}
+.task input[type=checkbox]{width:18px;height:18px;margin:3px 0 0;accent-color:var(--ink);flex:none;cursor:pointer}
+.task .t{flex:1;min-width:0}
+.task h3{margin:0;font-size:16px;font-weight:700;letter-spacing:-.025em;line-height:1.45}
+.task p{margin:5px 0 0;font-size:13.5px;color:var(--ink-2)}
+.task.done h3{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:1.5px}
+.task.done p{color:var(--ink-3)}
+.ics{
+  flex:none;font-family:var(--fs-num);font-size:11.5px;font-weight:700;color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper);
+  cursor:pointer;transition:all .15s ease;
+}
+.ics:hover{border-color:var(--ink);color:var(--ink)}
+.tasks-empty{padding:26px 2px;color:var(--ink-2);font-size:14px}
+.notice{
+  margin-top:26px;border-left:2px solid var(--ink);padding:2px 0 2px 14px;
+  font-size:13px;color:var(--ink-2);line-height:1.7;
+}
+@media (max-width:520px){
+  .task{flex-wrap:wrap}
+  .ics{margin-left:32px}
+}
+
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="page-head">
+  <div class="wrap">
+    <span class="tag">REMINDER</span>
+    <h1>업무 리마인더</h1>
+    <p>없앨 수 없는 일은 잊지 않게라도 만듭니다. 항목 옆 <b>담기</b>를 누르면 캘린더 파일이 받아지고, 열면 매년 같은 날 알림이 옵니다.</p>
+  </div>
+</div>
+
+<section id="month">
+  <div class="wrap">
+    <div class="sec-head row">
+      <div>
+        <span class="tag">MONTHLY</span>
+        <h2>월별 할 일</h2>
+        <p>이번 달에 자동으로 맞춰집니다</p>
+      </div>
+      <button class="ics" id="allBtn">이 달 전체 담기</button>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+    <div class="tasks" id="tasks"></div>
+
+    <p class="notice">
+      일반적인 총무 업무 주기입니다. 회사 규모와 업종에 따라 시기와 대상이 달라지고,
+      소방·안전·보건처럼 법으로 주기가 정해진 항목은 사업장 기준을 따로 확인하셔야 합니다.
+      실제 담당 일정을 여기에 그대로 옮기지는 마십시오.
+    </p>
+  </div>
+</section>
+
+<section id="always" style="background:var(--paper-2)">
+  <div class="wrap">
+    <div class="sec-head row">
+      <div>
+        <span class="tag">EVERY MONTH</span>
+        <h2>매달 반복</h2>
+        <p>달이 바뀌어도 그대로 돌아오는 일</p>
+      </div>
+    </div>
+    <div class="tasks" id="always-tasks"></div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <h2>빠진 항목이 있으면<br>알려주세요</h2>
+    <p>다른 회사 총무는 이 달에 뭘 하는지, 한 줄이면 충분합니다.</p>
+    <a class="btn lg" href="mailto:이메일주소@example.com">메일 보내기</a>
+  </div>
+</div>
+
+<div class="wrap"><p style="font-size:12px;color:var(--ink-3);text-align:center;padding:0 0 8px">미리보기 파일입니다. 메뉴 링크는 폴더째 올린 뒤 동작합니다.</p></div>
+<div id="site-footer"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   메뉴는 여기 한 곳에서만 고치면 모든 페이지에 반영됩니다.
+   file  : 연결할 파일 이름
+   name  : 화면에 보이는 이름
+   sub   : 하위 메뉴 (없으면 생략)
+   ══════════════════════════════════════════════════════════ */
+const SITE = {
+  logo: 'ㄱㅍㄹ',
+  title: '일 줄이는 강프로',
+  cta: { name: '아이디어 제보', file: 'issues.html#send' },
+  menu: [
+    { file:'news.html',   name:'새로운 소식', sub:[
+      { file:'news.html#this-week', name:'이번 주 도구' },
+      { file:'news.html#archive',   name:'지난 도구 모음' }
+    ]},
+    { file:'issues.html', name:'불편사항', sub:[
+      { file:'issues.html#list', name:'모아둔 불편' },
+      { file:'issues.html#send', name:'불편사항 접수' }
+    ]},
+    { file:'ideas.html',  name:'개선 아이디어', sub:[
+      { file:'ideas.html#rule',  name:'고르는 기준' },
+      { file:'ideas.html#steps', name:'만드는 순서' }
+    ]},
+    { file:'reminder.html', name:'업무 리마인더', sub:[
+      { file:'reminder.html#month',   name:'월별 할 일' },
+      { file:'reminder.html#always',  name:'매달 반복' }
+    ]},
+    { file:'files.html',  name:'자료실', sub:[
+      { file:'files.html#form',     name:'리포트 서식' },
+      { file:'files.html#reply',    name:'응대 문구 모음' },
+      { file:'files.html#template', name:'QR 안내물 템플릿' }
+    ]},
+    { file:'attic.html',  name:'딴짓 창고', sub:[
+      { file:'game.html', name:'모눈 회피 게임' },
+      { file:'attic.html#wip', name:'만들다 만 것들' }
+    ]}
+  ]
+};
+
+(function(){
+  const here = (location.pathname.split('/').pop() || 'index.html');
+  const isOn = f => f.split('#')[0] === here;
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+  /* ── 상단 바 ── */
+  let nav = '<nav class="gnb"><div class="wrap">'
+    + '<a class="logo" href="index.html" aria-label="' + esc(SITE.title) + ' — 홈으로">' + esc(SITE.logo) + '</a>'
+    + '<ul class="menu">';
+
+  for(const m of SITE.menu){
+    const on = isOn(m.file) ? ' on' : '';
+    if(m.sub && m.sub.length){
+      nav += '<li class="has-sub"><a class="' + on.trim() + '" href="' + m.file + '">' + esc(m.name) + ' <em>▾</em></a>'
+           + '<div class="sub"><ul>'
+           + m.sub.map(x => '<li><a href="' + x.file + '">' + esc(x.name) + '</a></li>').join('')
+           + '</ul></div></li>';
+    }else{
+      nav += '<li><a class="' + on.trim() + '" href="' + m.file + '">' + esc(m.name) + '</a></li>';
+    }
+  }
+
+  nav += '</ul><div class="gnb-right">'
+      + '<a class="btn" href="' + SITE.cta.file + '">' + esc(SITE.cta.name) + '</a>'
+      + '<button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button>'
+      + '</div></div></nav>';
+
+  /* ── 모바일 서랍 ── */
+  let drawer = '<div class="drawer" id="drawer" hidden><div class="drawer-in">';
+  for(const m of SITE.menu){
+    drawer += '<p>' + esc(m.name) + '</p>'
+           + '<a class="' + (isOn(m.file)?'on':'') + '" href="' + m.file + '">' + esc(m.name) + ' 전체보기</a>';
+    if(m.sub) drawer += m.sub.map(x => '<a href="' + x.file + '">' + esc(x.name) + '</a>').join('');
+  }
+  drawer += '</div></div>';
+
+  const head = document.getElementById('site-header');
+  if(head) head.outerHTML = nav + drawer;
+
+  /* ── 아래 고정 버튼 + 푸터 ── */
+  const foot = document.getElementById('site-footer');
+  if(foot){
+    foot.outerHTML =
+      '<footer><div class="wrap">'
+      + '<span>© 2026 강프로</span>'
+      + '<span>이 페이지도 직접 만들었습니다</span>'
+      + '</div></footer>'
+      + '<div class="dock"><a class="btn" href="' + SITE.cta.file + '">' + esc(SITE.cta.name) + '</a></div>';
+  }
+
+  /* ── 햄버거 동작 ── */
+  const burger = document.getElementById('burger');
+  const dw = document.getElementById('drawer');
+  if(burger && dw){
+    const setOpen = open => {
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+      dw.hidden = !open;
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+    burger.addEventListener('click', ()=> setOpen(dw.hidden));
+    dw.addEventListener('click', e=>{ if(e.target.tagName==='A') setOpen(false); });
+    addEventListener('keydown', e=>{ if(e.key==='Escape' && !dw.hidden) setOpen(false); });
+    addEventListener('resize', ()=>{ if(innerWidth>760 && !dw.hidden) setOpen(false); });
+  }
+})();
+
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   업무 목록 — 여기만 고치면 화면과 캘린더 파일에 함께 반영됩니다
+   m : 월(1~12), d : 권장 시작일, t : 제목, p : 설명
+   ══════════════════════════════════════════════════════════ */
+const TASKS = [
+  { m:1,  d:5,  t:'연간 예산 집행계획 수립',      p:'작년 집행 내역을 기준으로 항목별 한도를 잡습니다.' },
+  { m:1,  d:10, t:'연간 점검 일정표 확정',        p:'소방·전기·공기질 등 정기점검 날짜를 미리 달력에 박아둡니다.' },
+  { m:1,  d:15, t:'4대보험 요율 변경 반영',       p:'매년 초 요율이 바뀝니다. 급여 담당과 확인하십시오.' },
+  { m:2,  d:5,  t:'연말정산 서류 취합 지원',      p:'제출 안내와 마감 리마인드를 두 번 나눠 보냅니다.' },
+  { m:2,  d:20, t:'임대차 계약 갱신 검토',        p:'만기 3개월 전에는 조건 협의를 시작해야 여유가 있습니다.' },
+  { m:3,  d:5,  t:'1분기 안전보건교육',           p:'대상자 명단과 이수 기록을 함께 남겨두십시오.' },
+  { m:3,  d:15, t:'신규 입사자 좌석·비품 배치',   p:'좌석표, 출입카드, 비품 세트를 한 묶음으로 준비합니다.' },
+  { m:4,  d:10, t:'소화기·소화전 상태 확인',      p:'압력계와 유효기간을 눈으로 확인하고 대장에 기록합니다.' },
+  { m:4,  d:20, t:'비품 실사',                    p:'상반기 기준 재고를 맞춰두면 하반기 발주가 편합니다.' },
+  { m:5,  d:10, t:'냉방 설비 사전 점검',          p:'더워진 뒤에 부르면 업체 일정이 밀립니다.' },
+  { m:6,  d:5,  t:'2분기 안전보건교육',           p:'분기별 이수 현황을 표로 정리해 보관합니다.' },
+  { m:6,  d:15, t:'우기 대비 시설 점검',          p:'배수구, 옥상, 지하 주차장 누수 지점을 확인합니다.' },
+  { m:6,  d:25, t:'상반기 예산 집행률 점검',      p:'남은 예산을 하반기 계획에 반영합니다.' },
+  { m:7,  d:5,  t:'하계 휴가 계획 취합',          p:'부서별 최소 인원 유지 여부를 같이 확인합니다.' },
+  { m:7,  d:15, t:'냉방기 필터 청소',             p:'전기료와 민원이 동시에 줄어듭니다.' },
+  { m:8,  d:10, t:'전기 안전 점검',               p:'과부하 구간과 문어발 배선을 확인합니다.' },
+  { m:9,  d:5,  t:'3분기 안전보건교육',           p:'하반기 신규 입사자를 빠뜨리지 않게 명단을 갱신합니다.' },
+  { m:9,  d:15, t:'연휴 근무·보안 계획',          p:'비상 연락망과 출입 통제 방침을 미리 공지합니다.' },
+  { m:10, d:5,  t:'소방 종합점검',                p:'점검 결과 보고서 보관 기한까지 함께 확인하십시오.' },
+  { m:10, d:15, t:'난방 설비 사전 점검',          p:'첫 추위가 오기 전에 시운전을 돌려봅니다.' },
+  { m:10, d:25, t:'내년 예산 초안',               p:'올해 집행 실적을 근거로 항목을 정리합니다.' },
+  { m:11, d:5,  t:'4분기 안전보건교육',           p:'연간 이수율을 마감 전에 채웁니다.' },
+  { m:11, d:15, t:'연말 행사 준비',               p:'장소와 예산은 11월 안에 확정해야 선택지가 남습니다.' },
+  { m:11, d:25, t:'비품 연간 실사',               p:'폐기 대상과 내년 발주 목록을 함께 정리합니다.' },
+  { m:12, d:5,  t:'용역 계약 갱신',               p:'청소·경비·조경 등 만기 계약을 한 번에 검토합니다.' },
+  { m:12, d:20, t:'연간 결산 및 이관 준비',       p:'담당이 바뀌어도 돌아가게 문서를 정리합니다.' }
+];
+
+/* 매달 반복되는 일 — d는 권장일 */
+const MONTHLY = [
+  { d:25, t:'주차 이용 집계·정산',   p:'말일 전에 미리 돌려두면 마감이 밀리지 않습니다.' },
+  { d:25, t:'사무용품 재고 확인',    p:'떨어지고 나서 주문하면 항상 늦습니다.' },
+  { d:28, t:'월간 운영 리포트 작성', p:'서식은 자료실에 있습니다. 숫자만 갈아 끼우십시오.' },
+  { d:5,  t:'정기 방역 입회',        p:'완료 확인서를 받아 보관합니다.' },
+  { d:10, t:'관리비·청구 내역 확인', p:'전월 대비 급증 항목만 훑어도 충분합니다.' }
+];
+
+(function(){
+  const NOW = new Date();
+  const CUR = NOW.getMonth() + 1;
+  let view = CUR;
+
+  /* ── 저장 (막힌 환경이면 메모리로) ── */
+  const mem = {};
+  const store = {
+    get(k){ try{ const v=localStorage.getItem(k); return v===null?(mem[k]??null):v; }catch(e){ return mem[k]??null; } },
+    set(k,v){ mem[k]=v; try{ localStorage.setItem(k,v); }catch(e){} }
+  };
+  const KEY = 'reminder.done.' + NOW.getFullYear();
+  const load = () => { try{ return JSON.parse(store.get(KEY)||'{}'); }catch(e){ return {}; } };
+  let done = load();
+  const idOf = t => (t.m||'x') + '-' + t.d + '-' + t.t;
+
+  /* ── 캘린더 파일 만들기 ── */
+  const pad = n => String(n).padStart(2,'0');
+  function vevent(t, yearly){
+    const y = NOW.getFullYear();
+    const m = yearly ? t.m : CUR;
+    const dt = y + pad(m) + pad(t.d);
+    const uid = Math.random().toString(36).slice(2) + '@iljulida';
+    return [
+      'BEGIN:VEVENT',
+      'UID:' + uid,
+      'DTSTAMP:' + dt + 'T090000',
+      'DTSTART;VALUE=DATE:' + dt,
+      'SUMMARY:' + t.t,
+      'DESCRIPTION:' + (t.p || ''),
+      'RRULE:FREQ=' + (yearly ? 'YEARLY' : 'MONTHLY'),
+      'BEGIN:VALARM',
+      'TRIGGER:-P1D',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:' + t.t,
+      'END:VALARM',
+      'END:VEVENT'
+    ].join('\r\n');
+  }
+  function download(items, yearly, name){
+    const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//iljulida//reminder//KO','CALSCALE:GREGORIAN']
+      .concat(items.map(t => vevent(t, yearly)))
+      .concat(['END:VCALENDAR']).join('\r\n');
+    const url = URL.createObjectURL(new Blob([ics], {type:'text/calendar;charset=utf-8'}));
+    const a = document.createElement('a');
+    a.href = url; a.download = name + '.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 1000);
+  }
+
+  /* ── 그리기 ── */
+  function row(t, yearly){
+    const id = idOf(t);
+    const el = document.createElement('div');
+    el.className = 'task' + (done[id] ? ' done' : '');
+    el.innerHTML =
+      '<input type="checkbox"' + (done[id] ? ' checked' : '') + ' aria-label="' + t.t + ' 완료">'
+      + '<div class="t"><h3>' + (yearly ? t.d + '일 · ' : '매월 ' + t.d + '일 · ') + t.t + '</h3>'
+      + '<p>' + t.p + '</p></div>'
+      + '<button class="ics">담기</button>';
+    el.querySelector('input').addEventListener('change', e=>{
+      done[id] = e.target.checked;
+      if(!e.target.checked) delete done[id];
+      store.set(KEY, JSON.stringify(done));
+      el.classList.toggle('done', e.target.checked);
+    });
+    el.querySelector('.ics').addEventListener('click', ()=> download([t], yearly, t.t));
+    return el;
+  }
+
+  const tabsEl = document.getElementById('tabs');
+  const tasksEl = document.getElementById('tasks');
+
+  function render(){
+    tasksEl.innerHTML = '';
+    const list = TASKS.filter(t => t.m === view).sort((a,b)=> a.d - b.d);
+    if(!list.length){
+      tasksEl.innerHTML = '<p class="tasks-empty">이 달에 등록된 항목이 없습니다. 목록에 추가해 두십시오.</p>';
+      return;
+    }
+    list.forEach(t => tasksEl.appendChild(row(t, true)));
+  }
+
+  for(let m=1; m<=12; m++){
+    const b = document.createElement('button');
+    b.textContent = m + '월';
+    b.className = (m === view ? 'on' : '') + (m === CUR ? ' now' : '');
+    b.addEventListener('click', ()=>{
+      view = m;
+      [...tabsEl.children].forEach((c,i)=> c.classList.toggle('on', i+1 === m));
+      render();
+    });
+    tabsEl.appendChild(b);
+  }
+  render();
+
+  const alwaysEl = document.getElementById('always-tasks');
+  MONTHLY.slice().sort((a,b)=> a.d - b.d).forEach(t => alwaysEl.appendChild(row(t, false)));
+
+  document.getElementById('allBtn').addEventListener('click', ()=>{
+    const list = TASKS.filter(t => t.m === view);
+    if(list.length) download(list, true, view + '월_총무업무');
+  });
+})();
+</script>
+</body>
+</html>
