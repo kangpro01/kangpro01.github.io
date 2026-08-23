@@ -22,6 +22,7 @@ const SITE = {
       { file:'ideas.html#steps', name:'만드는 순서' }
     ]},
     { file:'reminder.html', name:'업무 리마인더', sub:[
+      { file:'reminder.html#alert',   name:'알림 받기' },
       { file:'reminder.html#month',   name:'월별 할 일' },
       { file:'reminder.html#always',  name:'매달 반복' }
     ]},
