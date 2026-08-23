@@ -39,10 +39,14 @@ def main() -> int:
     # 외부 스크립트는 전부 본문에 밀어 넣는다. 새 스크립트를 추가하면 여기에도 적는다.
     scripts = [
         "assets/site.js",
+        "assets/supabase.js",
+        "assets/db.js",
+        "assets/when.js",
+        "assets/task-form.js",
+        "assets/home.js",
         "assets/tasks.js",
         "assets/cal.js",
         "assets/notify.js",
-        "assets/supabase.js",
     ]
 
     for src_name, out_name in TARGETS:

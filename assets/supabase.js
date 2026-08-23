@@ -13,5 +13,10 @@
    ══════════════════════════════════════════════════════════ */
 const SUPABASE = {
   url: 'https://jtjveoqyocmcsfkvucwb.supabase.co/rest/v1',
-  key: 'sb_publishable_pA7soUU0UiQm6vswDtm5mw_sVGs5kJH'
+  key: 'sb_publishable_pA7soUU0UiQm6vswDtm5mw_sVGs5kJH',
+
+  /* 팀이 함께 쓰는 계정 주소. 비밀이 아닙니다 — 암호가 열쇠입니다.
+     Supabase 대시보드 Authentication → Users 에서 만든 주소와
+     똑같이 적어주십시오. */
+  teamEmail: 'dsds@supa.com'
 };

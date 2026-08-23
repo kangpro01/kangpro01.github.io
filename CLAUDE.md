@@ -1,28 +1,39 @@
-# 일 잘하는 강프로 — 개인 사이트
+# 일 잘하는 강프로 — 팀 업무 기억 보조 도구
 
-반복되는 총무 업무를 자동화 도구로 바꾸는 과정을 기록하는 개인 사이트.
-빌드 도구 없이 순수 HTML/CSS/JS로만 되어 있고, GitHub Pages에 폴더째 올려 쓴다.
+**무엇을 위한 것인가.** 개인 또는 4~5명 소규모 팀이 쓰는 내부용 도구다.
+바깥에 보여주는 소개 사이트가 아니다. 가장 중요한 목적은 **시간이 지나 잊기 쉬운 업무를
+사이트가 다시 떠올리게 해주는 것**이다. 들어왔을 때 두 가지에 답해야 한다.
+
+> "오늘 뭘 해야 하지?"  ·  "전에 하던 것 중 놓친 게 없나?"
+
+**기능을 늘리는 방향으로 가지 않는다.** 정보를 많이 보여주는 것보다, 잊은 것을
+떠올리게 하는 데 도움이 되는지로 판단한다. 도움이 안 되면 넣지 않는다.
+
+빌드 도구 없이 순수 HTML/CSS/JS. GitHub Pages에 폴더째 올려 쓴다.
 
 ## 폴더 구조
 
 ```
-index.html        홈 — 이번 주 진행 + 최근 도구 2개 + 방식 + 자료 + 리마인더 미리보기
-news.html         새로운 소식 — 이번 주 카드 + 지난 도구 전체
-issues.html       불편사항 — 반복되는 일 + 제보 방법
-ideas.html        개선 아이디어 — 고르는 기준 + 만드는 순서
-reminder.html     업무 리마인더 — 월별 할 일 + 캘린더(.ics) 내려받기
+index.html        메인 — 업무 리마인더 (놓친 것 / 이번 주 / 후속 / 방치 / 지난주 한 일)
+issues.html       불편사항 & 개선 — 기록 → 개선 아이디어 → 축적
+reminder.html     반복 업무 — 월별 할 일, 알림 켜기, 캘린더(.ics) 내려받기
 files.html        자료실 — 서식·템플릿
-attic.html        딴짓 창고 — 게임, 만들다 만 것들
+attic.html        딴짓 창고 — 게임. 잠깐 쉬고 돌아오는 정도로만 둔다
 game.html         모눈 회피 게임 (단일 파일, 자기완결형)
 assets/
   style.css       모든 페이지의 디자인
   site.js         메뉴·헤더·푸터 생성
-  tasks.js        리마인더 업무 목록 (reminder.html과 index.html이 함께 씀)
-  supabase.js     Supabase 연결 정보 (공개 키만)
-  favicon.svg     탭 아이콘
-  kang.png        인물 일러스트
+  supabase.js     연결 정보 (공개 키 + 공용 계정 주소). 암호는 넣지 않는다
+  db.js           로그인과 데이터 읽기·쓰기
+  when.js         "3일 뒤" 같은 사람 말을 날짜로 바꾸는 해석기
+  task-form.js    '잊지 말 업무' 등록 창
+  home.js         메인 화면의 리마인더 블록
+  cal.js          홈 달력
+  notify.js       일간·주간·월간 알림 켜고 끄기
+  tasks.js        일반적인 총무 반복 업무 목록 (개인 업무 아님)
+  favicon.svg / kang.png
 supabase/
-  schema.sql      불편사항 테이블 + RLS 정책. 대시보드 SQL Editor에서 실행한다
+  schema.sql      표와 보안 정책. 대시보드 SQL Editor에서 실행한다
 tools/
   build-preview.py  미리보기 파일 생성 스크립트
 preview*.html     생성물. 직접 고치지 말 것 (아래 참고)
@@ -69,24 +80,30 @@ CSS·JS·이미지를 한 파일에 밀어 넣은 생성물이다. 원본을 고
 - 과장하지 않는다. "혁신", "완벽한" 같은 말을 쓰지 않는다.
 - 숫자는 근거를 댈 수 있는 것만 쓴다. 모르면 아예 빼는 쪽을 택한다.
 
-## Supabase (불편사항 접수)
+## Supabase (로그인과 데이터)
 
-`issues.html`의 제보 폼이 `public.issues` 테이블에 넣는다. 그 외에는 쓰지 않는다.
+표는 `tasks`(업무)와 `improvements`(불편사항·개선) 둘이다. 정의는 `supabase/schema.sql`.
 
-**공개 키만 코드에 넣는다.** `assets/supabase.js`의 키는 브라우저에 노출되라고 만든
-publishable 키라 저장소에 올려도 된다. **데이터베이스 비밀번호와 secret / service_role 키는
-어떤 파일에도 넣지 않는다.** 정적 사이트라 넣는 즉시 공개된다.
+**로그인한 사람만 읽고 쓴다.** 팀이 공유하는 계정 하나로 로그인한다.
+화면에서는 암호 한 칸만 묻고, 계정 주소는 `assets/supabase.js`의 `teamEmail`에서 가져온다.
 
-**보호 장치는 RLS 정책뿐이다.** 지금 정책은 insert만 허용하고 select 정책이 없어서
-아무도 접수 내용을 읽어갈 수 없다. 접수분은 대시보드 Table Editor에서 본다.
-정책을 손댔다면 아래로 읽기가 막혔는지 반드시 확인한다. 빈 배열 `[]`이 나와야 정상이다.
+**자바스크립트로 암호를 비교하지 않는다.** 그렇게 하면 화면만 가릴 뿐 데이터는 못 지킨다.
+공개 키가 소스에 있으니 사이트를 거치지 않고 데이터베이스에 직접 물어보면 읽힌다.
+반드시 진짜 로그인(`/auth/v1/token`)을 거쳐 토큰을 받아 쓴다.
+
+**대시보드에서 지켜야 할 것 두 가지.**
+- Authentication → 공용 계정은 **Auto Confirm User**를 켜서 만든다
+- **"Allow new users to sign up"을 꺼둔다.** 켜져 있으면 누구나 계정을 만들어
+  로그인한 뒤 전부 읽을 수 있다. 이걸 빠뜨리면 나머지 보안이 전부 무의미하다
+
+검증하는 법 — 로그인 없이는 막혀야 하고, 가입은 거절돼야 한다.
 
 ```bash
-curl "<프로젝트 URL>/rest/v1/issues?select=*" -H "apikey: <공개 키>"
+curl "<프로젝트 URL>/rest/v1/tasks?select=*" -H "apikey: <공개 키>"
 ```
 
-읽기 권한이 없으므로 insert할 때 `Prefer: return=minimal` 헤더가 반드시 필요하다.
-빼면 PostgREST가 넣은 행을 돌려주려다 실패한다.
+**공개 키만 코드에 넣는다.** 데이터베이스 비밀번호, secret / service_role 키,
+그리고 **팀 암호**는 어떤 파일에도 넣지 않는다. 정적 사이트라 넣는 즉시 공개된다.
 
 ## 콘텐츠 정책 (중요)
 
@@ -111,10 +128,11 @@ curl "<프로젝트 URL>/rest/v1/issues?select=*" -H "apikey: <공개 키>"
 
 ## 자주 하는 작업
 
-- **이번 주 도구 갱신** → `index.html`의 `.week` 블록과 `news.html`의 `.work.now` 카드
-- **도구 추가** → `news.html`의 `#archive`에 `.work` 카드 복사, 대표 항목이면 `index.html`에도
-- **리마인더 항목 추가** → `assets/tasks.js`의 `TASKS` 배열에 `{ m, d, t, p }` 한 줄
+- **메인 블록 바꾸기** → `assets/home.js`. 블록 순서가 곧 '무엇을 먼저 떠올리게 할지'다
+- **"언제" 말 늘리기** → `assets/when.js`의 `parseWhen`. 새 표현을 넣으면 등록 창에 바로 붙는다
+- **반복 업무 목록** → `assets/tasks.js`의 `TASKS` 배열에 `{ m, d, t, p }` 한 줄
 - **메뉴 추가** → `assets/site.js`의 `SITE.menu`
+- **방치 기준일 바꾸기** → `assets/home.js`의 `STALE` (기본 14일)
 
 ## 배포
 

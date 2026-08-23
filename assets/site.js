@@ -7,21 +7,22 @@
 const SITE = {
   logo: 'ㄱㅍㄹ',
   title: '일 잘하는 강프로',
-  cta: { name: '아이디어 제보', file: 'issues.html#send' },
+  /* 오른쪽 위 버튼 — 링크가 아니라 업무 등록 창을 엽니다 */
+  cta: { name: '＋ 잊지 말 업무', newtask: true },
   menu: [
-    { file:'news.html',   name:'새로운 소식', sub:[
-      { file:'news.html#this-week', name:'이번 주 도구' },
-      { file:'news.html#archive',   name:'지난 도구 모음' }
+    { file:'index.html', name:'업무 리마인더', sub:[
+      { file:'index.html#late',   name:'지났는데 안 끝난 것' },
+      { file:'index.html#soon',   name:'오늘·이번 주' },
+      { file:'index.html#follow', name:'후속 조치' },
+      { file:'index.html#stale',  name:'오래 안 본 업무' },
+      { file:'index.html#done',   name:'지난주에 한 일' }
     ]},
-    { file:'issues.html', name:'불편사항', sub:[
-      { file:'issues.html#list', name:'모아둔 불편' },
-      { file:'issues.html#send', name:'불편사항 접수' }
+    { file:'issues.html', name:'불편사항 & 개선', sub:[
+      { file:'issues.html#write',   name:'불편한 점 적기' },
+      { file:'issues.html#list',    name:'모인 불편' },
+      { file:'issues.html#done',    name:'개선한 것' }
     ]},
-    { file:'ideas.html',  name:'개선 아이디어', sub:[
-      { file:'ideas.html#rule',  name:'고르는 기준' },
-      { file:'ideas.html#steps', name:'만드는 순서' }
-    ]},
-    { file:'reminder.html', name:'업무 리마인더', sub:[
+    { file:'reminder.html', name:'반복 업무', sub:[
       { file:'reminder.html#alert',   name:'알림 받기' },
       { file:'reminder.html#month',   name:'월별 할 일' },
       { file:'reminder.html#always',  name:'매달 반복' }
@@ -43,6 +44,11 @@ const SITE = {
   const isOn = f => f.split('#')[0] === here;
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
+  /* 오른쪽 위 버튼. newtask면 업무 등록 창을 열고, 아니면 링크로 갑니다. */
+  const ctaHtml = () => SITE.cta.newtask
+    ? '<button class="btn" type="button" data-newtask>' + esc(SITE.cta.name) + '</button>'
+    : '<a class="btn" href="' + SITE.cta.file + '">' + esc(SITE.cta.name) + '</a>';
+
   /* ── 상단 바 ── */
   let nav = '<nav class="gnb"><div class="wrap">'
     + '<a class="logo" href="index.html" aria-label="' + esc(SITE.title) + ' — 홈으로">' + esc(SITE.logo) + '</a>'
@@ -61,7 +67,7 @@ const SITE = {
   }
 
   nav += '</ul><div class="gnb-right">'
-      + '<a class="btn" href="' + SITE.cta.file + '">' + esc(SITE.cta.name) + '</a>'
+      + ctaHtml()
       + '<button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button>'
       + '</div></div></nav>';
 
@@ -85,7 +91,7 @@ const SITE = {
       + '<span>© 2026 강프로</span>'
       + '<span>이 페이지도 직접 만들었습니다</span>'
       + '</div></footer>'
-      + '<div class="dock"><a class="btn" href="' + SITE.cta.file + '">' + esc(SITE.cta.name) + '</a></div>';
+      + '<div class="dock">' + ctaHtml() + '</div>';
   }
 
   /* ── 햄버거 동작 ── */
