@@ -37,7 +37,7 @@ def main() -> int:
     icon = urllib.parse.quote((ROOT / "assets/favicon.svg").read_text(encoding="utf-8"))
 
     # 외부 스크립트는 전부 본문에 밀어 넣는다. 새 스크립트를 추가하면 여기에도 적는다.
-    scripts = ["assets/site.js", "assets/tasks.js"]
+    scripts = ["assets/site.js", "assets/tasks.js", "assets/supabase.js"]
 
     for src_name, out_name in TARGETS:
         src = ROOT / src_name

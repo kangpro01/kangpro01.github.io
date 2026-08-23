@@ -70,12 +70,99 @@
   <div class="wrap">
     <h2>없앴으면 하는 일,<br>하나만 알려주세요</h2>
     <p>다음 주 도구가 될 수도 있습니다. 한 줄이면 충분합니다.</p>
-    <a class="btn lg" href="mailto:이메일주소@example.com">메일 보내기</a>
+
+    <form class="ask" id="askForm" novalidate>
+      <label>
+        <span>무슨 일인지</span>
+        <textarea name="what" rows="2" maxlength="1000" required
+                  placeholder="예: 주차 대장을 손으로 받아 적습니다."></textarea>
+      </label>
+
+      <div class="ask-row">
+        <label>
+          <span>얼마나 자주</span>
+          <input name="how_often" maxlength="200" placeholder="예: 하루 10건, 매일">
+        </label>
+        <label>
+          <span>한 번에 몇 분</span>
+          <input name="minutes" maxlength="200" placeholder="예: 건당 2분">
+        </label>
+      </div>
+
+      <label>
+        <span>답을 받을 곳 <em>선택</em></span>
+        <input name="contact" maxlength="200" placeholder="메일 주소나 사내 메신저 아이디">
+      </label>
+
+      <!-- 사람 눈에는 보이지 않습니다. 자동 프로그램이 채우면 보내지 않습니다. -->
+      <div class="ask-trap" aria-hidden="true">
+        <input name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button class="btn lg" type="submit" id="askBtn">보내기</button>
+      <p class="ask-msg" id="askMsg" role="status" aria-live="polite"></p>
+    </form>
   </div>
 </div>
 
 <div id="site-footer"></div>
 
 <script src="assets/site.js"></script>
+<script src="assets/supabase.js"></script>
+<script>
+/* 제보를 Supabase에 넣습니다. 넣기만 되고 읽기는 막혀 있습니다(RLS).
+   내용은 Supabase 대시보드의 Table Editor에서 보십시오. */
+(function(){
+  const form = document.getElementById('askForm');
+  if(!form || typeof SUPABASE === 'undefined') return;
+
+  const btn = document.getElementById('askBtn');
+  const msg = document.getElementById('askMsg');
+  const say = (t, bad) => { msg.textContent = t; msg.classList.toggle('bad', !!bad); };
+  const val = (f, k) => (f.get(k) || '').trim() || null;
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    if(val(new FormData(form), 'website')) return;   // 덫에 걸린 자동 제출
+
+    const f = new FormData(form);
+    const what = val(f, 'what');
+    if(!what || what.length < 2){
+      say('무슨 일인지 한 줄만 적어주세요.', true);
+      form.querySelector('[name=what]').focus();
+      return;
+    }
+
+    btn.disabled = true;
+    say('보내는 중입니다…');
+
+    try{
+      const res = await fetch(SUPABASE.url + '/issues', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE.key,
+          'Authorization': 'Bearer ' + SUPABASE.key,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'          // 읽기 권한이 없으므로 되돌려받지 않습니다
+        },
+        body: JSON.stringify({
+          what: what,
+          how_often: val(f, 'how_often'),
+          minutes:   val(f, 'minutes'),
+          contact:   val(f, 'contact')
+        })
+      });
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      form.reset();
+      say('받았습니다. 다음 주 도구가 될 수도 있습니다.');
+    }catch(err){
+      say('보내지 못했습니다. 잠시 뒤 다시 시도해 주십시오.', true);
+    }finally{
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
 </body>
 </html>

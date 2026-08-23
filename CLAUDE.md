@@ -18,8 +18,11 @@ assets/
   style.css       모든 페이지의 디자인
   site.js         메뉴·헤더·푸터 생성
   tasks.js        리마인더 업무 목록 (reminder.html과 index.html이 함께 씀)
+  supabase.js     Supabase 연결 정보 (공개 키만)
   favicon.svg     탭 아이콘
   kang.png        인물 일러스트
+supabase/
+  schema.sql      불편사항 테이블 + RLS 정책. 대시보드 SQL Editor에서 실행한다
 tools/
   build-preview.py  미리보기 파일 생성 스크립트
 preview*.html     생성물. 직접 고치지 말 것 (아래 참고)
@@ -66,6 +69,25 @@ CSS·JS·이미지를 한 파일에 밀어 넣은 생성물이다. 원본을 고
 - 과장하지 않는다. "혁신", "완벽한" 같은 말을 쓰지 않는다.
 - 숫자는 근거를 댈 수 있는 것만 쓴다. 모르면 아예 빼는 쪽을 택한다.
 
+## Supabase (불편사항 접수)
+
+`issues.html`의 제보 폼이 `public.issues` 테이블에 넣는다. 그 외에는 쓰지 않는다.
+
+**공개 키만 코드에 넣는다.** `assets/supabase.js`의 키는 브라우저에 노출되라고 만든
+publishable 키라 저장소에 올려도 된다. **데이터베이스 비밀번호와 secret / service_role 키는
+어떤 파일에도 넣지 않는다.** 정적 사이트라 넣는 즉시 공개된다.
+
+**보호 장치는 RLS 정책뿐이다.** 지금 정책은 insert만 허용하고 select 정책이 없어서
+아무도 접수 내용을 읽어갈 수 없다. 접수분은 대시보드 Table Editor에서 본다.
+정책을 손댔다면 아래로 읽기가 막혔는지 반드시 확인한다. 빈 배열 `[]`이 나와야 정상이다.
+
+```bash
+curl "<프로젝트 URL>/rest/v1/issues?select=*" -H "apikey: <공개 키>"
+```
+
+읽기 권한이 없으므로 insert할 때 `Prefer: return=minimal` 헤더가 반드시 필요하다.
+빼면 PostgREST가 넣은 행을 돌려주려다 실패한다.
+
 ## 콘텐츠 정책 (중요)
 
 이 사이트는 공개 저장소에 올라간다.
@@ -79,6 +101,9 @@ CSS·JS·이미지를 한 파일에 밀어 넣은 생성물이다. 원본을 고
 
 - 빌드 과정 없음. 파일을 그대로 서빙한다. npm, 번들러, 프레임워크를 도입하지 않는다.
 - 서버가 없다. 폼 전송·알림·DB가 필요하면 외부 서비스(구글 폼, Supabase 등)를 붙인다.
+- **글은 HTML에 둔다. Supabase로 옮기지 않는다.** 정적 파일이라 DB에서 불러오면 첫 화면이
+  비어 보이고 검색 노출도 나빠진다. 무료 플랜은 한동안 접속이 없으면 일시정지되므로
+  글까지 DB에 있으면 그때 사이트가 백지가 된다. DB는 브라우저에서 써넣어야 하는 것에만 쓴다.
 - `localStorage`는 반드시 try/catch로 감싼다. 차단 환경에서 페이지가 죽으면 안 된다.
 - 리마인더의 `.ics` 생성은 브라우저에서 Blob으로 만든다. 서버를 쓰지 않는다.
   `DTSTAMP`는 UTC에 `Z`를 붙이고, `SUMMARY`·`DESCRIPTION`은 쉼표·세미콜론·역슬래시를 이스케이프해야 한다(RFC 5545).
