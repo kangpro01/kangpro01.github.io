@@ -6,7 +6,7 @@
    ══════════════════════════════════════════════════════════ */
 const SITE = {
   logo: 'ㄱㅍㄹ',
-  title: '일 줄이는 강프로',
+  title: '일 잘하는 강프로',
   cta: { name: '아이디어 제보', file: 'issues.html#send' },
   menu: [
     { file:'news.html',   name:'새로운 소식', sub:[
