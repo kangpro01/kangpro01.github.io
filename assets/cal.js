@@ -63,6 +63,10 @@ const CAL = (function(){
 
     const onToday = (y === TY && m === TM);
 
+    /* 뒤쪽도 빈 칸으로 채워야 마지막 줄이 이가 빠지지 않습니다 */
+    const tail = (7 - (lead + last) % 7) % 7;
+    for(let i = 0; i < tail; i++) cells += '<div class="cal-day off"></div>';
+
     host.innerHTML =
       '<div class="cal-head">'
       + '<button type="button" class="cal-nav" data-go="-1" aria-label="이전 달">‹</button>'
@@ -74,7 +78,9 @@ const CAL = (function(){
       + '<button type="button" class="cal-nav" data-go="1" aria-label="다음 달">›</button>'
       + '</div>'
       + '<div class="cal-grid">'
-      + DOW.map(d => '<span class="cal-dow">' + d + '</span>').join('')
+      + DOW.map((d, i) =>
+          '<span class="cal-dow' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">'
+          + d + '</span>').join('')
       + cells
       + '</div>';
   }
