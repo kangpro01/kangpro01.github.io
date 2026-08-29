@@ -100,11 +100,11 @@
       .sort((a,b) => (a.due_on||'').localeCompare(b.due_on||''));
 
     fill(document.getElementById('dailyList'),   rep('daily'),
-         '+ 버튼을 눌러 일간 업무를 등록하세요.', { slim:true, hideRepeat:true });
+         '+ 버튼을 눌러 일간 업무를 등록하십시오.', { slim:true, hideRepeat:true });
     fill(document.getElementById('weeklyList'),  rep('weekly'),
-         '+ 버튼을 눌러 주간 업무를 등록하세요.', { slim:true });
+         '+ 버튼을 눌러 주간 업무를 등록하십시오.', { slim:true });
     fill(document.getElementById('monthlyList'), rep('monthly').concat(rep('yearly')),
-         '+ 버튼을 눌러 월간 업무를 등록하세요.', { slim:true });
+         '+ 버튼을 눌러 월간 업무를 등록하십시오.', { slim:true });
 
     /* 아래쪽 블록 */
     if(!board) return;
