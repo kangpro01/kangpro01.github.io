@@ -57,7 +57,7 @@
             + ' aria-pressed="' + (cycled ? 'true' : 'false') + '"'
             + ' aria-label="' + (cycled ? '완료 취소' : '완료') + '"><span></span></button>')
       + '<div class="tk-body">'
-      +   '<b>' + esc(t.title) + '</b>'
+      +   '<button type="button" class="tk-title" data-do="edit">' + esc(t.title) + '</button>'
       +   (opt.slim || !t.note ? '' : '<p>' + esc(t.note) + '</p>')
       +   '<span class="tk-meta">'
       +     (opt.seen ? '<i class="tk-when late">' + opt.seen + '</i>'
@@ -163,6 +163,16 @@
     if(!btn) return;
     const card = btn.closest('.tk');
     const id = card.dataset.id;
+
+    /* 제목을 누르면 고치는 창을 엽니다 */
+    if(btn.dataset.do === 'edit'){
+      try{
+        const cur = (await DB.q('tasks', 'select=*&id=eq.' + id))[0];
+        if(cur) TaskForm.open({ task: cur });
+      }catch(err){ alert('불러오지 못했어요. ' + err.message); }
+      return;
+    }
+
     card.classList.add('busy');
 
     try{

@@ -1,7 +1,9 @@
 /* ══════════════════════════════════════════════════════════
-   '업무추가' 창.
+   '업무추가' 창. 담아둔 업무를 고치고 지우는 창이기도 합니다.
 
-   오른쪽 위 버튼이나 [data-newtask] 를 누르면 열립니다.
+   [data-newtask] 를 누르면 새로 담는 창이,
+   open({ task: 행 }) 으로 열면 고치는 창이 됩니다.
+
    날짜는 "3일 뒤", "매주 금요일"처럼 사람 말로 적으면
    아래에 해석 결과가 바로 보입니다.
    ══════════════════════════════════════════════════════════ */
@@ -9,48 +11,71 @@ const TaskForm = (function(){
   const CATS = ['시설','총무','인사','예산','계약','안전','비품','보고','기타'];
   let box = null;
 
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
   function close(){
     box?.remove();
     box = null;
     document.body.style.overflow = '';
   }
 
+  /* 고칠 때 '언제' 칸에 미리 넣어둘 말 */
+  function whenOf(t){
+    if(t.repeat_rule) return WHEN.repeatLabel(t.repeat_rule);
+    if(t.due_on){
+      const d = new Date(t.due_on + 'T00:00:00');
+      return (d.getMonth()+1) + '/' + d.getDate();
+    }
+    return '';
+  }
+
   function open(preset){
     if(box) return;
     preset = preset || {};
+
+    const task = preset.task || null;          // 있으면 고치는 창
+    const initWhen = task ? whenOf(task) : (preset.when || '');
 
     box = document.createElement('div');
     box.className = 'modal';
     box.innerHTML =
       '<div class="modal-bg" data-close></div>'
       + '<form class="modal-box" role="dialog" aria-modal="true" aria-label="업무추가">'
-      + '<div class="modal-head"><b>업무추가</b>'
+      + '<div class="modal-head"><b>' + (task ? '업무 고치기' : '업무추가') + '</b>'
       +   '<button type="button" class="modal-x" data-close aria-label="닫기">×</button></div>'
 
       + '<label><span>업무 내용 입력</span>'
       +   '<textarea name="title" rows="2" maxlength="300" required '
-      +   'placeholder="예: 소화기 유효기간 확인하고 대장에 기록"></textarea></label>'
+      +   'placeholder="예: 소화기 유효기간 확인하고 대장에 기록">'
+      +   (task ? esc(task.title) : '') + '</textarea></label>'
 
       + '<label><span>일정</span>'
       +   '<input name="when" maxlength="60" autocomplete="off" '
       +   'placeholder="3일 뒤 · 다음 주 금요일 · 매주 금요일 · 매달 25일 · 9/15" '
-      +   'value="' + (preset.when || '') + '"></label>'
+      +   'value="' + esc(initWhen) + '"></label>'
       + '<p class="when-read" id="whenRead"></p>'
 
       + '<div class="modal-row">'
       +   '<label><span>담당자</span>'
-      +     '<input name="owner" maxlength="60" list="ownerList" autocomplete="off" placeholder="이름"></label>'
+      +     '<input name="owner" maxlength="60" list="ownerList" autocomplete="off" placeholder="이름" '
+      +     'value="' + esc(task && task.owner) + '"></label>'
       +   '<label><span>분류</span>'
-      +     '<input name="category" maxlength="40" list="catList" autocomplete="off" placeholder="고르거나 직접 입력"></label>'
+      +     '<input name="category" maxlength="40" list="catList" autocomplete="off" placeholder="고르거나 직접 입력" '
+      +     'value="' + esc(task && task.category) + '"></label>'
       + '</div>'
       + '<datalist id="catList">' + CATS.map(c => '<option value="'+c+'">').join('') + '</datalist>'
       + '<datalist id="ownerList"></datalist>'
 
       + '<label><span>메모</span>'
       +   '<textarea name="note" rows="2" maxlength="2000" '
-      +   'placeholder="다음에 볼 때 도움이 될 내용"></textarea></label>'
+      +   'placeholder="다음에 볼 때 도움이 될 내용">'
+      +   (task ? esc(task.note) : '') + '</textarea></label>'
 
-      + '<button class="btn lg" type="submit">등록</button>'
+      + '<div class="modal-foot">'
+      +   (task ? '<button type="button" class="modal-del" id="taskDel">지우기</button>' : '')
+      +   '<button class="btn lg" type="submit">' + (task ? '저장' : '등록') + '</button>'
+      + '</div>'
       + '<p class="modal-msg" role="status" aria-live="polite"></p>'
       + '</form>';
 
@@ -90,6 +115,24 @@ const TaskForm = (function(){
     when.addEventListener('input', readWhen);
     readWhen();
 
+    /* 지우기 — 되돌릴 수 없으니 한 번 물어봅니다 */
+    const del = box.querySelector('#taskDel');
+    if(del) del.addEventListener('click', async () => {
+      if(!confirm('이 업무를 지울까요? 되돌릴 수 없어요.')) return;
+      del.disabled = true;
+      msg.className = 'modal-msg';
+      msg.textContent = '지우는 중이에요…';
+      try{
+        await DB.remove('tasks', 'id=eq.' + task.id);
+        close();
+        document.dispatchEvent(new CustomEvent('tasks:changed'));
+      }catch(err){
+        msg.textContent = err.message;
+        msg.classList.add('bad');
+        del.disabled = false;
+      }
+    });
+
     box.addEventListener('click', e => { if(e.target.closest('[data-close]')) close(); });
     addEventListener('keydown', function esc(e){
       if(e.key === 'Escape'){ close(); removeEventListener('keydown', esc); }
@@ -111,18 +154,30 @@ const TaskForm = (function(){
 
       btn.disabled = true;
       msg.className = 'modal-msg';
-      msg.textContent = '담는 중이에요…';
+      msg.textContent = task ? '저장하는 중이에요…' : '담는 중이에요…';
+
+      const common = {
+        title: title,
+        note: form.note.value.trim() || null,
+        owner: form.owner.value.trim() || null,
+        category: form.category.value.trim() || null
+      };
 
       try{
-        await DB.insert('tasks', {
-          title: title,
-          note: form.note.value.trim() || null,
-          owner: form.owner.value.trim() || null,
-          category: form.category.value.trim() || null,
-          due_on: w ? w.due_on : null,
-          repeat_rule: w ? w.repeat : null,
-          follow_up_of: preset.follow_up_of || null
-        });
+        if(task){
+          /* '언제' 칸을 건드리지 않았으면 날짜는 그대로 둡니다.
+             다시 해석하면 '매주 금요일'이 다음 금요일로 밀려버립니다. */
+          if(when.value.trim() !== initWhen){
+            common.due_on = w ? w.due_on : null;
+            common.repeat_rule = w ? w.repeat : null;
+          }
+          await DB.update('tasks', 'id=eq.' + task.id, common);
+        }else{
+          common.due_on = w ? w.due_on : null;
+          common.repeat_rule = w ? w.repeat : null;
+          common.follow_up_of = preset.follow_up_of || null;
+          await DB.insert('tasks', common);
+        }
         close();
         document.dispatchEvent(new CustomEvent('tasks:changed'));
       }catch(err){
