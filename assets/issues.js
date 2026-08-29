@@ -1,7 +1,12 @@
 /* ══════════════════════════════════════════════════════════
    불편사항 & 개선.
 
-   흐름 — 불편한 점 기록 → 개선 아이디어 → 개선한 것
+   세 칸짜리 판입니다. 상태에 따라 카드가 옮겨 다닙니다.
+
+     불편한 점(new) → 개선 아이디어(doing) → 개선한 것(done·dropped)
+
+   세로로 늘어놓으면 화면을 한참 굴려야 전체가 보였습니다.
+   나란히 두면 어디에 얼마나 쌓였는지 한눈에 들어옵니다.
 
    적는 칸은 기본으로 접혀 있습니다. 대개는 쌓인 것을 보러 오지
    새로 적으러 오는 것이 아니라서, 펴 두면 목록이 아래로 밀립니다.
@@ -11,9 +16,21 @@
    ══════════════════════════════════════════════════════════ */
 (function(){
   const writeHost = document.getElementById('issueForm');
+  const newHost   = document.getElementById('issueNew');
   const listHost  = document.getElementById('issueList');
   const doneHost  = document.getElementById('issueDone');
   if(!listHost) return;
+
+  /* 비어 있는 칸 — 점선 상자. 누를 데가 있으면 단추로 만듭니다. */
+  function empty(text, action){
+    return action
+      ? '<button type="button" class="kan-empty" data-empty="' + action + '">' + text + '</button>'
+      : '<p class="kan-empty">' + text + '</p>';
+  }
+  const count = (id, n) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = n;
+  };
 
   const CATS = ['자료 찾기','반복 입력','승인·결재','연락·응대','시설','비품','일정','기타'];
   const PRIO = { high:'긴급 업무', normal:'일반 업무', low:'보류/여유 업무' };
@@ -53,11 +70,16 @@
       writeHost.hidden = !open;
       if(toggle){
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.textContent = open ? '접기' : '+ 불편사항 등록';
+        toggle.textContent = open ? '접기' : '+ 등록';
       }
       if(open) writeHost.querySelector('textarea').focus();
     }
     if(toggle) toggle.addEventListener('click', () => setOpen(writeHost.hidden));
+
+    /* 빈 칸의 점선 상자를 눌러도 적는 칸이 열립니다 */
+    document.addEventListener('click', e => {
+      if(e.target.closest('[data-empty="write"]')) setOpen(true);
+    });
 
     const form = writeHost.querySelector('form');
     const msg  = writeHost.querySelector('.modal-msg');
@@ -138,31 +160,37 @@
 
   /* ── 불러오기 ── */
   async function load(){
-    listHost.innerHTML = '<p class="board-load">불러오는 중이에요…</p>';
+    listHost.innerHTML = '<p class="kan-load">불러오는 중이에요…</p>';
     let rows;
     try{
       rows = await DB.q('improvements', 'select=*&order=created_at.desc&limit=200');
     }catch(err){
-      listHost.innerHTML = '<p class="board-load bad">불러오지 못했어요. ' + esc(err.message) + '</p>';
+      listHost.innerHTML = '<p class="kan-load bad">불러오지 못했어요. ' + esc(err.message) + '</p>';
       return;
     }
 
     // 같은 분류가 몇 건이나 되는지 — 반복되는 불편을 드러냅니다
-    const count = {};
-    rows.forEach(r => { if(r.category) count[r.category] = (count[r.category]||0) + 1; });
+    const seen = {};
+    rows.forEach(r => { if(r.category) seen[r.category] = (seen[r.category]||0) + 1; });
 
-    const open = rows.filter(r => r.status === 'new' || r.status === 'doing');
-    const shut = rows.filter(r => r.status === 'done' || r.status === 'dropped');
+    const fresh = rows.filter(r => r.status === 'new');
+    const doing = rows.filter(r => r.status === 'doing');
+    const shut  = rows.filter(r => r.status === 'done' || r.status === 'dropped');
 
-    listHost.innerHTML = open.length
-      ? open.map(x => card(x, count[x.category] || 1)).join('')
-      : '<p class="board-load">아직 기록된 불편함이 없어요. 생각나는 아이디어를 한 줄 적어보세요.</p>';
+    const draw = (host, list, emptyText, action) => {
+      if(!host) return;
+      host.innerHTML = list.length
+        ? list.map(x => card(x, seen[x.category] || 1)).join('')
+        : empty(emptyText, action);
+    };
 
-    if(doneHost){
-      doneHost.innerHTML = shut.length
-        ? shut.map(x => card(x, count[x.category] || 1)).join('')
-        : '<p class="board-load">개선을 마친 업무나 아이디어가 여기에 하나씩 쌓여요.</p>';
-    }
+    draw(newHost,  fresh, '아직 기록된 불편함이 없어요.<br>눌러서 한 줄 적어보세요.', 'write');
+    draw(listHost, doing, '아이디어를 적으면 여기로 옮겨져요.');
+    draw(doneHost, shut,  '개선을 마친 업무나 아이디어가<br>여기에 하나씩 쌓여요.');
+
+    count('cntNew', fresh.length);
+    count('cntDoing', doing.length);
+    count('cntDone', shut.length);
   }
 
   /* ── 손보기 ── */
@@ -230,7 +258,7 @@
     try{
       rows = await DB.q('refs', 'select=*&order=created_at.desc&limit=200');
     }catch(err){
-      refHost.innerHTML = '<p class="board-load bad">불러오지 못했어요. ' + esc(err.message) + '</p>';
+      refHost.innerHTML = '<p class="kan-load bad">불러오지 못했어요. ' + esc(err.message) + '</p>';
       return;
     }
     refHost.innerHTML = rows.length
@@ -247,10 +275,14 @@
           + (r.note ? '<p class="ref-n">' + esc(r.note) + '</p>' : '')
           + '<div class="isu-acts"><button type="button" class="tk-btn" data-ref="del">지우기</button></div>'
           + '</div>').join('')
-      : '<p class="board-load">아직 담아둔 자료가 없어요. 참고할 글이나 아이디어를 담아두세요.</p>';
+      : empty('아직 담아둔 자료가 없어요.<br>참고할 글이나 아이디어를 담아두세요.', 'ref');
+    count('cntRef', rows.length);
   }
 
   if(refBtn){
+    document.addEventListener('click', e => {
+      if(e.target.closest('[data-empty="ref"]')) refBtn.click();
+    });
     refBtn.addEventListener('click', () => {
       if(document.getElementById('refForm')) return;
       const box = document.createElement('form');
