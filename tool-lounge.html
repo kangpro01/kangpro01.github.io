@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>서초 비즈니스 라운지 운영 체크리스트 — 일 잘하는 강프로</title>
+<title>비즈니스 라운지 운영 체크리스트 — 일 잘하는 강프로</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -211,8 +211,8 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
       <a class="back" href="tools.html">← 업무 Tools</a>
       <button class="export" id="exportBtn" type="button">내보내기</button>
     </div>
-    <p class="eyebrow" style="margin-bottom:6px">SEOCHO BUSINESS LOUNGE</p>
-    <h1><span class="thin">서초 비즈니스 라운지</span>운영 체크리스트</h1>
+    <p class="eyebrow" style="margin-bottom:6px">BUSINESS LOUNGE</p>
+    <h1><span class="thin">비즈니스 라운지</span>운영 체크리스트</h1>
     <div class="meta-bar">
       <button class="meta-toggle" id="metaToggle" type="button" aria-expanded="true" aria-controls="meta">
         <span class="chev" aria-hidden="true"></span>
@@ -335,7 +335,7 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
           <span class="item-note">원상복구 여부, 분실물 확인</span></label>
         <label class="item"><input type="checkbox"><span class="box"></span>
           <span class="item-name">웰컴보드 OFF</span>
-          <span class="item-note">기본 SAMSUNG 화면으로 전환</span></label>
+          <span class="item-note">기본 대기 화면으로 전환</span></label>
         <label class="item"><input type="checkbox"><span class="box"></span>
           <span class="item-name">주차 처리</span>
           <span class="item-note">주차 등록 및 도장 사용 횟수 기록</span></label>
@@ -407,7 +407,7 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
       </div>
     </section>
 
-    <footer>서초 비즈니스 라운지 운영 체크리스트 · 인쇄(Ctrl/⌘+P) 시 네 페이지가 한 번에 출력됩니다</footer>
+    <footer>비즈니스 라운지 운영 체크리스트 · 인쇄(Ctrl/⌘+P) 시 네 페이지가 한 번에 출력됩니다</footer>
   </div>
 </main>
 
@@ -484,7 +484,7 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
   });
 
   /* ---------- 자동 저장 ---------- */
-  var KEY = 'seocho-lounge-checklist-v1';
+  var KEY = 'lounge-checklist-v1';
   var FIELDS = ['f-client','f-date','f-room','f-owner'];
   var badge = document.getElementById('saved');
   var timer = null, badgeTimer = null;
@@ -646,9 +646,9 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
     // 헤더
     ctx.fillStyle = INK; ctx.fillRect(0, 0, W, 132);
     font(12, '600'); ctx.fillStyle = 'rgba(255,255,255,.6)';
-    ctx.fillText('SEOCHO BUSINESS LOUNGE', x, 46);
+    ctx.fillText('BUSINESS LOUNGE', x, 46);
     font(27, '800'); ctx.fillStyle = '#fff';
-    ctx.fillText('서초 비즈니스 라운지 운영 체크리스트', x, 88);
+    ctx.fillText('비즈니스 라운지 운영 체크리스트', x, 88);
     y = 132 + 42;
 
     // 회의 정보
@@ -771,7 +771,7 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
     ctx.textBaseline = 'alphabetic';
     drawSheet(ctx, W);
 
-    var name = (document.getElementById('f-client').value.trim() || '서초라운지') + '_' +
+    var name = (document.getElementById('f-client').value.trim() || '라운지') + '_' +
                (document.getElementById('f-date').value.trim() || '체크리스트');
     name = name.replace(/[\\/:*?"<>|]/g, '-') + '.png';
 
