@@ -409,23 +409,37 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 /* ══ 떠 있는 단추 ══ */
 .fab-wrap{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+/* 강프로 그림이 단추입니다. 누르면 판이 열립니다. */
 .fab{
-  width:56px;height:56px;border-radius:50%;flex:none;
-  border:0;background:var(--ink);cursor:pointer;position:relative;
-  box-shadow:0 10px 26px rgba(51,49,50,.32);
-  transition:transform .16s ease,background .2s ease;
+  width:72px;height:72px;border-radius:50%;flex:none;padding:0;
+  border:2px solid var(--ink);background:var(--paper);cursor:pointer;position:relative;
+  overflow:visible;
+  box-shadow:0 10px 26px rgba(51,49,50,.28);
+  transition:transform .16s ease,box-shadow .2s ease;
 }
-.fab::before,.fab::after{
-  content:'';position:absolute;left:50%;top:50%;background:#fff;border-radius:2px;
-  transform:translate(-50%,-50%);transition:transform .18s ease;
+.fab img{
+  width:100%;height:100%;display:block;border-radius:50%;
+  object-fit:cover;object-position:50% 14%;   /* 얼굴이 보이게 위쪽을 잡습니다 */
 }
-.fab::before{width:18px;height:2px}
-.fab::after{width:2px;height:18px}
-.fab:hover{background:var(--hover);transform:translateY(-2px)}
-.fab.on{background:var(--hover)}
-.fab.on::before{transform:translate(-50%,-50%) rotate(45deg)}
-.fab.on::after{transform:translate(-50%,-50%) rotate(45deg)}
-.fab:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.fab:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(51,49,50,.34)}
+.fab:active{transform:translateY(-1px)}
+.fab:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+
+/* 열려 있을 때 닫기 표시 — 그림만으로는 닫을 수 있다는 게 안 보입니다 */
+.fab-x{
+  position:absolute;top:-4px;right:-4px;width:24px;height:24px;border-radius:50%;
+  background:var(--ink);opacity:0;transform:scale(.6);
+  transition:opacity .16s ease,transform .16s ease;
+}
+.fab-x::before,.fab-x::after{
+  content:'';position:absolute;left:50%;top:50%;width:11px;height:2px;
+  background:#fff;border-radius:2px;
+}
+.fab-x::before{transform:translate(-50%,-50%) rotate(45deg)}
+.fab-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.fab.on{box-shadow:0 0 0 4px rgba(51,49,50,.12),0 10px 26px rgba(51,49,50,.28)}
+.fab.on .fab-x{opacity:1;transform:scale(1)}
+@media (max-width:760px){.fab{width:62px;height:62px}}
 
 .fab-pop{
   width:min(300px,calc(100vw - 40px));
@@ -452,7 +466,8 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 @media (prefers-reduced-motion:reduce){
   .fab-pop{animation:none}
-  .fab:hover{transform:none}
+  .fab:hover,.fab:active{transform:none}
+  .fab-x{transition:none}
 }
 
 .board{padding-top:20px}
