@@ -196,5 +196,13 @@
   }
 
   document.addEventListener('tasks:changed', load);
-  DB.gate(load);
+  DB.gate(() => {
+    load();
+    /* 다른 페이지에서 '＋ 업무추가'를 누르고 넘어온 경우.
+       로그인을 지난 뒤에 엽니다. */
+    if(location.hash === '#new'){
+      history.replaceState(null, '', location.pathname + location.search);
+      TaskForm.open();
+    }
+  });
 })();
