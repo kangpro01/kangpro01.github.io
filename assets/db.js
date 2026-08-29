@@ -90,9 +90,10 @@ const DB = (function(){
      q('tasks', {select, order, eq, ...})  읽기
      insert / update / remove              쓰기
      모두 로그인 토큰을 붙입니다. 없으면 서버가 거절합니다. */
-  async function call(path, opts){
+  async function call(path, opts, retried){
     const t = await token();
     if(!t) throw new Error('로그인이 필요합니다.');
+
     const res = await fetch(REST + path, Object.assign({}, opts, {
       headers: Object.assign({
         'apikey': KEY,
@@ -100,11 +101,27 @@ const DB = (function(){
         'Content-Type': 'application/json'
       }, (opts && opts.headers) || {})
     }));
-    if(!res.ok){
-      const e = await res.json().catch(()=>({}));
-      throw new Error(e.message || ('요청 실패 (' + res.status + ')'));
+
+    if(res.ok) return res.status === 204 ? null : res.json().catch(()=>null);
+
+    const e = await res.json().catch(()=>({}));
+    const raw = (e.message || e.msg || '').toLowerCase();
+
+    /* 토큰이 거절되는 경우가 있습니다. 흔한 것이 'JWT issued at future' 로,
+       발급 시각이 서버 기준으로 미래라 생깁니다(시계 어긋남).
+       한 번은 새 토큰을 받아 조용히 다시 시도합니다. */
+    const badToken = res.status === 401 || res.status === 403
+      || raw.includes('jwt') || raw.includes('token');
+    if(badToken && !retried){
+      if(await refresh()) return call(path, opts, true);
+      keep(null);                                  // 갱신도 안 되면 다시 로그인받습니다
+      throw new Error('로그인이 풀렸습니다. 새로고침한 뒤 암호를 다시 넣어주십시오.');
     }
-    return res.status === 204 ? null : res.json().catch(()=>null);
+
+    throw new Error(
+      raw.includes('jwt') ? '인증이 거절됐습니다. 새로고침해 주십시오.'
+                          : (e.message || '요청 실패 (' + res.status + ')')
+    );
   }
 
   const q = (table, query) => call('/' + table + (query ? '?' + query : ''), { method:'GET' });

@@ -14,17 +14,6 @@
 
 <div id="site-header"></div>
 
-<div class="page-head slim home-head">
-  <div class="wrap">
-    <img class="face" src="assets/kang.png" alt="강프로 일러스트" width="252" height="340">
-    <div>
-      <span class="tag">일 잘하는 강프로</span>
-      <h1 id="greet">오늘 뭘 해야 하지?</h1>
-      <p>놓친 것과 해야 할 것을 위에서부터 보여드립니다. 오른쪽 위에서 새 업무를 담으실 수 있습니다.</p>
-    </div>
-  </div>
-</div>
-
 <div class="wrap board" id="board"></div>
 
 <div class="wrap">
@@ -55,19 +44,6 @@
 <script src="assets/cal.js"></script>
 <script src="assets/notify.js"></script>
 <script>
-/* 시간대에 맞춘 인사 — 들어온 때를 알아채게 합니다 */
-(function(){
-  const el = document.getElementById('greet');
-  if(!el) return;
-  const h = new Date().getHours();
-  const d = new Date().getDay();
-  if(d === 5)          el.textContent = '금요일입니다. 이번 주 마무리하셨습니까?';
-  else if(d === 1)     el.textContent = '월요일입니다. 지난주에 놓친 것부터 봅니다.';
-  else if(h < 11)      el.textContent = '오늘 뭘 해야 하지?';
-  else if(h < 17)      el.textContent = '남은 오늘, 무엇이 급합니까?';
-  else                 el.textContent = '오늘 놓친 것은 없습니까?';
-})();
-
 /* 홈의 이번 달 미리보기 — 반복되는 일반 업무 목록에서 뽑습니다 */
 (function(){
   const el = document.getElementById('homeReminder');

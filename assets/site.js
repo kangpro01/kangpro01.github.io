@@ -52,7 +52,6 @@ const SITE = {
   /* ── 상단 바 ── */
   let nav = '<nav class="gnb"><div class="wrap">'
     + '<a class="logo" href="index.html" aria-label="' + esc(SITE.title) + ' — 홈으로">'
-    +   '<img src="assets/kang.png" alt="" width="252" height="340">'
     +   '<span>' + esc(SITE.title) + '</span>'
     + '</a>'
     + '<ul class="menu">';
