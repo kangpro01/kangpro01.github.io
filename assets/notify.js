@@ -11,17 +11,33 @@
      일간 — 오늘 할 일이 있으면 하루 한 번
      주간 — 앞으로 7일 안의 할 일을 주 한 번
      월간 — 이 달 할 일을 달 한 번
+     지연·임박 — 마감이 지났거나 이틀 안인 일을 하루 한 번
+
+   시각
+     '아침 09:00' 을 고르면 그 시각 전에는 알리지 않습니다.
+     서버가 없으니 그 시각에 울리는 것이 아니라, 그 시각을 지나
+     처음 들어왔을 때 알린다는 뜻입니다.
 
    알림 방식
-     브라우저 알림 권한이 있으면 시스템 알림으로, 없으면 화면 위 쪽지로 띄웁니다.
+     '브라우저 Push' 를 켜두고 권한이 있으면 시스템 알림으로,
+     아니면 화면 위 쪽지로 띄웁니다.
+     이메일은 보낼 서버가 없어 아직 고를 수 없습니다.
    ══════════════════════════════════════════════════════════ */
 const NOTIFY = (function(){
   let tasks = [];        // 담아둔 업무. home.js가 불러온 뒤 넣어줍니다.
 
   const KINDS = [
-    { k:'daily',   name:'일간', desc:'오늘 할 일이 있으면 알려드려요.' },
-    { k:'weekly',  name:'주간', desc:'앞으로 7일 안의 할 일을 알려드려요.' },
-    { k:'monthly', name:'월간', desc:'이 달 할 일을 한 번에 알려드려요.' }
+    { k:'daily',   name:'일간', desc:'오늘까지인 일' },
+    { k:'weekly',  name:'주간', desc:'앞으로 7일 안' },
+    { k:'monthly', name:'월간', desc:'이 달 안' },
+    { k:'soon',    name:'지연 및 마감 임박', desc:'지난 일과 이틀 안', sep:true }
+  ];
+
+  /* 알릴 시각 — 고른 시각 전에는 알리지 않습니다 */
+  const HOURS = [
+    ['',   '아무 때나'],
+    ['8',  '아침 08:00'], ['9',  '아침 09:00'], ['10', '오전 10:00'],
+    ['12', '점심 12:00'], ['14', '오후 14:00'], ['18', '저녁 18:00']
   ];
 
   /* ── 저장 (막힌 환경이면 메모리로) ── */
@@ -33,6 +49,10 @@ const NOTIFY = (function(){
   };
   const isOn  = k => store.get('notify.' + k) === '1';
   const setOn = (k,v) => store.set('notify.' + k, v ? '1' : '0');
+  const atOf  = k => store.get('notify.at.' + k) ?? '9';
+  const setAt = (k,v) => store.set('notify.at.' + k, v);
+  /* 알림 수단. 지금 고를 수 있는 것은 브라우저 Push 뿐입니다. */
+  const pushOn = () => store.get('notify.ch.push') !== '0';
 
   /* ── 날짜 ── */
   const NOW = new Date();
@@ -43,7 +63,7 @@ const NOTIFY = (function(){
 
   /* 같은 기간에 두 번 알리지 않기 위한 열쇠 */
   function periodKey(kind){
-    if(kind === 'daily')   return ymd(midnight);
+    if(kind === 'daily' || kind === 'soon') return ymd(midnight);
     if(kind === 'monthly') return Y + '-' + pad(M);
     const mon = new Date(midnight);              // 그 주의 월요일
     mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
@@ -55,6 +75,7 @@ const NOTIFY = (function(){
   function due(kind){
     const upto =
         kind === 'daily'  ? ymd(midnight)
+      : kind === 'soon'   ? ymd(new Date(Y, NOW.getMonth(), D + 2))    // 지난 일 + 이틀 안
       : kind === 'weekly' ? ymd(new Date(Y, NOW.getMonth(), D + 7))
       :                     ymd(new Date(Y, NOW.getMonth() + 1, 0));   // 이 달 말일
 
@@ -94,7 +115,7 @@ const NOTIFY = (function(){
     const lines = list.slice(0,3).map(x => x.m + '월 ' + x.d + '일 · ' + x.t);
     if(list.length > 3) lines.push('그 밖에 ' + (list.length - 3) + '건');
 
-    if('Notification' in window && Notification.permission === 'granted'){
+    if(pushOn() && 'Notification' in window && Notification.permission === 'granted'){
       try{
         new Notification(title, { body: lines.join('\n'), icon: 'assets/favicon.svg' });
         return;
@@ -110,6 +131,9 @@ const NOTIFY = (function(){
     KINDS.forEach(({k}) => {
       if(only && k !== only) return;
       if(!isOn(k)) return;
+      /* 고른 시각 전이면 넘어갑니다. 다음에 들어올 때 다시 봅니다. */
+      const at = atOf(k);
+      if(!force && at && NOW.getHours() < Number(at)) return;
       const key = periodKey(k);
       if(!force && store.get('notify.last.' + k) === key) return;
       const list = due(k);
@@ -122,12 +146,36 @@ const NOTIFY = (function(){
   /* ── 설정 화면 ── */
   const host = document.getElementById('notifySwitches');
   if(host){
-    host.innerHTML = KINDS.map(({k,name,desc}) =>
-      '<label class="switch">'
-      + '<input type="checkbox" data-k="' + k + '"' + (isOn(k) ? ' checked' : '') + '>'
-      + '<span class="switch-t"><b>' + name + '</b>' + desc + '</span>'
-      + '</label>'
-    ).join('') + '<button type="button" class="ics" id="notifyTest">지금 한 번 보기</button>'
+    const hourOpts = k => HOURS.map(([v, t]) =>
+      '<option value="' + v + '"' + (atOf(k) === v ? ' selected' : '') + '>' + t + '</option>'
+    ).join('');
+
+    host.innerHTML =
+      /* 알림 수단 */
+      '<div class="ntf-ch">'
+      +   '<button type="button" class="ntf-chip' + (pushOn() ? ' on' : '') + '" data-ch="push"'
+      +     ' aria-pressed="' + (pushOn() ? 'true' : 'false') + '">브라우저 Push</button>'
+      +   '<button type="button" class="ntf-chip" data-ch="mail" disabled'
+      +     ' title="보낼 서버가 없어 아직 못 씁니다">이메일</button>'
+      + '</div>'
+
+      + KINDS.map(({k, name, desc, sep}) =>
+          (sep ? '<hr class="ntf-sep">' : '')
+          + '<div class="ntf-row">'
+          +   '<span class="ntf-name"><b>' + name + '</b><span>' + desc + '</span></span>'
+          +   '<label class="tgl">'
+          +     '<input type="checkbox" data-k="' + k + '"' + (isOn(k) ? ' checked' : '')
+          +       ' aria-label="' + name + ' 알림"><i></i>'
+          +   '</label>'
+          + '</div>'
+          + '<div class="ntf-when" data-for="' + k + '"' + (isOn(k) ? '' : ' hidden') + '>'
+          +   '<select data-at="' + k + '" aria-label="' + name + ' 알릴 시각">'
+          +     hourOpts(k)
+          +   '</select>'
+          + '</div>'
+        ).join('')
+
+      + '<button type="button" class="ics" id="notifyTest">지금 한 번 보기</button>'
       + '<p class="switch-state" id="notifyState"></p>';
 
     const state = host.querySelector('#notifyState');
@@ -135,6 +183,10 @@ const NOTIFY = (function(){
     function paintState(){
       if(!('Notification' in window)){
         state.textContent = '이 브라우저는 시스템 알림을 지원하지 않아요. 화면 위 쪽지로 알려드려요.';
+        return;
+      }
+      if(!pushOn()){
+        state.textContent = '화면 위 쪽지로 알려드려요.';
         return;
       }
       const p = Notification.permission;
@@ -145,13 +197,34 @@ const NOTIFY = (function(){
     }
     paintState();
 
+    /* 알림 수단 칩 */
+    host.addEventListener('click', e => {
+      const chip = e.target.closest('.ntf-chip[data-ch="push"]');
+      if(!chip) return;
+      const next = !pushOn();
+      store.set('notify.ch.push', next ? '1' : '0');
+      chip.classList.toggle('on', next);
+      chip.setAttribute('aria-pressed', next ? 'true' : 'false');
+      paintState();
+    });
+
+    /* 알릴 시각 */
+    host.addEventListener('change', e => {
+      const sel = e.target.closest('select[data-at]');
+      if(!sel) return;
+      setAt(sel.dataset.at, sel.value);
+    });
+
     host.addEventListener('change', async e => {
       const box = e.target.closest('input[data-k]');
       if(!box) return;
       setOn(box.dataset.k, box.checked);
 
+      const when = host.querySelector('.ntf-when[data-for="' + box.dataset.k + '"]');
+      if(when) when.hidden = !box.checked;
+
       // 권한 요청은 사용자가 직접 켤 때만 (브라우저 규칙)
-      if(box.checked && 'Notification' in window && Notification.permission === 'default'){
+      if(box.checked && pushOn() && 'Notification' in window && Notification.permission === 'default'){
         try{ await Notification.requestPermission(); }catch(e){}
       }
       paintState();
