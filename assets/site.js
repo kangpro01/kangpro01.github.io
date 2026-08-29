@@ -93,9 +93,7 @@ const SITE = {
                  '<a class="drawer-sub" href="' + x.file + '">' + esc(x.name) + '</a>').join('') : '')
            + '</div>';
   }
-  drawer += '</div>'
-         + '<div class="drawer-foot">' + ctaHtml() + '</div>'
-         + '</div></div>';
+  drawer += '</div></div></div>';
 
   const head = document.getElementById('site-header');
   if(head) head.outerHTML = nav + drawer;
@@ -126,7 +124,7 @@ const SITE = {
     dw.addEventListener('click', e=>{
       if(e.target.tagName === 'A'
          || e.target.closest('[data-newtask]')
-         || !e.target.closest('.drawer-grid, .drawer-foot')) setOpen(false);
+         || !e.target.closest('.drawer-grid')) setOpen(false);
     });
     addEventListener('keydown', e=>{ if(e.key==='Escape' && !dw.hidden) setOpen(false); });
   }
