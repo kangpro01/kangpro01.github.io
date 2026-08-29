@@ -52,11 +52,11 @@ const DB = (function(){
       const e = await res.json().catch(()=>({}));
       const raw = (e.error_description || e.msg || e.message || '').toLowerCase();
       throw new Error(
-        raw.includes('invalid login')   ? '암호가 맞지 않습니다.'
-      : raw.includes('email not confirmed') ? '계정이 아직 확인되지 않았습니다. 대시보드에서 Auto Confirm을 켜주십시오.'
-      : raw.includes('too many')       ? '시도가 잦습니다. 잠시 뒤 다시 해주십시오.'
-      : raw.includes('failed to fetch')? '연결하지 못했습니다. 인터넷을 확인해 주십시오.'
-      : '들어가지 못했습니다. 잠시 뒤 다시 해주십시오.'
+        raw.includes('invalid login')   ? '암호가 맞지 않아요.'
+      : raw.includes('email not confirmed') ? '계정이 아직 확인되지 않았어요. 대시보드에서 Auto Confirm을 켜주세요.'
+      : raw.includes('too many')       ? '시도가 너무 잦아요. 잠시 뒤 다시 해주세요.'
+      : raw.includes('failed to fetch')? '연결하지 못했어요. 인터넷을 확인해 주세요.'
+      : '들어가지 못했어요. 잠시 뒤 다시 해주세요.'
       );
     }
     keep(await res.json());
@@ -92,7 +92,7 @@ const DB = (function(){
      모두 로그인 토큰을 붙입니다. 없으면 서버가 거절합니다. */
   async function call(path, opts, retried){
     const t = await token();
-    if(!t) throw new Error('로그인이 필요합니다.');
+    if(!t) throw new Error('로그인이 필요해요.');
 
     const res = await fetch(REST + path, Object.assign({}, opts, {
       headers: Object.assign({
@@ -115,11 +115,11 @@ const DB = (function(){
     if(badToken && !retried){
       if(await refresh()) return call(path, opts, true);
       keep(null);                                  // 갱신도 안 되면 다시 로그인받습니다
-      throw new Error('로그인이 풀렸습니다. 새로고침한 뒤 암호를 다시 넣어주십시오.');
+      throw new Error('로그인이 풀렸어요. 새로고침한 뒤 암호를 다시 넣어주세요.');
     }
 
     throw new Error(
-      raw.includes('jwt') ? '인증이 거절됐습니다. 새로고침해 주십시오.'
+      raw.includes('jwt') ? '인증이 거절됐어요. 새로고침해 주세요.'
                           : (e.message || '요청 실패 (' + res.status + ')')
     );
   }
@@ -149,7 +149,7 @@ const DB = (function(){
     el.innerHTML =
       '<form class="gate-box">'
       + '<b>일 잘하는 강프로</b>'
-      + '<p>팀 암호를 입력하십시오.</p>'
+      + '<p>팀 암호를 입력해 주세요.</p>'
       + '<input type="password" id="gatePw" autocomplete="current-password" '
       +   'placeholder="암호" aria-label="팀 암호" required>'
       + '<button class="btn lg" type="submit">들어가기</button>'
@@ -167,7 +167,7 @@ const DB = (function(){
     form.addEventListener('submit', async e => {
       e.preventDefault();
       btn.disabled = true;
-      msg.textContent = '확인 중입니다…';
+      msg.textContent = '확인 중이에요…';
       msg.classList.remove('bad');
       try{
         await login(pw.value);

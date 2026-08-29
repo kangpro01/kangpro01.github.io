@@ -362,9 +362,9 @@
       dz.id = "dropzone";
       dz.innerHTML = `
         <div class="ico">🧾</div>
-        <div class="big">영수증 사진을 여기로 끌어다 놓으십시오</div>
+        <div class="big">영수증 사진을 여기로 끌어다 놓으세요</div>
         <div class="sub">
-          눌러서 고르셔도 됩니다. 여러 장을 한번에 넣을 수 있습니다<br>
+          눌러서 골라도 돼요. 여러 장을 한번에 넣을 수 있어요<br>
           캡처한 영수증은 <kbd>Ctrl</kbd>+<kbd>V</kbd> 로 바로 붙여넣기
         </div>`;
       dz.onclick = () => $("fileInput").click();
@@ -424,9 +424,9 @@
     const hint = document.createElement("div");
     hint.className = "hint noprint";
     hint.innerHTML = picked !== null
-      ? "옮길 자리를 누르십시오. 손잡이(⠿)를 다시 누르면 취소됩니다."
-      : "손잡이(⠿)를 눌러 고른 뒤 옮길 자리를 누르면 순서가 바뀝니다. 마우스로는 끌어도 됩니다. " +
-        "<b>넣은 사진은 이 화면에만 있습니다. 새로고침하면 사라지니 끝나면 저장하십시오.</b>";
+      ? "옮길 자리를 누르세요. 손잡이(⠿)를 다시 누르면 취소돼요."
+      : "손잡이(⠿)를 눌러 고른 뒤 옮길 자리를 누르면 순서가 바뀌어요. 마우스로는 끌어도 돼요. " +
+        "<b>넣은 사진은 이 화면에만 있어요. 새로고침하면 사라지니 끝나면 저장하세요.</b>";
     stage.appendChild(hint);
   }
 
@@ -618,7 +618,7 @@
 
   // ---- JPG 생성 (외부 라이브러리 없이 Canvas로 직접 렌더) ----
   async function exportImages() {
-    if (receipts.length === 0) { alert("먼저 영수증을 넣어주십시오."); return; }
+    if (receipts.length === 0) { alert("먼저 영수증을 넣어주세요."); return; }
 
     const btn = $("printBtn");
     const orig = btn.innerHTML;
@@ -749,7 +749,7 @@
       showResults(results);
     } catch (e) {
       console.error(e);
-      alert("이미지를 만들지 못했습니다. 영수증 수를 줄여 다시 해보십시오.");
+      alert("이미지를 만들지 못했어요. 영수증 수를 줄여 다시 해보세요.");
     } finally {
       btn.disabled = false; btn.innerHTML = orig;
     }
@@ -768,8 +768,8 @@
     const card = document.createElement("div");
     card.className = "result-card";
     card.innerHTML = `
-      <h3>저장할 이미지가 나왔습니다</h3>
-      <p class="desc">아래 <b>다운로드</b>를 누르거나, 이미지를 <b>길게 눌러(PC는 우클릭) 저장</b>하셔도 됩니다.${results.length > 1 ? " 여러 장이니 하나씩 받으십시오." : ""}</p>`;
+      <h3>저장할 이미지가 나왔어요</h3>
+      <p class="desc">아래 <b>다운로드</b>를 누르거나, 이미지를 <b>길게 눌러(PC는 우클릭) 저장</b>해도 돼요.${results.length > 1 ? " 여러 장이니 하나씩 받으세요." : ""}</p>`;
 
     results.forEach((r, i) => {
       const block = document.createElement("div");

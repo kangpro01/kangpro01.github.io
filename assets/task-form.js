@@ -73,10 +73,10 @@ const TaskForm = (function(){
     /* 적는 대로 해석 결과 보여주기 */
     function readWhen(){
       const v = when.value.trim();
-      if(!v){ read.textContent = '비워두면 날짜 없는 업무로 담깁니다.'; read.className = 'when-read'; return null; }
+      if(!v){ read.textContent = '비워두면 날짜 없는 업무로 담겨요.'; read.className = 'when-read'; return null; }
       const r = WHEN.parseWhen(v);
       if(!r){
-        read.textContent = '이 말은 아직 못 알아듣습니다. 9/15 처럼 날짜로 적어주십시오.';
+        read.textContent = '이 말은 아직 못 알아들어요. 9/15 처럼 날짜로 적어주세요.';
         read.className = 'when-read bad';
         return null;
       }
@@ -103,7 +103,7 @@ const TaskForm = (function(){
 
       const w = when.value.trim() ? WHEN.parseWhen(when.value.trim()) : null;
       if(when.value.trim() && !w){
-        msg.textContent = '언제인지 알아듣지 못했습니다. 9/15 처럼 적어주십시오.';
+        msg.textContent = '언제인지 알아듣지 못했어요. 9/15 처럼 적어주세요.';
         msg.classList.add('bad');
         when.focus();
         return;
@@ -111,7 +111,7 @@ const TaskForm = (function(){
 
       btn.disabled = true;
       msg.className = 'modal-msg';
-      msg.textContent = '담는 중입니다…';
+      msg.textContent = '담는 중이에요…';
 
       try{
         await DB.insert('tasks', {

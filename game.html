@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <title>피지컬 120s</title>
-<meta name="description" content="방향키와 손가락으로 총알을 피하는 120초 생존 게임. 기록은 초 단위로 남습니다.">
+<meta name="description" content="방향키와 손가락으로 총알을 피하는 120초 생존 게임. 기록은 초 단위로 남아요.">
 
 <!-- 파비콘: 이 파일 하나로 열리도록 외부 파일 대신 직접 넣습니다 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317211C'/%3E%3Cpath d='M9 10.5h14v12' fill='none' stroke='%23E9EDE8' stroke-width='3.4'/%3E%3C/svg%3E">
@@ -188,15 +188,15 @@ footer{max-width:480px;font-size:11px;color:var(--ink-soft);text-align:center;pa
   <!-- 시작 화면 -->
   <div class="screen" id="scStart">
     <div class="eyebrow">120 SECONDS</div>
-    <h2>피하기만 하면 됩니다</h2>
+    <h2>피하기만 하면 돼요</h2>
     <p class="howto">
       <b>이동</b> <span class="key">← ↑ → ↓</span> · <span class="key">WASD</span>,
-      <span class="key">Z</span>를 누르면 느리고 정밀하게 움직입니다.
-      모바일은 화면을 누른 채 손가락을 끄십시오.<br>
+      <span class="key">Z</span>를 누르면 느리고 정밀하게 움직여요.
+      모바일은 화면을 누른 채 손가락을 끌어주세요.<br>
       <b>방어</b> <span class="key">Shift</span>(모바일은 오른쪽 아래 버튼).
-      0.6초 동안 막이 서서 안에 들어온 탄을 지웁니다.
-      <b>쓰면 10초 뒤에 다시 차고, 쌓이지는 않습니다.</b><br>
-      <b>목숨은 하나</b>, 한 번 맞으면 끝입니다. 10초마다 난이도가 올라가고 120초를 버티면 완주입니다.
+      0.6초 동안 막이 서서 안에 들어온 탄을 지워요.
+      <b>쓰면 10초 뒤에 다시 차고, 쌓이지는 않아요.</b><br>
+      <b>목숨은 하나</b>, 한 번 맞으면 끝이에요. 10초마다 난이도가 올라가고 120초를 버티면 완주예요.
     </p>
     <button class="go" id="btnStart">시작하기</button>
     <div class="rank">
@@ -220,7 +220,7 @@ footer{max-width:480px;font-size:11px;color:var(--ink-soft);text-align:center;pa
   </div>
 </div>
 
-<footer>목숨 1개 · <span class="key">Shift</span> 방어(10초 충전, 적립 없음) · <span class="key">R</span> 재시작. 기록은 이 브라우저에만 저장됩니다.</footer>
+<footer>목숨 1개 · <span class="key">Shift</span> 방어(10초 충전, 적립 없음) · <span class="key">R</span> 재시작. 기록은 이 브라우저에만 저장돼요.</footer>
 
 <script>
 (function(){
@@ -765,7 +765,7 @@ function showWave(name){
 function renderRank(el, hi){
   const a = loadRanks();
   el.innerHTML = '';
-  if(!a.length){ el.innerHTML = '<li class="empty">아직 기록이 없습니다.</li>'; return; }
+  if(!a.length){ el.innerHTML = '<li class="empty">아직 기록이 없어요.</li>'; return; }
   a.forEach((r,i)=>{
     const li = document.createElement('li');
     if(hi && Math.abs(r.t-hi)<0.005 && !el.querySelector('.me')) li.className = 'me';
@@ -800,7 +800,7 @@ function finish(cleared){
   const tail = ' 스침 '+graze+'회, 방어 '+guardUsed+'회.';
   const sub = cleared
     ? '120초 완주.'+tail
-    : (time>bestBefore ? '개인 최고 기록입니다.'+tail
+    : (time>bestBefore ? '개인 최고 기록이에요.'+tail
                        : '최고 기록까지 '+fmt(bestBefore-time)+'초.'+tail);
   document.getElementById('overSub').textContent = sub;
   renderRank(document.getElementById('rankOver'), time);

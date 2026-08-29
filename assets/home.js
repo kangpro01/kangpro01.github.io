@@ -75,13 +75,13 @@
   /* ── 불러오기 ── */
   async function load(){
     if(board) board.innerHTML = '';
-    if(nowEl) nowEl.innerHTML = '<p class="card-empty">불러오는 중입니다…</p>';
+    if(nowEl) nowEl.innerHTML = '<p class="card-empty">불러오는 중이에요…</p>';
 
     let all;
     try{
       all = await DB.q('tasks', 'select=*&status=eq.open&order=due_on.asc&limit=400');
     }catch(err){
-      const m = '<p class="card-empty bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
+      const m = '<p class="card-empty bad">불러오지 못했어요. ' + esc(err.message) + '</p>';
       if(nowEl) nowEl.innerHTML = m;
       return;
     }
@@ -91,7 +91,7 @@
 
     /* 위쪽 네 칸 */
     const now = all.filter(t => t.due_on && t.due_on <= today);
-    fill(nowEl, now, '오늘까지인 일이 없습니다.');
+    fill(nowEl, now, '오늘까지인 일이 없어요.');
     const cnt = document.getElementById('nowCount');
     if(cnt) cnt.textContent = now.length ? now.length + '건' : '';
 
@@ -100,11 +100,11 @@
       .sort((a,b) => (a.due_on||'').localeCompare(b.due_on||''));
 
     fill(document.getElementById('dailyList'),   rep('daily'),
-         '+ 버튼을 눌러 일간 업무를 등록하십시오.', { slim:true, hideRepeat:true });
+         '+ 버튼을 눌러 일간 업무를 등록하세요.', { slim:true, hideRepeat:true });
     fill(document.getElementById('weeklyList'),  rep('weekly'),
-         '+ 버튼을 눌러 주간 업무를 등록하십시오.', { slim:true });
+         '+ 버튼을 눌러 주간 업무를 등록하세요.', { slim:true });
     fill(document.getElementById('monthlyList'), rep('monthly').concat(rep('yearly')),
-         '+ 버튼을 눌러 월간 업무를 등록하십시오.', { slim:true });
+         '+ 버튼을 눌러 월간 업무를 등록하세요.', { slim:true });
 
     /* 아래쪽 블록 */
     if(!board) return;
@@ -123,11 +123,11 @@
     stale = stale.filter(t => !shown.has(t.id));
 
     board.innerHTML =
-        block('follow', 'FOLLOW UP', '후속 조치가 남았습니다', '전에 한 일에서 이어진 것',
+        block('follow', 'FOLLOW UP', '후속 조치가 남았어요', '전에 한 일에서 이어진 것',
               follow.map(t => row(t)))
-      + block('stale',  'FORGOTTEN', '오래 들여다보지 않았습니다', STALE + '일 넘게 손대지 않은 업무',
+      + block('stale',  'FORGOTTEN', '오래 들여다보지 않았어요', STALE + '일 넘게 손대지 않은 업무',
               stale.map(t => row(t, { seen: daysSince(t.last_seen_at) + '일째 안 봄' })))
-      + block('done',   'LAST WEEK', '지난 7일 동안 끝낸 일', '주간 보고에 그대로 쓰십시오',
+      + block('done',   'LAST WEEK', '지난 7일 동안 끝낸 일', '주간 보고에 그대로 쓰세요',
               done.map(t => row(t, { done:true })));
 
     if(stale.length) markSeen(stale.map(t => t.id));
@@ -169,7 +169,7 @@
       load();
     }catch(err){
       card.classList.remove('busy');
-      alert('처리하지 못했습니다. ' + err.message);
+      alert('처리하지 못했어요. ' + err.message);
     }
   });
 
@@ -181,8 +181,8 @@
     el.innerHTML =
       '<div class="toast">'
       + '<button type="button" class="toast-x" aria-label="닫기">×</button>'
-      + '<b>' + esc(t.title) + ' — 끝냈습니다</b>'
-      + '<ul><li>이어서 확인할 일이 있습니까?</li></ul>'
+      + '<b>' + esc(t.title) + ' — 끝냈어요</b>'
+      + '<ul><li>이어서 확인할 일이 있나요?</li></ul>'
       + '<button type="button" class="toast-go">후속 업무 담기</button>'
       + '</div>';
     document.body.appendChild(el);

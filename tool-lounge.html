@@ -365,7 +365,7 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
         <span class="stage-char">HISTORY</span>
         <p class="stage-when">개선사항 기록</p>
       </div>
-      <p class="hist-note">회차마다 나온 불편함과 조치 결과를 한 줄씩 쌓습니다.</p>
+      <p class="hist-note">회차마다 나온 불편함과 조치 결과를 한 줄씩 쌓아요.</p>
       <table>
         <thead>
           <tr>
@@ -407,7 +407,7 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
       </div>
     </section>
 
-    <footer>비즈니스 라운지 운영 체크리스트 · 인쇄(Ctrl/⌘+P) 시 네 페이지가 한 번에 출력됩니다</footer>
+    <footer>비즈니스 라운지 운영 체크리스트 · 인쇄(Ctrl/⌘+P) 하면 네 페이지가 한 번에 출력돼요</footer>
   </div>
 </main>
 
@@ -590,7 +590,7 @@ footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
   });
 
   document.getElementById('newRun').addEventListener('click', function(){
-    if(!confirm('새 회차를 시작합니다.\n체크 표시와 상단 입력값, 특이사항이 모두 지워집니다.\n개선사항 HISTORY는 그대로 남습니다.')) return;
+    if(!confirm('새 회차를 시작할까요?\n체크 표시와 상단 입력값, 특이사항이 모두 지워져요.\n개선사항 HISTORY는 그대로 남아요.')) return;
     FIELDS.forEach(function(id){ document.getElementById(id).value = ''; });
     [].slice.call(document.querySelectorAll('.item input')).forEach(function(b){ b.checked = false; });
     document.getElementById('memo-box').value = '';

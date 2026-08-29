@@ -26,9 +26,9 @@
       '<form class="isu-form" id="isuForm">'
       + '<label><span>불편한 점 작성란</span>'
       +   '<textarea name="body" rows="3" maxlength="2000" required '
-      +   'placeholder="예: 매번 같은 자료를 찾느라 시간이 걸립니다. 어디에 뒀는지 매번 헷갈립니다."></textarea></label>'
+      +   'placeholder="예: 매번 같은 자료를 찾느라 시간이 걸려요. 어디에 뒀는지 매번 헷갈려요."></textarea></label>'
       + '<div class="modal-row">'
-      +   '<label><span>분류 <em>나중에 반복 여부를 보려면 골라두십시오</em></span>'
+      +   '<label><span>분류 <em>나중에 반복 여부를 보려면 골라두세요</em></span>'
       +     '<input name="category" maxlength="40" list="isuCats" autocomplete="off" placeholder="고르거나 직접 입력"></label>'
       +   '<label><span>작성자</span>'
       +     '<input name="writer" maxlength="60" autocomplete="off" placeholder="이름"></label>'
@@ -53,7 +53,7 @@
       const btn = form.querySelector('button');
       btn.disabled = true;
       msg.className = 'modal-msg';
-      msg.textContent = '담는 중입니다…';
+      msg.textContent = '담는 중이에요…';
       try{
         await DB.insert('improvements', {
           body: body,
@@ -62,7 +62,7 @@
           priority: form.priority.value
         });
         form.reset();
-        msg.textContent = '기록했습니다.';
+        msg.textContent = '기록했어요.';
         load();
       }catch(err){
         msg.textContent = err.message;
@@ -96,12 +96,12 @@
 
   /* ── 불러오기 ── */
   async function load(){
-    listHost.innerHTML = '<p class="board-load">불러오는 중입니다…</p>';
+    listHost.innerHTML = '<p class="board-load">불러오는 중이에요…</p>';
     let rows;
     try{
       rows = await DB.q('improvements', 'select=*&order=created_at.desc&limit=200');
     }catch(err){
-      listHost.innerHTML = '<p class="board-load bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
+      listHost.innerHTML = '<p class="board-load bad">불러오지 못했어요. ' + esc(err.message) + '</p>';
       return;
     }
 
@@ -134,7 +134,7 @@
     try{
       if(act === 'idea'){
         const cur = (await DB.q('improvements', 'select=idea&id=eq.' + id))[0];
-        const v = prompt('이 불편을 어떻게 없앨 수 있겠습니까?', cur?.idea || '');
+        const v = prompt('이 불편을 어떻게 없앨 수 있을까요?', cur?.idea || '');
         if(v === null) return;
         await DB.update('improvements', 'id=eq.' + id, { idea: v.trim() || null });
       }
@@ -148,7 +148,7 @@
         });
         await DB.update('improvements', 'id=eq.' + id,
                         { status:'doing', task_id: t[0].id });
-        alert('업무로 담았습니다. 메인 화면에서 보실 수 있습니다.');
+        alert('업무로 담았어요. 메인 화면에서 볼 수 있어요.');
       }
       else if(act === 'reopen'){
         await DB.update('improvements', 'id=eq.' + id, { status:'new' });
@@ -158,7 +158,7 @@
       }
       load();
     }catch(err){
-      alert('처리하지 못했습니다. ' + err.message);
+      alert('처리하지 못했어요. ' + err.message);
     }
   });
 
@@ -172,7 +172,7 @@
     try{
       rows = await DB.q('refs', 'select=*&order=created_at.desc&limit=200');
     }catch(err){
-      refHost.innerHTML = '<p class="board-load bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
+      refHost.innerHTML = '<p class="board-load bad">불러오지 못했어요. ' + esc(err.message) + '</p>';
       return;
     }
     refHost.innerHTML = rows.length
@@ -199,7 +199,7 @@
       box.id = 'refForm';
       box.className = 'isu-form ref-form';
       box.innerHTML =
-        '<label><span>제목</span><input name="title" maxlength="300" required placeholder="무엇을 참고했습니까"></label>'
+        '<label><span>제목</span><input name="title" maxlength="300" required placeholder="무엇을 참고했나요"></label>'
         + '<div class="modal-row">'
         +   '<label><span>링크 <em>선택</em></span><input name="url" maxlength="600" placeholder="https://"></label>'
         +   '<label><span>꼬리표 <em>선택</em></span><input name="tag" maxlength="40" placeholder="예: 응대, 서식"></label>'
@@ -216,7 +216,7 @@
         const t = box.title.value.trim();
         if(!t) return;
         const msg = box.querySelector('.modal-msg');
-        msg.textContent = '담는 중입니다…';
+        msg.textContent = '담는 중이에요…';
         try{
           await DB.insert('refs', {
             title: t,
@@ -238,9 +238,9 @@
     const b = e.target.closest('.ref [data-ref="del"]');
     if(!b) return;
     const card = b.closest('.ref');
-    if(!confirm('이 레퍼런스를 지웁니까?')) return;
+    if(!confirm('이 레퍼런스를 지울까요?')) return;
     try{ await DB.remove('refs', 'id=eq.' + card.dataset.id); loadRefs(); }
-    catch(err){ alert('지우지 못했습니다. ' + err.message); }
+    catch(err){ alert('지우지 못했어요. ' + err.message); }
   });
 
   DB.gate(() => { load(); loadRefs(); });

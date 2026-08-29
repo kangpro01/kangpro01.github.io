@@ -19,9 +19,9 @@ const NOTIFY = (function(){
   let tasks = [];        // 담아둔 업무. home.js가 불러온 뒤 넣어줍니다.
 
   const KINDS = [
-    { k:'daily',   name:'일간', desc:'오늘 할 일이 있으면 알립니다.' },
-    { k:'weekly',  name:'주간', desc:'앞으로 7일 안의 할 일을 알립니다.' },
-    { k:'monthly', name:'월간', desc:'이 달 할 일을 한 번에 알립니다.' }
+    { k:'daily',   name:'일간', desc:'오늘 할 일이 있으면 알려드려요.' },
+    { k:'weekly',  name:'주간', desc:'앞으로 7일 안의 할 일을 알려드려요.' },
+    { k:'monthly', name:'월간', desc:'이 달 할 일을 한 번에 알려드려요.' }
   ];
 
   /* ── 저장 (막힌 환경이면 메모리로) ── */
@@ -134,14 +134,14 @@ const NOTIFY = (function(){
 
     function paintState(){
       if(!('Notification' in window)){
-        state.textContent = '이 브라우저는 시스템 알림을 지원하지 않습니다. 화면 위 쪽지로 알려드립니다.';
+        state.textContent = '이 브라우저는 시스템 알림을 지원하지 않아요. 화면 위 쪽지로 알려드려요.';
         return;
       }
       const p = Notification.permission;
       state.textContent =
-        p === 'granted' ? '시스템 알림으로 받습니다.'
-      : p === 'denied'  ? '알림이 차단돼 있어 화면 위 쪽지로 알려드립니다. 주소창의 자물쇠에서 바꿀 수 있습니다.'
-                        : '켜면 알림 권한을 물어봅니다. 거절하셔도 화면 위 쪽지로 알려드립니다.';
+        p === 'granted' ? '시스템 알림으로 받아요.'
+      : p === 'denied'  ? '알림이 차단돼 있어 화면 위 쪽지로 알려드려요. 주소창의 자물쇠에서 바꿀 수 있어요.'
+                        : '켜면 알림 권한을 물어봐요. 거절해도 화면 위 쪽지로 알려드려요.';
     }
     paintState();
 
@@ -160,10 +160,10 @@ const NOTIFY = (function(){
 
     host.querySelector('#notifyTest').addEventListener('click', () => {
       const on = KINDS.filter(({k}) => isOn(k));
-      if(!on.length){ toast('켜진 알림이 없습니다', ['위에서 하나 이상 켜주십시오.']); return; }
+      if(!on.length){ toast('켜진 알림이 없어요', ['위에서 하나 이상 켜주세요.']); return; }
       let shown = false;
       on.forEach(({k}) => { const l = due(k); if(l.length){ fire(k, l); shown = true; } });
-      if(!shown) toast('지금은 알릴 것이 없습니다', ['켜두시면 해당하는 날에 알려드립니다.']);
+      if(!shown) toast('지금은 알릴 것이 없어요', ['켜두면 해당하는 날에 알려드려요.']);
     });
   }
 
