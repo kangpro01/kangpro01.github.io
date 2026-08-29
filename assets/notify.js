@@ -181,19 +181,20 @@ const NOTIFY = (function(){
     const state = host.querySelector('#notifyState');
 
     function paintState(){
+      /* 알림이 차단된 경우에는 아무 말도 하지 않습니다.
+         고칠 방법을 안내해도 대개 손대지 않고, 판만 길어집니다. */
+      let msg = '';
       if(!('Notification' in window)){
-        state.textContent = '이 브라우저는 시스템 알림을 지원하지 않아요. 화면 위 쪽지로 알려드려요.';
-        return;
+        msg = '이 브라우저는 시스템 알림을 지원하지 않아요. 화면 위 쪽지로 알려드려요.';
+      }else if(!pushOn()){
+        msg = '화면 위 쪽지로 알려드려요.';
+      }else{
+        const p = Notification.permission;
+        if(p === 'granted') msg = '시스템 알림으로 받아요.';
+        else if(p !== 'denied') msg = '켜면 알림 권한을 물어봐요. 거절해도 화면 위 쪽지로 알려드려요.';
       }
-      if(!pushOn()){
-        state.textContent = '화면 위 쪽지로 알려드려요.';
-        return;
-      }
-      const p = Notification.permission;
-      state.textContent =
-        p === 'granted' ? '시스템 알림으로 받아요.'
-      : p === 'denied'  ? '알림이 차단돼 있어 화면 위 쪽지로 알려드려요. 주소창의 자물쇠에서 바꿀 수 있어요.'
-                        : '켜면 알림 권한을 물어봐요. 거절해도 화면 위 쪽지로 알려드려요.';
+      state.textContent = msg;
+      state.hidden = !msg;
     }
     paintState();
 
