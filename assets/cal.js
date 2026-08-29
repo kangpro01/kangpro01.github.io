@@ -4,6 +4,11 @@
    담아둔 업무를 달력 위에 얹습니다.
    점을 찍고 옆에 목록을 따로 두는 대신, 날짜 칸 안에 제목을 바로 적습니다.
    무엇이 있는지 달력만 보고 알 수 있어야 하기 때문입니다.
+
+   제목을 누르면 고치는 창이 열립니다. 이것이 없으면 오늘 이후로 잡힌
+   한 번짜리 업무는 마감일이 올 때까지 손댈 방법이 없습니다.
+   칸에 다 못 담은 것은 +N 을 눌러 펼칩니다.
+
    업무를 불러온 뒤 CAL.setTasks(rows) 를 부르면 다시 그립니다.
    ══════════════════════════════════════════════════════════ */
 const CAL = (function(){
@@ -18,15 +23,16 @@ const CAL = (function(){
 
   let y = TY, m = TM;
   let mine = [];                       // 직접 담은 업무 (로그인 뒤 채워집니다)
+  let openDay = null;                  // +N 을 눌러 펼쳐둔 날 (YYYY-MM-DD)
 
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
-  /* 그 날짜에 걸린 업무 제목 모으기 */
+  /* 그 날짜에 걸린 업무 모으기 */
   const pad = n => String(n).padStart(2,'0');
-  function titlesOn(year, month, day){
-    const key = year + '-' + pad(month) + '-' + pad(day);
-    return mine.filter(t => t.due_on === key).map(t => t.title);
+  const keyOf = (year, month, day) => year + '-' + pad(month) + '-' + pad(day);
+  function itemsOn(key){
+    return mine.filter(t => t.due_on === key);
   }
 
   function draw(){
@@ -37,16 +43,26 @@ const CAL = (function(){
     for(let i = 0; i < lead; i++) cells += '<div class="cal-day off"></div>';
 
     for(let d = 1; d <= last; d++){
-      const list = titlesOn(y, m, d);
+      const key = keyOf(y, m, d);
+      const list = itemsOn(key);
+      const wide = openDay === key;                 // 펼쳐둔 날은 전부 보여줍니다
       let cls = 'cal-day';
       if(list.length) cls += ' has';
       if(y === TY && m === TM && d === TD) cls += ' today';
+      if(wide) cls += ' open';
 
       /* 넘치는 건수는 줄을 하나 더 쓰지 않도록 날짜 숫자 옆에 적습니다 */
-      const more = list.length > show
-        ? '<em class="cal-more">+' + (list.length - show) + '</em>' : '';
-      const evs = list.slice(0, show).map(t =>
-        '<span class="cal-ev" title="' + esc(t) + '">' + esc(t) + '</span>').join('');
+      const hidden = list.length - show;
+      const more = (!wide && hidden > 0)
+        ? '<button type="button" class="cal-more" data-more="' + key + '"'
+          + ' aria-label="이 날 업무 모두 보기">+' + hidden + '</button>'
+        : (wide && hidden > 0
+            ? '<button type="button" class="cal-more" data-more="" aria-label="접기">접기</button>'
+            : '');
+
+      const evs = (wide ? list : list.slice(0, show)).map(t =>
+        '<button type="button" class="cal-ev" data-task="' + t.id + '"'
+        + ' title="' + esc(t.title) + '">' + esc(t.title) + '</button>').join('');
 
       /* 칸이 좁은 화면에서는 제목이 서너 글자만 보여 쓸모가 없습니다.
          그때는 CSS가 제목을 감추고 이 건수만 남깁니다. */
@@ -115,9 +131,27 @@ const CAL = (function(){
     tid = setTimeout(render, 150);
   });
 
-  host.addEventListener('click', e => {
+  host.addEventListener('click', async e => {
+    /* 일정을 누르면 고치는 창 */
+    const ev = e.target.closest('[data-task]');
+    if(ev){
+      try{
+        const cur = (await DB.q('tasks', 'select=*&id=eq.' + ev.dataset.task))[0];
+        if(cur) TaskForm.open({ task: cur });
+      }catch(err){ alert('불러오지 못했어요. ' + err.message); }
+      return;
+    }
+
+    /* +N / 접기 */
+    const more = e.target.closest('[data-more]');
+    if(more){
+      openDay = more.dataset.more || null;
+      render();
+      return;
+    }
+
     if(e.target.closest('[data-today]')){
-      y = TY; m = TM; render();
+      y = TY; m = TM; openDay = null; render();
       return;
     }
     const nav = e.target.closest('.cal-nav');
@@ -125,6 +159,7 @@ const CAL = (function(){
     m += Number(nav.dataset.go);
     if(m < 1){ m = 12; y--; }
     if(m > 12){ m = 1; y++; }
+    openDay = null;
     render();
   });
 

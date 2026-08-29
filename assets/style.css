@@ -771,7 +771,9 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
   grid-template-rows:auto;grid-auto-rows:minmax(52px,1fr);
   /* 격자선 — 칸마다 오른쪽·아래를 긋고, 바깥 테두리는 위·왼쪽·오른쪽만 둡니다.
      아래는 마지막 줄 칸들이 그어주므로 겹치지 않습니다. */
-  border:1px solid var(--rule);border-bottom:0;border-radius:10px;overflow:hidden;
+  /* 모서리를 둥글리려면 overflow:hidden 이 필요한데, 그러면 +N 으로 펼친 칸이
+     잘려 보이지 않습니다. 달력 격자는 각진 편이 자연스러우니 그대로 둡니다. */
+  border:1px solid var(--rule);border-bottom:0;
 }
 .cal-grid > *:nth-child(7n){border-right:0}
 .cal-dow{
@@ -803,14 +805,26 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .cal-day.today .cal-n{color:var(--ink);font-weight:800}
 /* 그 날의 일정 — 길면 잘리고, 마우스를 올리면 전체가 보입니다 */
 .cal-ev{
+  display:block;width:100%;text-align:left;flex:none;cursor:pointer;
   font-family:var(--fs);font-size:10.5px;line-height:1.4;font-weight:600;
   color:var(--ink);background:var(--paper);border:1px solid var(--rule);
   border-radius:4px;padding:1px 4px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
+.cal-ev:hover{border-color:var(--ink)}
+.cal-ev:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
 .cal-more{
-  font-style:normal;font-family:var(--fs-num);font-size:10px;font-weight:700;
-  color:var(--ink-2);line-height:1.3;padding-right:2px;flex:none;
+  font-family:var(--fs-num);font-size:10px;font-weight:700;
+  color:var(--ink-2);line-height:1.3;flex:none;cursor:pointer;
+  background:none;border:0;padding:0 2px;border-radius:4px;
+}
+.cal-more:hover{color:var(--ink);background:var(--marker)}
+
+/* +N 을 눌러 펼친 칸 — 아래 칸 위로 떠올라 그 날 것을 전부 보여줍니다 */
+.cal-day.open{
+  overflow:visible;z-index:5;
+  background:var(--paper);border-radius:6px;
+  box-shadow:0 0 0 1.5px var(--ink), 0 10px 24px rgba(51,49,50,.18);
 }
 /* 좁은 화면용 건수. 넓을 때는 제목을 적으므로 숨겨둡니다 */
 .cal-count{display:none}
