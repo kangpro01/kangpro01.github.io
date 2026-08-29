@@ -625,30 +625,23 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .ref-n{margin:6px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.6}
 
-/* ══ 체크리스트 ══ */
-.cl{border:1px solid var(--rule);border-radius:16px;padding:22px 24px;background:var(--paper);margin-bottom:16px}
-.cl-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
-.cl-head h2{margin:0;font-size:19px;font-weight:900;letter-spacing:-.04em}
-.cl-head p{margin:4px 0 0;font-size:13px;color:var(--ink-3)}
-.cl-right{display:flex;align-items:center;gap:10px}
-.cl-count{font-family:var(--fs-num);font-size:13px;color:var(--ink-3);white-space:nowrap}
-.cl-count b{color:var(--ink);font-weight:800;font-size:15px}
-.cl-bar{height:4px;border-radius:3px;background:var(--rule);margin:14px 0 18px;overflow:hidden}
-.cl-bar i{display:block;height:100%;background:var(--ink);transition:width .25s ease}
-.cl-grp + .cl-grp{margin-top:18px}
-.cl-grp > b{
-  display:block;font-family:var(--fs-num);font-size:11px;letter-spacing:.16em;
-  color:var(--ink-3);font-weight:700;margin-bottom:6px;
+/* ══ 업무 Tools 목록 ══ */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.tool{
+  display:flex;flex-direction:column;
+  border:1px solid var(--rule);border-radius:16px;padding:24px;background:var(--paper);
+  transition:border-color .2s ease,transform .15s ease,box-shadow .2s ease;
 }
-.cl-item{
-  display:flex;gap:11px;align-items:flex-start;cursor:pointer;
-  padding:9px 2px;border-bottom:1px solid var(--rule);
+.tool:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 26px rgba(51,49,50,.08)}
+.tool-tag{
+  align-self:flex-start;font-family:var(--fs-num);font-size:10.5px;font-weight:700;letter-spacing:.06em;
+  color:var(--ink-2);border:1px solid var(--rule);border-radius:999px;padding:3px 10px;margin-bottom:12px;
 }
-.cl-item:last-child{border-bottom:0}
-.cl-item input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--ink);flex:none;cursor:pointer}
-.cl-item span{font-size:15px;line-height:1.55}
-.cl-item.done span{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:1.5px}
-@media (prefers-reduced-motion:reduce){.cl-bar i{transition:none}}
+.tool b{font-size:18px;font-weight:800;letter-spacing:-.035em;line-height:1.4}
+.tool p{margin:8px 0 0;font-size:14px;color:var(--ink-2);line-height:1.65}
+.tool-go{margin-top:16px;font-size:13.5px;font-weight:800;color:var(--ink)}
+.tool:hover .tool-go{text-decoration:underline;text-underline-offset:4px}
+@media (prefers-reduced-motion:reduce){.tool:hover{transform:none}}
 
 /* ══ 홈: 리마인더 + 달력 좌우 배치 ══ */
 .home-rem{display:grid;grid-template-columns:1fr 330px;gap:30px;align-items:start}
@@ -865,8 +858,9 @@ const SITE = {
       { file:'issues.html#list',  name:'개선 아이디어' },
       { file:'issues.html#ref',   name:'레퍼런스' }
     ]},
+    /* 도구를 늘리면 assets/tools.js 와 여기 두 곳에 적습니다 */
     { file:'tools.html', name:'업무 Tools', sub:[
-      { file:'tools.html#lounge', name:'라운지 운영 체크리스트' }
+      { file:'tool-lounge.html', name:'라운지 운영 체크리스트' }
     ]},
     { file:'attic.html',  name:'딴짓 창고', sub:[
       { file:'game.html', name:'피지컬 120s' }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>업무 Tools — 일 잘하는 강프로</title>
-<meta name="description" content="업무에 바로 쓰는 도구. 체크리스트.">
+<meta name="description" content="업무에 바로 쓰는 도구 모음.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
@@ -18,18 +18,38 @@
   <div class="wrap">
     <span class="tag">TOOLS</span>
     <h1>업무 Tools</h1>
-    <p>매번 같은 순서로 확인해야 하는 일을 눈으로 짚어가며 하십시오. 체크는 이 브라우저에만 남고, 주기가 지나면 저절로 비워집니다.</p>
+    <p>쓸 도구를 골라 여십시오. 도구마다 쓰는 법이 다르고, 적은 내용은 각 도구 안에 남습니다.</p>
   </div>
 </div>
 
 <section>
-  <div class="wrap" id="checklists"></div>
+  <div class="wrap">
+    <div class="tool-grid" id="toolList"></div>
+  </div>
 </section>
 
 <div id="site-footer"></div>
 
 <script src="assets/site.js"></script>
-<script src="assets/checklists.js"></script>
-<script src="assets/checklist.js"></script>
+<script src="assets/tools.js"></script>
+<script>
+/* 목록은 assets/tools.js 에 있습니다. 여기는 그리기만 합니다. */
+(function(){
+  const host = document.getElementById('toolList');
+  if(!host || typeof TOOLS === 'undefined') return;
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
+  host.innerHTML = TOOLS.length
+    ? TOOLS.map(t =>
+        '<a class="tool" href="' + esc(t.file) + '">'
+        + '<span class="tool-tag">' + esc(t.tag) + '</span>'
+        + '<b>' + esc(t.name) + '</b>'
+        + '<p>' + esc(t.desc) + '</p>'
+        + '<span class="tool-go">열기 →</span>'
+        + '</a>').join('')
+    : '<p class="card-empty">아직 만든 도구가 없습니다.</p>';
+})();
+</script>
 </body>
 </html>

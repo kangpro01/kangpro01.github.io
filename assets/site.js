@@ -20,8 +20,9 @@ const SITE = {
       { file:'issues.html#list',  name:'개선 아이디어' },
       { file:'issues.html#ref',   name:'레퍼런스' }
     ]},
+    /* 도구를 늘리면 assets/tools.js 와 여기 두 곳에 적습니다 */
     { file:'tools.html', name:'업무 Tools', sub:[
-      { file:'tools.html#lounge', name:'라운지 운영 체크리스트' }
+      { file:'tool-lounge.html', name:'라운지 운영 체크리스트' }
     ]},
     { file:'attic.html',  name:'딴짓 창고', sub:[
       { file:'game.html', name:'피지컬 120s' }

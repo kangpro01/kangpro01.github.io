@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서초 비즈니스 라운지 운영 체크리스트 — 일 잘하는 강프로</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --ink:#333132;
+  --ink-70:#6b6a6a;
+  --ink-40:#a3a2a2;
+  --line:#dcdad8;
+  --hair:#f0eeec;
+  --fill:#f4f3f1;
+  --paper:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  color:var(--ink);background:var(--fill);line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* ---------- masthead ---------- */
+.masthead{background:var(--ink);color:#fff;padding:48px 0 38px}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.export{
+  flex:0 0 auto;
+  background:none;border:1px solid rgba(255,255,255,.38);color:#fff;
+  font:inherit;font-size:13px;font-weight:600;letter-spacing:-.01em;
+  padding:9px 18px;border-radius:2px;cursor:pointer;transition:.15s;
+}
+.export:hover{background:#fff;border-color:#fff;color:var(--ink)}
+.export:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.export[disabled]{opacity:.5;pointer-events:none}
+.masthead .eyebrow{font-size:12px;letter-spacing:.22em;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:0}
+.back{
+  flex:0 0 auto;font-size:12px;letter-spacing:.06em;font-weight:600;
+  color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;
+}
+.back:hover{color:#fff}
+.back:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.masthead h1{font-size:clamp(26px,4.6vw,44px);font-weight:800;letter-spacing:-.035em;line-height:1.12}
+.masthead h1 .thin{font-weight:200;color:rgba(255,255,255,.62);display:block}
+.meta-bar{margin-top:26px;padding-top:18px;border-top:1px solid rgba(255,255,255,.18)}
+.meta-toggle{
+  display:flex;align-items:center;gap:10px;width:100%;
+  background:none;border:0;font:inherit;color:#fff;cursor:pointer;padding:2px 0;text-align:left;
+}
+.meta-toggle:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:4px}
+.chev{
+  width:8px;height:8px;border-right:1.6px solid rgba(255,255,255,.7);border-bottom:1.6px solid rgba(255,255,255,.7);
+  transform:rotate(45deg);transition:transform .22s ease;flex:0 0 auto;margin-bottom:3px;
+}
+.meta-toggle[aria-expanded="false"] .chev{transform:rotate(-45deg);margin-bottom:0}
+.meta-label{font-size:11px;letter-spacing:.16em;font-weight:700;color:rgba(255,255,255,.55);white-space:nowrap}
+.meta{
+  display:flex;flex-wrap:wrap;gap:26px;
+  margin-top:20px;max-height:400px;overflow:hidden;
+  transition:max-height .26s ease,margin-top .26s ease,opacity .2s ease;
+}
+.meta.folded{max-height:0;margin-top:0;opacity:0;pointer-events:none}
+.field{flex:1 1 185px;min-width:0}
+.field label{display:block;font-size:11px;letter-spacing:.16em;font-weight:600;color:rgba(255,255,255,.45);margin-bottom:7px}
+.field input{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.28);color:#fff;font:inherit;font-size:16px;font-weight:500;padding:4px 0 8px;border-radius:0}
+.field input::placeholder{color:rgba(255,255,255,.3);font-weight:300}
+.field input:focus{outline:0;border-bottom-color:#fff}
+
+/* ---------- tabs ---------- */
+.tabs{position:sticky;top:0;z-index:30;background:var(--paper);border-bottom:1px solid var(--line)}
+.tabs .wrap{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.tabs .wrap::-webkit-scrollbar{display:none}
+.tab{
+  position:relative;background:none;border:0;font:inherit;cursor:pointer;
+  padding:20px 22px 17px;color:var(--ink-40);text-align:left;white-space:nowrap;flex:0 0 auto;
+}
+.tab:first-child{padding-left:0}
+.tab-name{display:block;font-size:14px;font-weight:700;letter-spacing:.08em;transition:.18s}
+.tab-sub{display:block;font-size:11px;font-weight:500;margin-top:3px;color:var(--ink-40);letter-spacing:-.01em}
+.tab::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:transparent;transition:.18s}
+.tab:first-child::after{left:0}
+.tab:hover .tab-name{color:var(--ink-70)}
+.tab.on .tab-name{color:var(--ink)}
+.tab.on .tab-sub{color:var(--ink-70)}
+.tab.on::after{background:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--ink);outline-offset:-4px}
+
+/* ---------- progress ---------- */
+.bar{background:var(--paper);border-bottom:1px solid var(--hair)}
+.bar .wrap{display:flex;align-items:center;gap:18px;height:54px}
+.bar-count{font-size:14px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.bar-count em{font-style:normal;color:var(--ink-40);font-weight:500}
+.bar-track{flex:1;height:3px;background:var(--line);position:relative;overflow:hidden}
+.bar-fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--ink);transition:width .35s cubic-bezier(.4,0,.2,1)}
+.saved{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--ink-40);white-space:nowrap;opacity:0;transition:opacity .3s}
+.saved.show{opacity:1}
+.btn{background:none;border:1px solid var(--line);color:var(--ink-70);font:inherit;font-size:13px;font-weight:500;padding:7px 14px;cursor:pointer;border-radius:2px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--ink);color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- pages ---------- */
+main{background:var(--paper);min-height:52vh;padding-bottom:20px}
+.page{display:none}
+.page.on{display:block}
+.page-head{padding:44px 0 26px;border-bottom:1.5px solid var(--ink)}
+.page-head .stage-char{font-size:clamp(34px,6vw,54px);font-weight:800;letter-spacing:-.04em;line-height:1;display:block}
+.page-head .stage-when{margin-top:10px;font-size:14px;font-weight:600;color:var(--ink-70);letter-spacing:-.015em}
+
+.items{padding:8px 0 40px}
+.item{display:block;position:relative;padding:16px 0 16px 40px;cursor:pointer;border-bottom:1px solid var(--hair)}
+.item input{position:absolute;opacity:0;width:0;height:0}
+.box{position:absolute;left:0;top:19px;width:20px;height:20px;border:1.5px solid var(--ink-40);border-radius:2px;transition:.18s}
+.box::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) scale(.4);opacity:0;transition:.18s}
+.item input:checked ~ .box{background:var(--ink);border-color:var(--ink)}
+.item input:checked ~ .box::after{opacity:1;transform:rotate(45deg) scale(1)}
+.item input:focus-visible ~ .box{outline:2px solid var(--ink);outline-offset:3px}
+.item:hover .box{border-color:var(--ink)}
+.item-name{display:block;font-size:16.5px;font-weight:600;letter-spacing:-.015em;transition:.18s}
+.item-note{display:block;font-size:13.5px;color:var(--ink-70);margin-top:3px;letter-spacing:-.01em;transition:.18s}
+.item input:checked ~ .item-name{color:var(--ink-40);text-decoration:line-through;text-decoration-thickness:1px}
+.item input:checked ~ .item-note{color:#c4c3c2}
+
+/* ---------- memo ---------- */
+.memo{padding:0 0 40px}
+.memo label{display:block;font-size:11px;letter-spacing:.16em;font-weight:700;color:var(--ink-40);margin-bottom:12px}
+.memo textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:2px;padding:14px;font:inherit;font-size:15px;color:var(--ink);resize:vertical;background:#fdfcfb}
+.memo textarea:focus{outline:0;border-color:var(--ink)}
+
+/* ---------- history ---------- */
+.hist-note{padding:22px 0 18px;font-size:13.5px;color:var(--ink-70)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+thead th{text-align:left;font-size:11px;letter-spacing:.12em;font-weight:700;color:var(--ink-40);padding:0 10px 10px;border-bottom:1.5px solid var(--ink)}
+thead th:first-child{padding-left:0}
+tbody td{padding:11px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+tbody td:first-child{padding-left:0}
+tbody td[contenteditable]{outline:0;min-height:24px}
+tbody td[contenteditable]:focus{background:#faf9f7;box-shadow:inset 0 -1.5px 0 var(--ink)}
+tbody td:empty::before{content:attr(data-ph);color:#c9c8c7}
+.col-date{width:110px}
+.col-status{width:96px}
+.col-act{width:34px}
+.row-del{background:none;border:0;color:#c9c8c7;font-size:17px;line-height:1;cursor:pointer;padding:2px 4px}
+.row-del:hover{color:var(--ink)}
+.hist-add{margin:18px 0 44px}
+
+/* ---------- pager ---------- */
+.pager{display:flex;justify-content:space-between;gap:12px;padding:0 0 56px}
+.pager .btn{padding:11px 18px;font-size:14px}
+.pager .btn[disabled]{opacity:.3;pointer-events:none}
+
+footer{padding:24px 0 40px;font-size:12px;color:var(--ink-40)}
+
+/* ---------- responsive ---------- */
+@media (max-width:720px){
+  .masthead{padding:36px 0 28px}
+  .export{padding:8px 14px;font-size:12.5px}
+  .masthead .eyebrow{font-size:11px;letter-spacing:.16em}
+  .tab{padding:16px 16px 14px}
+  .tab-name{font-size:13px}
+  .bar .wrap{gap:12px;height:50px}
+  .bar-count{font-size:13px}
+  .page-head{padding:32px 0 20px}
+  table{font-size:13.5px}
+  .col-date{width:74px}
+  .col-status{width:62px}
+  thead th,tbody td{padding-left:6px;padding-right:6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- print: 모든 페이지 한번에 ---------- */
+@media print{
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  .masthead{background:#fff;color:var(--ink);padding:0 0 14px;border-bottom:2px solid var(--ink)}
+  .masthead h1{font-size:24px}
+  .masthead h1 .thin{display:inline;color:var(--ink-70)}
+  .masthead .eyebrow{color:var(--ink-70);margin-bottom:0}
+  .top-row{margin-bottom:8px}
+  .meta-bar{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+  .meta-toggle{display:none}
+  .meta{margin-top:10px;max-height:none;opacity:1;overflow:visible}
+  .meta.folded{max-height:none;margin-top:10px;opacity:1;pointer-events:auto}
+  .field label{color:var(--ink-70)}
+  .field input{color:var(--ink);border-bottom:1px solid var(--line)}
+  .tabs,.bar,.pager,.btn,.saved,.export,.back,.col-act,.row-del,footer{display:none}
+  .page{display:block!important;page-break-inside:avoid}
+  .page-head{padding:20px 0 12px;border-bottom-width:1px}
+  .page-head .stage-char{font-size:20px}
+  .page-head .stage-when{font-size:12px;margin-top:4px}
+  .items{padding:4px 0 16px}
+  .item{padding:6px 0 6px 30px}
+  .box{top:9px;width:14px;height:14px;border-color:var(--ink)}
+  .item-name{font-size:12.5px}
+  .item-note{font-size:11px}
+  .memo{padding-bottom:16px}
+  .memo textarea{min-height:60px;background:#fff}
+  .hist-add{margin-bottom:0}
+  @page{margin:14mm}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="top-row">
+      <a class="back" href="tools.html">← 업무 Tools</a>
+      <button class="export" id="exportBtn" type="button">내보내기</button>
+    </div>
+    <p class="eyebrow" style="margin-bottom:6px">SEOCHO BUSINESS LOUNGE</p>
+    <h1><span class="thin">서초 비즈니스 라운지</span>운영 체크리스트</h1>
+    <div class="meta-bar">
+      <button class="meta-toggle" id="metaToggle" type="button" aria-expanded="true" aria-controls="meta">
+        <span class="chev" aria-hidden="true"></span>
+        <span class="meta-label">회의 정보</span>
+      </button>
+    </div>
+    <div class="meta" id="meta">
+      <div class="field">
+        <label for="f-client">이용사 / 회의명</label>
+        <input id="f-client" type="text" placeholder="예) OO그룹 정기회의">
+      </div>
+      <div class="field">
+        <label for="f-date">일시</label>
+        <input id="f-date" type="text" placeholder="예) 8/28(금) 14:00–16:00">
+      </div>
+      <div class="field">
+        <label for="f-room">사용 룸 / 인원</label>
+        <input id="f-room" type="text" placeholder="예) 회의실 A / 12명">
+      </div>
+      <div class="field">
+        <label for="f-owner">담당자</label>
+        <input id="f-owner" type="text" placeholder="예) 강OO">
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <button class="tab on" type="button" data-target="p-before">
+      <span class="tab-name">BEFORE</span><span class="tab-sub">회의 당일 방문 전</span>
+    </button>
+    <button class="tab" type="button" data-target="p-during">
+      <span class="tab-name">DURING</span><span class="tab-sub">회의 시작 직전</span>
+    </button>
+    <button class="tab" type="button" data-target="p-after">
+      <span class="tab-name">AFTER</span><span class="tab-sub">거점 복귀 후</span>
+    </button>
+    <button class="tab" type="button" data-target="p-history">
+      <span class="tab-name">HISTORY</span><span class="tab-sub">개선사항 기록</span>
+    </button>
+  </div>
+</nav>
+
+<div class="bar">
+  <div class="wrap">
+    <span class="bar-count"><span id="done">0</span><em> / <span id="total">0</span> 완료</em></span>
+    <span class="bar-track"><span class="bar-fill" id="barFill"></span></span>
+    <span class="saved" id="saved">저장됨</span>
+    <button class="btn" id="reset" type="button">이 페이지 해제</button>
+    <button class="btn" id="newRun" type="button">새 회차 시작</button>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+
+    <!-- BEFORE -->
+    <section class="page on" id="p-before">
+      <div class="page-head">
+        <span class="stage-char">BEFORE</span>
+        <p class="stage-when">회의 당일 방문 전</p>
+      </div>
+      <div class="items">
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">예약 정보 확인</span>
+          <span class="item-note">예약자명 / 회사명 / 인원 / 이용 시작·종료 시각 / 사용룸</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">웰컴보드 ON</span>
+          <span class="item-note">회사명·문구 오탈자 확인 및 지정 위치에 게시</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">주차 확인</span>
+          <span class="item-note">방문 차량 번호 사전 접수 여부, 주차권 및 주차 도장 준비 여부</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">비품</span>
+          <span class="item-note">컵, 냅킨, 필기구, 메모지 등</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">장비 점검</span>
+          <span class="item-note">모니터 / 빔 프로젝터, HDMI, C타입 케이블, 화상회의 장비, 마이크, 와이파이 연결</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">환경</span>
+          <span class="item-note">냉난방·조명·환기, 청소 상태, 좌석 및 테이블 세팅 상태</span></label>
+      </div>
+      <div class="pager">
+        <span></span>
+        <button class="btn" type="button" data-go="p-during">DURING →</button>
+      </div>
+    </section>
+
+    <!-- DURING -->
+    <section class="page" id="p-during">
+      <div class="page-head">
+        <span class="stage-char">DURING</span>
+        <p class="stage-when">회의 시작 직전</p>
+      </div>
+      <div class="items">
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">노트북 실제 연결 테스트</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">방문객 응대</span>
+          <span class="item-note">라운지 위치, 화장실, 비상 연락처 안내</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">종료 예정 시각 확인 및 공유</span></label>
+      </div>
+      <div class="pager">
+        <button class="btn" type="button" data-go="p-before">← BEFORE</button>
+        <button class="btn" type="button" data-go="p-after">AFTER →</button>
+      </div>
+    </section>
+
+    <!-- AFTER -->
+    <section class="page" id="p-after">
+      <div class="page-head">
+        <span class="stage-char">AFTER</span>
+        <p class="stage-when">거점 복귀 후</p>
+      </div>
+      <div class="items">
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">정리 상태 확인</span>
+          <span class="item-note">원상복구 여부, 분실물 확인</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">웰컴보드 OFF</span>
+          <span class="item-note">기본 SAMSUNG 화면으로 전환</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">주차 처리</span>
+          <span class="item-note">주차 등록 및 도장 사용 횟수 기록</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">비품 정산</span>
+          <span class="item-note">소모량, 재발주 필요 품목 정리</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">하자·고장 접수</span>
+          <span class="item-note">발견된 문제 사진 포함하여 기록</span></label>
+        <label class="item"><input type="checkbox"><span class="box"></span>
+          <span class="item-name">개선 사항 등록</span>
+          <span class="item-note">이번 회차에서 불편했던 점</span></label>
+      </div>
+      <div class="memo">
+        <label for="memo-box">특이사항 · 다음 회차 전달</label>
+        <textarea id="memo-box" placeholder="이번 회차에서 놓친 것, 다음 담당자가 알아야 할 것"></textarea>
+      </div>
+      <div class="pager">
+        <button class="btn" type="button" data-go="p-during">← DURING</button>
+        <button class="btn" type="button" data-go="p-history">HISTORY →</button>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="page" id="p-history">
+      <div class="page-head">
+        <span class="stage-char">HISTORY</span>
+        <p class="stage-when">개선사항 기록</p>
+      </div>
+      <p class="hist-note">회차마다 나온 불편함과 조치 결과를 한 줄씩 쌓습니다.</p>
+      <table>
+        <thead>
+          <tr>
+            <th class="col-date">날짜</th>
+            <th>발견된 불편 사항</th>
+            <th>조치 내용</th>
+            <th class="col-status">상태</th>
+            <th class="col-act"></th>
+          </tr>
+        </thead>
+        <tbody id="histBody">
+          <tr>
+            <td class="col-date" contenteditable data-ph="8/28"></td>
+            <td contenteditable data-ph="예) HDMI 케이블 길이 부족"></td>
+            <td contenteditable data-ph="예) 3m 케이블 추가 비치 요청"></td>
+            <td class="col-status" contenteditable data-ph="진행중"></td>
+            <td class="col-act"><button class="row-del" type="button" aria-label="행 삭제">×</button></td>
+          </tr>
+          <tr>
+            <td class="col-date" contenteditable data-ph=""></td>
+            <td contenteditable data-ph=""></td>
+            <td contenteditable data-ph=""></td>
+            <td class="col-status" contenteditable data-ph=""></td>
+            <td class="col-act"><button class="row-del" type="button" aria-label="행 삭제">×</button></td>
+          </tr>
+          <tr>
+            <td class="col-date" contenteditable data-ph=""></td>
+            <td contenteditable data-ph=""></td>
+            <td contenteditable data-ph=""></td>
+            <td class="col-status" contenteditable data-ph=""></td>
+            <td class="col-act"><button class="row-del" type="button" aria-label="행 삭제">×</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="hist-add"><button class="btn" id="addRow" type="button">행 추가</button></div>
+      <div class="pager">
+        <button class="btn" type="button" data-go="p-after">← AFTER</button>
+        <span></span>
+      </div>
+    </section>
+
+    <footer>서초 비즈니스 라운지 운영 체크리스트 · 인쇄(Ctrl/⌘+P) 시 네 페이지가 한 번에 출력됩니다</footer>
+  </div>
+</main>
+
+<script>
+(function(){
+  var tabs  = [].slice.call(document.querySelectorAll('.tab'));
+  var pages = [].slice.call(document.querySelectorAll('.page'));
+  var bar   = document.querySelector('.bar');
+  var current = 'p-before';
+
+  function stats(id){
+    var page = document.getElementById(id);
+    var inputs = [].slice.call(page.querySelectorAll('.item input'));
+    var done = inputs.filter(function(i){ return i.checked; }).length;
+    return { total: inputs.length, done: done };
+  }
+
+  function refresh(){
+    var s = stats(current);
+    if(s.total === 0){
+      bar.style.display = 'none';
+      return;
+    }
+    bar.style.display = '';
+    document.getElementById('done').textContent = s.done;
+    document.getElementById('total').textContent = s.total;
+    document.getElementById('barFill').style.width = (s.done / s.total * 100) + '%';
+  }
+
+  function show(id){
+    current = id;
+    pages.forEach(function(p){ p.classList.toggle('on', p.id === id); });
+    tabs.forEach(function(t){ t.classList.toggle('on', t.dataset.target === id); });
+    refresh();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ show(t.dataset.target); });
+  });
+  [].slice.call(document.querySelectorAll('[data-go]')).forEach(function(b){
+    b.addEventListener('click', function(){ show(b.dataset.go); });
+  });
+
+  [].slice.call(document.querySelectorAll('.item input')).forEach(function(b){
+    b.addEventListener('change', refresh);
+  });
+
+  document.getElementById('reset').addEventListener('click', function(){
+    [].slice.call(document.getElementById(current).querySelectorAll('.item input'))
+      .forEach(function(b){ b.checked = false; });
+    refresh();
+    save();
+  });
+
+  // HISTORY
+  var body = document.getElementById('histBody');
+  document.getElementById('addRow').addEventListener('click', function(){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="col-date" contenteditable data-ph=""></td>' +
+      '<td contenteditable data-ph=""></td>' +
+      '<td contenteditable data-ph=""></td>' +
+      '<td class="col-status" contenteditable data-ph=""></td>' +
+      '<td class="col-act"><button class="row-del" type="button" aria-label="행 삭제">×</button></td>';
+    body.appendChild(tr);
+    tr.querySelector('td').focus();
+  });
+  body.addEventListener('click', function(e){
+    if(e.target.classList.contains('row-del') && body.rows.length > 1){
+      e.target.closest('tr').remove();
+      save();
+    }
+  });
+
+  /* ---------- 자동 저장 ---------- */
+  var KEY = 'seocho-lounge-checklist-v1';
+  var FIELDS = ['f-client','f-date','f-room','f-owner'];
+  var badge = document.getElementById('saved');
+  var timer = null, badgeTimer = null;
+
+  function store(){
+    try { return window.localStorage; } catch(e){ return null; }
+  }
+
+  function newRow(cells){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="col-date" contenteditable data-ph=""></td>' +
+      '<td contenteditable data-ph=""></td>' +
+      '<td contenteditable data-ph=""></td>' +
+      '<td class="col-status" contenteditable data-ph=""></td>' +
+      '<td class="col-act"><button class="row-del" type="button" aria-label="행 삭제">×</button></td>';
+    if(cells){
+      var tds = tr.querySelectorAll('td[contenteditable]');
+      for(var i=0;i<tds.length;i++){ tds[i].textContent = cells[i] || ''; }
+    }
+    return tr;
+  }
+
+  function collect(){
+    var data = { fields:{}, checks:{}, memo:'', history:[] };
+    FIELDS.forEach(function(id){ data.fields[id] = document.getElementById(id).value; });
+    pages.forEach(function(p){
+      data.checks[p.id] = [].slice.call(p.querySelectorAll('.item input'))
+        .map(function(b){ return b.checked ? 1 : 0; });
+    });
+    data.memo = document.getElementById('memo-box').value;
+    [].slice.call(body.rows).forEach(function(tr){
+      data.history.push([].slice.call(tr.querySelectorAll('td[contenteditable]'))
+        .map(function(td){ return td.textContent.trim(); }));
+    });
+    return data;
+  }
+
+  function flashSaved(){
+    badge.classList.add('show');
+    clearTimeout(badgeTimer);
+    badgeTimer = setTimeout(function(){ badge.classList.remove('show'); }, 1400);
+  }
+
+  function save(){
+    var s = store();
+    if(!s) return;
+    clearTimeout(timer);
+    timer = setTimeout(function(){
+      try { s.setItem(KEY, JSON.stringify(collect())); flashSaved(); } catch(e){}
+    }, 250);
+  }
+
+  function restore(){
+    var s = store();
+    if(!s) return;
+    var raw;
+    try { raw = s.getItem(KEY); } catch(e){ return; }
+    if(!raw) return;
+    var data;
+    try { data = JSON.parse(raw); } catch(e){ return; }
+
+    FIELDS.forEach(function(id){
+      if(data.fields && data.fields[id] != null) document.getElementById(id).value = data.fields[id];
+    });
+    pages.forEach(function(p){
+      var saved = data.checks && data.checks[p.id];
+      if(!saved) return;
+      [].slice.call(p.querySelectorAll('.item input')).forEach(function(b,i){
+        b.checked = saved[i] === 1;
+      });
+    });
+    if(data.memo) document.getElementById('memo-box').value = data.memo;
+    if(data.history && data.history.length){
+      body.innerHTML = '';
+      data.history.forEach(function(cells){ body.appendChild(newRow(cells)); });
+      if(!body.rows.length) body.appendChild(newRow());
+    }
+  }
+
+  /* ---------- 회의 정보 접기 ---------- */
+  var metaEl = document.getElementById('meta');
+  var metaBtn = document.getElementById('metaToggle');
+
+  function setFold(folded){
+    metaEl.classList.toggle('folded', folded);
+    metaBtn.setAttribute('aria-expanded', folded ? 'false' : 'true');
+  }
+
+  metaBtn.addEventListener('click', function(){
+    var folded = !metaEl.classList.contains('folded');
+    setFold(folded);
+    var s = store();
+    if(s){ try { s.setItem(KEY + '-fold', folded ? '1' : '0'); } catch(e){} }
+  });
+
+  document.addEventListener('change', save);
+  document.addEventListener('input', save);
+  body.addEventListener('blur', save, true);
+  window.addEventListener('beforeunload', function(){
+    var s = store();
+    if(s){ try { s.setItem(KEY, JSON.stringify(collect())); } catch(e){} }
+  });
+
+  document.getElementById('newRun').addEventListener('click', function(){
+    if(!confirm('새 회차를 시작합니다.\n체크 표시와 상단 입력값, 특이사항이 모두 지워집니다.\n개선사항 HISTORY는 그대로 남습니다.')) return;
+    FIELDS.forEach(function(id){ document.getElementById(id).value = ''; });
+    [].slice.call(document.querySelectorAll('.item input')).forEach(function(b){ b.checked = false; });
+    document.getElementById('memo-box').value = '';
+    setFold(false);
+    refresh();
+    save();
+    show('p-before');
+  });
+
+  /* ---------- 내보내기 (PNG) ---------- */
+  var FONT = "'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+  var LABELS = { 'f-client':'이용사 / 회의명', 'f-date':'일시', 'f-room':'사용 룸 / 인원', 'f-owner':'담당자' };
+
+  function drawSheet(ctx, W){
+    var PAD = 56, x = PAD, y = 0, right = W - PAD, colW = right - x;
+    var INK = '#333132', GRAY = '#6b6a6a', LIGHT = '#dcdad8';
+
+    function font(size, weight){ ctx.font = weight + ' ' + size + 'px ' + FONT; }
+    function rule(color, gapTop, gapBottom, thick){
+      y += gapTop;
+      ctx.fillStyle = color; ctx.fillRect(x, y, colW, thick || 1);
+      y += (thick || 1) + gapBottom;
+    }
+    function wrap(str, px, maxW, size, color, lh){
+      var words = String(str).split(''), line = '', out = [];
+      for(var i=0;i<words.length;i++){
+        var test = line + words[i];
+        if(ctx.measureText(test).width > maxW && line){ out.push(line); line = words[i]; }
+        else line = test;
+      }
+      if(line) out.push(line);
+      ctx.fillStyle = color;
+      out.forEach(function(l){ ctx.fillText(l, px, y + size * 0.8); y += lh || size * 1.5; });
+      return out.length;
+    }
+
+    function head(label, caption, rightText){
+      font(15, '800'); ctx.fillStyle = INK;
+      ctx.fillText(label, x, y + 12);
+      var w = ctx.measureText(label).width;
+      if(caption){
+        font(12.5, '500'); ctx.fillStyle = GRAY;
+        ctx.fillText(caption, x + w + 22, y + 12);
+      }
+      if(rightText){
+        font(12, '700'); ctx.fillStyle = '#a3a2a2';
+        ctx.textAlign = 'right'; ctx.fillText(rightText, right, y + 12); ctx.textAlign = 'left';
+      }
+      y += 22;
+      rule(INK, 0, 12, 1.4);
+    }
+
+    // 헤더
+    ctx.fillStyle = INK; ctx.fillRect(0, 0, W, 132);
+    font(12, '600'); ctx.fillStyle = 'rgba(255,255,255,.6)';
+    ctx.fillText('SEOCHO BUSINESS LOUNGE', x, 46);
+    font(27, '800'); ctx.fillStyle = '#fff';
+    ctx.fillText('서초 비즈니스 라운지 운영 체크리스트', x, 88);
+    y = 132 + 42;
+
+    // 회의 정보
+    head('회의 정보', '', '');
+    FIELDS.forEach(function(id){
+      var v = document.getElementById(id).value.trim();
+      font(12.5, '600'); ctx.fillStyle = GRAY;
+      ctx.fillText(LABELS[id], x, y + 10);
+      font(16, '600'); ctx.fillStyle = INK;
+      ctx.fillText(v || '—', x + 150, y + 11);
+      y += 30;
+      ctx.fillStyle = '#f0eeec'; ctx.fillRect(x, y - 6, colW, 1);
+    });
+    y += 26;
+
+    // 단계별 체크
+    pages.forEach(function(p){
+      if(p.id === 'p-history') return;
+      var items = [].slice.call(p.querySelectorAll('.item'));
+      if(!items.length) return;
+      var s = stats(p.id);
+      var name = p.querySelector('.stage-char').textContent;
+      var cap = p.querySelector('.stage-when').textContent;
+
+      if(y > 1400){ /* 여백 확보용 자리 */ }
+      head(name, cap, s.done + ' / ' + s.total);
+
+      items.forEach(function(it){
+        var on = it.querySelector('input').checked;
+        var label = it.querySelector('.item-name').textContent;
+        ctx.strokeStyle = on ? INK : '#b8b7b6';
+        ctx.lineWidth = 1.4;
+        if(on){ ctx.fillStyle = INK; ctx.fillRect(x, y + 1, 14, 14); }
+        else { ctx.strokeRect(x + 0.7, y + 1.7, 13, 13); }
+        if(on){
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.8; ctx.beginPath();
+          ctx.moveTo(x + 3.5, y + 8); ctx.lineTo(x + 6.2, y + 11); ctx.lineTo(x + 10.8, y + 4.5);
+          ctx.stroke();
+        }
+        font(14.5, on ? '600' : '500');
+        ctx.fillStyle = on ? INK : '#8f8e8e';
+        ctx.fillText(label, x + 26, y + 12);
+        y += 26;
+        ctx.fillStyle = '#f4f3f1'; ctx.fillRect(x, y - 6, colW, 1);
+      });
+      y += 26;
+    });
+
+    // 특이사항
+    var memo = document.getElementById('memo-box').value.trim();
+    if(memo){
+      head('특이사항', '다음 회차 전달', '');
+      font(14, '500');
+      wrap(memo, x, colW, 14, INK, 22);
+      y += 26;
+    }
+
+    // 개선사항 HISTORY
+    var rows = [].slice.call(body.rows).map(function(tr){
+      return [].slice.call(tr.querySelectorAll('td[contenteditable]'))
+               .map(function(td){ return (td.innerText || td.textContent || '').replace(/\s+/g,' ').trim(); });
+    }).filter(function(c){ return c.join('').length > 0; });
+
+    head('HISTORY', '개선사항 기록', rows.length ? rows.length + '건' : '');
+
+    if(!rows.length){
+      font(14.5, '500'); ctx.fillStyle = '#8f8e8e';
+      ctx.fillText('기록 없음', x, y + 12);
+      y += 32;
+    } else {
+      var txtX = x + 74, txtW = colW - 74 - 84;
+      rows.forEach(function(c){
+        var top = y;
+        font(13, '700'); ctx.fillStyle = GRAY;
+        ctx.fillText(c[0] || '', x, y + 12);
+        if(c[3]){
+          font(12, '700'); ctx.fillStyle = '#a3a2a2';
+          ctx.textAlign = 'right'; ctx.fillText(c[3], right, y + 12); ctx.textAlign = 'left';
+        }
+        if(c[1]){
+          font(14.5, '600');
+          wrap(c[1], txtX, txtW, 14.5, INK, 22);
+        }
+        if(c[2]){
+          font(13.5, '500');
+          wrap('↳ ' + c[2], txtX, txtW, 13.5, GRAY, 21);
+        }
+        if(y - top < 26) y = top + 26;
+        y += 6;
+        ctx.fillStyle = '#f4f3f1'; ctx.fillRect(x, y - 6, colW, 1);
+      });
+      y += 26;
+    }
+
+    // 푸터
+    var now = new Date();
+    var stamp = now.getFullYear() + '.' +
+      String(now.getMonth()+1).padStart(2,'0') + '.' +
+      String(now.getDate()).padStart(2,'0') + ' ' +
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0');
+    font(11.5, '500'); ctx.fillStyle = '#a3a2a2';
+    ctx.fillText('작성 ' + stamp, x, y + 10);
+    y += 44;
+
+    return y;
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', function(){
+    var W = 900, dpr = 2;
+    var probe = document.createElement('canvas').getContext('2d');
+    probe.canvas.width = W;
+    var H = Math.ceil(drawSheet(probe, W));
+
+    var cv = document.createElement('canvas');
+    cv.width = W * dpr; cv.height = H * dpr;
+    var ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+    ctx.textBaseline = 'alphabetic';
+    drawSheet(ctx, W);
+
+    var name = (document.getElementById('f-client').value.trim() || '서초라운지') + '_' +
+               (document.getElementById('f-date').value.trim() || '체크리스트');
+    name = name.replace(/[\\/:*?"<>|]/g, '-') + '.png';
+
+    cv.toBlob(function(blob){
+      if(!blob){ window.open(cv.toDataURL('image/png')); return; }
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    }, 'image/png');
+  });
+
+  restore();
+  (function(){
+    var s = store();
+    if(!s) return;
+    var f;
+    try { f = s.getItem(KEY + '-fold'); } catch(e){ return; }
+    if(f === '1') setFold(true);
+  })();
+  refresh();
+})();
+</script>
+
+</body>
+</html>
