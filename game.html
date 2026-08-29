@@ -46,15 +46,6 @@ h1 span{font-weight:400;color:var(--ink-soft)}
 .best{font-family:var(--fs-num);font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .best b{color:var(--ink);font-weight:800}
 
-/* ── 광고 자리 ── */
-.ad-slot{
-  width:100%;max-width:480px;min-height:60px;margin:4px 0;
-  display:flex;align-items:center;justify-content:center;
-  border:1px dashed var(--line);border-radius:2px;
-  font-size:11px;letter-spacing:.08em;color:#9AA79C;background:rgba(255,255,255,.35);
-}
-.ad-slot:empty::after{content:'AD'}
-
 /* ── 게임판 ── */
 #stage{
   position:relative;aspect-ratio:2/3;
@@ -176,16 +167,6 @@ footer{max-width:480px;font-size:11px;color:var(--ink-soft);text-align:center;pa
   <div class="best">최고 <b id="bestTxt">—</b></div>
 </header>
 
-<!-- ▼▼ 광고 자리 (상단) — 아래 div 안에 광고 코드를 붙여넣으세요 ▼▼ -->
-<div class="ad-slot" id="ad-top">
-  <!-- 예) 구글 애드센스 반응형 코드
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX"
-       data-ad-slot="1111111111" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  -->
-</div>
-<!-- ▲▲ 광고 자리 (상단) ▲▲ -->
-
 <div id="stage">
   <canvas id="cv"></canvas>
 
@@ -230,9 +211,6 @@ footer{max-width:480px;font-size:11px;color:var(--ink-soft);text-align:center;pa
     <div class="result-time" id="overTime">0.00<small>초</small></div>
     <p class="result-sub" id="overSub"></p>
 
-    <!-- ▼▼ 광고 자리 (결과 화면) ▼▼ -->
-    <div class="ad-slot" id="ad-result" style="max-width:300px;min-height:60px"></div>
-    <!-- ▲▲ 광고 자리 (결과 화면) ▲▲ -->
 
     <button class="go" id="btnRetry">다시 하기</button>
     <div class="rank">
@@ -241,10 +219,6 @@ footer{max-width:480px;font-size:11px;color:var(--ink-soft);text-align:center;pa
     </div>
   </div>
 </div>
-
-<!-- ▼▼ 광고 자리 (하단) ▼▼ -->
-<div class="ad-slot" id="ad-bottom"></div>
-<!-- ▲▲ 광고 자리 (하단) ▲▲ -->
 
 <footer>목숨 1개 · <span class="key">Shift</span> 방어(10초 충전, 적립 없음) · <span class="key">R</span> 재시작. 기록은 이 브라우저에만 저장됩니다.</footer>
 

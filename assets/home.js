@@ -91,7 +91,7 @@
 
     /* 위쪽 네 칸 */
     const now = all.filter(t => t.due_on && t.due_on <= today);
-    fill(nowEl, now, '급한 것이 없습니다. 좋은 상태입니다.');
+    fill(nowEl, now, '오늘까지인 일이 없습니다.');
     const cnt = document.getElementById('nowCount');
     if(cnt) cnt.textContent = now.length ? now.length + '건' : '';
 
@@ -100,11 +100,11 @@
       .sort((a,b) => (a.due_on||'').localeCompare(b.due_on||''));
 
     fill(document.getElementById('dailyList'),   rep('daily'),
-         '매일 하는 일을 ＋ 로 담아보십시오.', { slim:true, hideRepeat:true });
+         '＋ 로 매일 하는 일을 넣어두십시오.', { slim:true, hideRepeat:true });
     fill(document.getElementById('weeklyList'),  rep('weekly'),
-         '매주 하는 일을 ＋ 로 담아보십시오.', { slim:true });
+         '＋ 로 매주 하는 일을 넣어두십시오.', { slim:true });
     fill(document.getElementById('monthlyList'), rep('monthly').concat(rep('yearly')),
-         '매달 하는 일을 ＋ 로 담아보십시오.', { slim:true });
+         '＋ 로 매달 하는 일을 넣어두십시오.', { slim:true });
 
     /* 아래쪽 블록 */
     if(!board) return;

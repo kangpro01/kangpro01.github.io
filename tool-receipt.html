@@ -120,6 +120,8 @@
   }
   .page-foot .lbl { font-size: 12px; font-weight: 700; color: var(--muted); }
   .page-foot .sum { font-family: var(--mono); font-size: 17px; font-weight: 700; color: var(--accent); }
+  .page-foot .sum-this { font-size: 14px; color: var(--muted); }
+  .page-foot .lbl + .lbl { margin-left: 6px; }
 
   .cell {
     border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
@@ -172,6 +174,18 @@
   }
   .cell .grip:active { cursor: grabbing; }
   .cell:hover .grip { opacity: 1; }
+
+  /* 손가락으로 쓰는 기기에는 hover가 없습니다.
+     그대로 두면 회전·삭제 단추에 아예 닿을 수 없어 늘 보이게 합니다. */
+  @media (hover: none) {
+    .cell .actions, .cell .grip { opacity: 1; }
+  }
+
+  /* 손잡이를 눌러 고른 카드와, 옮겨 갈 자리 */
+  .cell.picked { box-shadow: 0 0 0 2px var(--accent); }
+  .cell.picked .grip { background: var(--accent); opacity: 1; }
+  .picking .cell:not(.picked) { cursor: pointer; }
+  .picking .cell:not(.picked):hover { box-shadow: 0 0 0 2px #f1d4c2; }
 
   .cell.empty {
     border-style: dashed; align-items: center; justify-content: center;
@@ -292,6 +306,8 @@
   // ---- 상태 ----
   let receipts = []; // { id, src, rot, desc, amt }
   let uid = 1;
+  let dirty = false;   // 저장한 뒤로 바뀐 것이 있는지
+  let picked = null;   // 손잡이를 눌러 고른 카드의 자리 (터치용)
 
   const PAPER = {
     A4:     { w: 210, h: 297, label: "A4 210×297mm" },
@@ -304,6 +320,14 @@
   const $ = (id) => document.getElementById(id);
   const stage = $("stage");
 
+  /* 화면에 보여줄 축척(mm당 픽셀).
+     넉넉하면 2.55, 좁으면 화면 폭에 맞춥니다. 44는 .stage 좌우 여백입니다. */
+  let lastScale = 0;
+  function pageScale(paper) {
+    const avail = Math.min(document.documentElement.clientWidth, 1100) - 44;
+    return Math.max(0.8, Math.min(2.55, avail / paper.w));
+  }
+
   // ---- 이미지 추가 ----
   function addFiles(files) {
     const imgs = [...files].filter((f) => f.type.startsWith("image/"));
@@ -313,6 +337,7 @@
       const r = new FileReader();
       r.onload = (e) => {
         receipts.push({ id: uid++, src: e.target.result, rot: 0, desc: "", amt: "" });
+        dirty = true;
         if (--pending === 0) render();
       };
       r.readAsDataURL(f);
@@ -337,9 +362,9 @@
       dz.id = "dropzone";
       dz.innerHTML = `
         <div class="ico">🧾</div>
-        <div class="big">영수증 사진을 여기로 끌어다 놓으세요</div>
+        <div class="big">영수증 사진을 여기로 끌어다 놓으십시오</div>
         <div class="sub">
-          클릭해서 파일 선택 · 여러 장 한번에 가능<br>
+          눌러서 고르셔도 됩니다. 여러 장을 한번에 넣을 수 있습니다<br>
           캡처한 영수증은 <kbd>Ctrl</kbd>+<kbd>V</kbd> 로 바로 붙여넣기
         </div>`;
       dz.onclick = () => $("fileInput").click();
@@ -348,8 +373,9 @@
       return;
     }
 
-    // 페이지 픽셀 폭 (화면 표시용). 297mm 기준 스케일.
-    const scale = 2.55; // px per mm (화면)
+    // 페이지 픽셀 폭 (화면 표시용). 좁은 화면에서는 잘리지 않게 줄입니다.
+    const scale = pageScale(paper);
+    lastScale = scale;
     const pw = paper.w * scale;
     const ph = paper.h * scale;
     const pad = Math.round(paper.w * scale * 0.05);
@@ -386,22 +412,27 @@
 
       const foot = document.createElement("div");
       foot.className = "page-foot";
-      foot.innerHTML = `<span class="lbl">총 합계</span><span class="sum">${fmtWon(totalAmount())}</span>`;
+      foot.dataset.page = p;
+      foot.innerHTML = footHtml(p, perPage, pageCount);
       page.appendChild(foot);
 
       stage.appendChild(page);
     }
 
+    stage.classList.toggle("picking", picked !== null);
+
     const hint = document.createElement("div");
     hint.className = "hint noprint";
-    hint.innerHTML = "왼쪽 손잡이(⠿)를 잡고 끌면 순서가 바뀌고, 카드에 마우스를 올리면 회전·삭제·메모 편집이 가능해요. " +
-      "<b>JPG로 저장</b>을 누르면 결과 이미지가 만들어집니다.";
+    hint.innerHTML = picked !== null
+      ? "옮길 자리를 누르십시오. 손잡이(⠿)를 다시 누르면 취소됩니다."
+      : "손잡이(⠿)를 눌러 고른 뒤 옮길 자리를 누르면 순서가 바뀝니다. 마우스로는 끌어도 됩니다. " +
+        "<b>넣은 사진은 이 화면에만 있습니다. 새로고침하면 사라지니 끝나면 저장하십시오.</b>";
     stage.appendChild(hint);
   }
 
   function buildCell(rec, idx) {
     const cell = document.createElement("div");
-    cell.className = "cell";
+    cell.className = "cell" + (picked === idx ? " picked" : "");
     cell.dataset.idx = idx;
 
     cell.innerHTML = `
@@ -417,15 +448,15 @@
         <div class="amtfield"><span class="won">₩</span><input class="amt" placeholder="금액" inputmode="numeric" value="${escapeAttr(rec.amt)}"></div>
       </div>`;
 
-    cell.querySelector('[data-act="rotL"]').onclick = (e) => { e.stopPropagation(); rec.rot -= 90; render(); };
-    cell.querySelector('[data-act="rotR"]').onclick = (e) => { e.stopPropagation(); rec.rot += 90; render(); };
+    cell.querySelector('[data-act="rotL"]').onclick = (e) => { e.stopPropagation(); rec.rot -= 90; dirty = true; render(); };
+    cell.querySelector('[data-act="rotR"]').onclick = (e) => { e.stopPropagation(); rec.rot += 90; dirty = true; render(); };
     cell.querySelector('[data-act="del"]').onclick = (e) => {
       e.stopPropagation();
-      receipts = receipts.filter((r) => r.id !== rec.id); render();
+      receipts = receipts.filter((r) => r.id !== rec.id); dirty = true; render();
     };
-    cell.querySelector(".desc").oninput = (e) => { rec.desc = e.target.value; };
+    cell.querySelector(".desc").oninput = (e) => { rec.desc = e.target.value; dirty = true; };
     const amtEl = cell.querySelector(".amt");
-    amtEl.oninput = (e) => { rec.amt = e.target.value; updateTotals(); };
+    amtEl.oninput = (e) => { rec.amt = e.target.value; dirty = true; updateTotals(); };
     amtEl.onblur = (e) => {
       const n = e.target.value.replace(/[^\d]/g, "");
       rec.amt = n ? Number(n).toLocaleString("ko-KR") : "";
@@ -461,6 +492,27 @@
       cell.classList.remove("dragging"); dragIdx = null;
     });
 
+    /* 끌기는 마우스에서만 됩니다. 손가락으로도 순서를 바꿀 수 있게
+       손잡이를 눌러 고르고, 옮길 자리를 눌러 놓는 방법을 함께 둡니다. */
+    grip.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const idx = +cell.dataset.idx;
+      if (picked === idx) picked = null;
+      else if (picked === null) picked = idx;
+      else move(picked, idx);
+      render();
+    });
+
+    // 고른 상태에서 다른 카드를 누르면 그 자리로 옮깁니다
+    cell.addEventListener("click", (e) => {
+      if (picked === null) return;
+      if (e.target.closest("input, button, .grip")) return;
+      const to = +cell.dataset.idx;
+      if (to !== picked) move(picked, to);
+      picked = null;
+      render();
+    });
+
     // 셀은 드롭 받는 자리
     cell.addEventListener("dragover", (e) => {
       if (dragIdx === null) return; // 외부 파일 드래그는 무시
@@ -473,10 +525,16 @@
       e.preventDefault();
       const to = +cell.dataset.idx;
       if (dragIdx === to) return;
-      const [moved] = receipts.splice(dragIdx, 1);
-      receipts.splice(to, 0, moved);
+      move(dragIdx, to);
       dragIdx = null; render();
     });
+  }
+
+  function move(from, to) {
+    const [m] = receipts.splice(from, 1);
+    receipts.splice(to, 0, m);
+    picked = null;
+    dirty = true;
   }
 
   // ---- 드롭존 (시각 효과만, 실제 파일 추가는 window 핸들러가 단독 처리) ----
@@ -492,10 +550,29 @@
   function escapeAttr(s) { return (s || "").replace(/"/g, "&quot;"); }
   function parseAmt(s) { const n = (s || "").replace(/[^\d]/g, ""); return n ? parseInt(n, 10) : 0; }
   function totalAmount() { return receipts.reduce((sum, r) => sum + parseAmt(r.amt), 0); }
+  function pageAmount(p, perPage) {
+    return receipts.slice(p * perPage, (p + 1) * perPage)
+                   .reduce((sum, r) => sum + parseAmt(r.amt), 0);
+  }
   function fmtWon(n) { return "₩" + n.toLocaleString("ko-KR"); }
+
+  /* 여러 장이면 이 장 합계와 전체 합계를 함께 보여줍니다.
+     한 장뿐인데 '총 합계'라고 하면 군더더기고,
+     여러 장인데 전체 합계만 쓰면 같은 숫자가 장마다 반복돼 헷갈립니다. */
+  function footHtml(p, perPage, pageCount) {
+    if (pageCount === 1) {
+      return `<span class="lbl">합계</span><span class="sum">${fmtWon(totalAmount())}</span>`;
+    }
+    return `<span class="lbl">이 장</span><span class="sum sum-this">${fmtWon(pageAmount(p, perPage))}</span>`
+         + `<span class="lbl">전체</span><span class="sum">${fmtWon(totalAmount())}</span>`;
+  }
+
   function updateTotals() {
-    const t = fmtWon(totalAmount());
-    document.querySelectorAll(".page-foot .sum").forEach((el) => { el.textContent = t; });
+    const perPage = +$("perPage").value;
+    const pageCount = Math.max(1, Math.ceil(receipts.length / perPage));
+    document.querySelectorAll(".page-foot").forEach((foot) => {
+      foot.innerHTML = footHtml(+foot.dataset.page, perPage, pageCount);
+    });
   }
 
   // ---- 전역 이벤트 ----
@@ -541,7 +618,7 @@
 
   // ---- JPG 생성 (외부 라이브러리 없이 Canvas로 직접 렌더) ----
   async function exportImages() {
-    if (receipts.length === 0) { alert("먼저 영수증을 추가해 주세요."); return; }
+    if (receipts.length === 0) { alert("먼저 영수증을 넣어주십시오."); return; }
 
     const btn = $("printBtn");
     const orig = btn.innerHTML;
@@ -633,22 +710,34 @@
           roundRect(ctx, cx, cy, cellW, cellH, radius); ctx.stroke();
         }
 
-        // 총 합계 (하단 우측)
+        // 합계 (하단 우측) — 여러 장이면 이 장 합계와 전체 합계를 나란히
         const footTop = gridTop + gridH + gap;
         ctx.strokeStyle = "#1c1a17"; ctx.lineWidth = Math.max(2, W * 0.0016);
         ctx.beginPath(); ctx.moveTo(pad, footTop); ctx.lineTo(W - pad, footTop); ctx.stroke();
 
-        const sumStr = fmtWon(totalAmount());
         const fy = footTop + footH * 0.62;
         const afs = Math.round(footH * 0.5);
-        ctx.textAlign = "right"; ctx.fillStyle = "#c2410c";
-        ctx.font = `700 ${afs}px monospace`;
-        ctx.fillText(sumStr, W - pad, fy);
-        const sumW = ctx.measureText(sumStr).width;
         const lfs = Math.round(footH * 0.36);
-        ctx.font = `700 ${lfs}px Pretendard, sans-serif`;
-        ctx.fillStyle = "#8a8378";
-        ctx.fillText("총 합계", W - pad - sumW - afs * 0.6, fy);
+        let right = W - pad;
+
+        // 오른쪽부터 왼쪽으로 한 쌍씩 씁니다
+        const pair = (label, value) => {
+          ctx.textAlign = "right"; ctx.fillStyle = "#c2410c";
+          ctx.font = `700 ${afs}px monospace`;
+          ctx.fillText(value, right, fy);
+          const vw = ctx.measureText(value).width;
+          ctx.font = `700 ${lfs}px Pretendard, sans-serif`;
+          ctx.fillStyle = "#8a8378";
+          ctx.fillText(label, right - vw - afs * 0.4, fy);
+          right -= vw + afs * 0.4 + ctx.measureText(label).width + afs * 0.9;
+        };
+
+        if (pageCount === 1) {
+          pair("합계", fmtWon(totalAmount()));
+        } else {
+          pair("전체", fmtWon(totalAmount()));
+          pair("이 장", fmtWon(pageAmount(p, perPage)));
+        }
         ctx.textAlign = "left";
 
         const url = cv.toDataURL("image/jpeg", 0.92);
@@ -656,10 +745,11 @@
         results.push({ url, fname });
       }
 
+      dirty = false;
       showResults(results);
     } catch (e) {
       console.error(e);
-      alert("이미지 생성 중 문제가 발생했습니다. 영수증 수를 줄이거나 다시 시도해 주세요.");
+      alert("이미지를 만들지 못했습니다. 영수증 수를 줄여 다시 해보십시오.");
     } finally {
       btn.disabled = false; btn.innerHTML = orig;
     }
@@ -678,8 +768,8 @@
     const card = document.createElement("div");
     card.className = "result-card";
     card.innerHTML = `
-      <h3>저장할 이미지가 준비됐어요 🧾</h3>
-      <p class="desc">아래 <b>다운로드</b> 버튼을 누르거나, 이미지를 <b>길게 눌러(PC는 우클릭) 저장</b>하셔도 됩니다.${results.length > 1 ? " 페이지가 여러 장이라 각각 받으시면 돼요." : ""}</p>`;
+      <h3>저장할 이미지가 나왔습니다</h3>
+      <p class="desc">아래 <b>다운로드</b>를 누르거나, 이미지를 <b>길게 눌러(PC는 우클릭) 저장</b>하셔도 됩니다.${results.length > 1 ? " 여러 장이니 하나씩 받으십시오." : ""}</p>`;
 
     results.forEach((r, i) => {
       const block = document.createElement("div");
@@ -714,6 +804,24 @@
     e.preventDefault();
     // 외부 파일이 있을 때만 추가. 카드 정렬용 내부 드래그는 files가 비어 무시됨
     if (e.dataTransfer.files && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+
+  /* 사진은 이 화면에만 있습니다. 저장하지 않은 채 닫거나
+     '업무 Tools'로 돌아가려 하면 한 번 물어봅니다. */
+  window.addEventListener("beforeunload", (e) => {
+    if (!dirty || receipts.length === 0) return;
+    e.preventDefault();
+    e.returnValue = "";
+  });
+
+  /* 화면 폭이 바뀌면 다시 그립니다.
+     칸에 적는 중일 때 다시 그리면 커서가 튀므로 그때는 두고 봅니다. */
+  window.addEventListener("resize", () => {
+    if (!receipts.length) return;
+    const el = document.activeElement;
+    if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
+    if (Math.abs(pageScale(PAPER[$("paperSize").value]) - lastScale) < 0.01) return;
+    render();
   });
 
   // Ctrl+V 붙여넣기
