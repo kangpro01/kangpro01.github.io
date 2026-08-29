@@ -63,6 +63,17 @@ const SITE = {
   }
 
   nav += '</ul><div class="gnb-right">'
+      + '<button class="theme" id="theme" type="button" aria-label="어둡게 보기">'
+      +   '<svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+      +     'stroke-linecap="round" aria-hidden="true">'
+      +     '<circle cx="12" cy="12" r="4.2"/>'
+      +     '<path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5"/>'
+      +   '</svg>'
+      +   '<svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+      +     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+      +     '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>'
+      +   '</svg>'
+      + '</button>'
       + '<button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">'
       +   '<span></span><span></span>'
       + '</button>'
@@ -115,6 +126,17 @@ const SITE = {
          || !e.target.closest('.drawer-grid, .drawer-foot')) setOpen(false);
     });
     addEventListener('keydown', e=>{ if(e.key==='Escape' && !dw.hidden) setOpen(false); });
+  }
+
+  /* ── 밝기 단추 ──
+     실제 전환은 assets/theme.js 가 합니다. 여기서는 누르는 것만 잇습니다. */
+  const themeBtn = document.getElementById('theme');
+  if(themeBtn && typeof THEME !== 'undefined'){
+    const label = () => {
+      themeBtn.setAttribute('aria-label', THEME.now() === 'dark' ? '밝게 보기' : '어둡게 보기');
+    };
+    label();
+    themeBtn.addEventListener('click', () => { THEME.toggle(); label(); });
   }
 
   /* 업무 등록 창은 메인과 '문제 & 개선'에만 실려 있습니다.
