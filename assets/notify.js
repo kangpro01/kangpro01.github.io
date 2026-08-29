@@ -175,7 +175,7 @@ const NOTIFY = (function(){
           + '</div>'
         ).join('')
 
-      + '<button type="button" class="ics" id="notifyTest">지금 한 번 보기</button>'
+      + '<button type="button" class="ics" id="notifyTest">알림 즉시 받아보기</button>'
       + '<p class="switch-state" id="notifyState"></p>';
 
     const state = host.querySelector('#notifyState');
