@@ -22,7 +22,8 @@ const SITE = {
     ]},
     /* 도구를 늘리면 assets/tools.js 와 여기 두 곳에 적습니다 */
     { file:'tools.html', name:'업무 Tools', sub:[
-      { file:'tool-lounge.html', name:'라운지 운영 체크리스트' }
+      { file:'tool-lounge.html',  name:'라운지 운영 체크리스트' },
+      { file:'tool-receipt.html', name:'영수증 한번에 정리' }
     ]},
     { file:'attic.html',  name:'딴짓 창고', sub:[
       { file:'game.html', name:'피지컬 120s' }

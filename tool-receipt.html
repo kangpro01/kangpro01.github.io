@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>영수증 한번에 정리 — 일 잘하는 강프로</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="assets/favicon.svg" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root {
+    --paper: #fbfaf7;
+    --ink: #1c1a17;
+    --muted: #8a8378;
+    --line: #e4ded3;
+    --accent: #c2410c;        /* 영수증 잉크 같은 burnt orange */
+    --accent-soft: #fff1e8;
+    --shadow: 0 1px 2px rgba(28,26,23,.06), 0 8px 24px rgba(28,26,23,.08);
+    --mono: "SFMono-Regular", ui-monospace, "JetBrains Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Pretendard", -apple-system, sans-serif;
+    background:
+      radial-gradient(circle at 12% -10%, #fff6ee 0, transparent 45%),
+      radial-gradient(circle at 90% 0%, #f4f1ea 0, transparent 40%),
+      #f0ece4;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- 상단 툴바 ---------- */
+  .toolbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 14px 22px;
+    background: rgba(251,250,247,.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .back {
+    flex: 0 0 auto; font-size: 12px; font-weight: 600; letter-spacing: .04em;
+    color: var(--muted); text-decoration: none; transition: color .15s;
+  }
+  .back:hover { color: var(--accent); }
+  .back:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; margin-right: 4px; }
+  .brand .logo {
+    font-family: var(--mono); font-weight: 700; letter-spacing: -.5px;
+    font-size: 13px; color: #fff; background: var(--ink);
+    padding: 5px 9px; border-radius: 7px;
+  }
+  .brand h1 { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -.4px; }
+  .brand small { color: var(--muted); font-size: 12px; }
+
+  .spacer { flex: 1; }
+
+  .field { display: flex; flex-direction: column; gap: 3px; }
+  .field label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  select, .ttl-input {
+    font-family: inherit; font-size: 13px; color: var(--ink);
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 7px 10px; outline: none; transition: border-color .15s;
+  }
+  select:focus, .ttl-input:focus { border-color: var(--accent); }
+  .ttl-input { min-width: 220px; font-weight: 600; }
+
+  .btn {
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+    padding: 8px 14px; border-radius: 9px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px; transition: all .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: #cfc7b8; transform: translateY(-1px); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #a8350a; }
+  .btn svg { width: 15px; height: 15px; }
+  .stat { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .stat b { color: var(--ink); }
+
+  /* ---------- 작업 영역 ---------- */
+  .stage { padding: 26px 22px 80px; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+
+  .dropzone {
+    width: min(760px, 92vw); margin: 40px auto;
+    border: 2px dashed var(--line); border-radius: 18px;
+    background: rgba(255,255,255,.5);
+    padding: 64px 32px; text-align: center; cursor: pointer; transition: all .2s;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone .big { font-size: 17px; font-weight: 700; margin: 14px 0 6px; }
+  .dropzone .sub { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .dropzone .ico { font-size: 40px; }
+  kbd { font-family: var(--mono); font-size: 11px; background: #fff; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; }
+
+  /* 종이 한 장 */
+  .page {
+    background: #fff; box-shadow: var(--shadow); border-radius: 4px;
+    position: relative; padding: var(--pad); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .page-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 14px;
+    flex: 0 0 auto;
+  }
+  .page-head .pt { font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
+  .page-head .pmeta { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: right; line-height: 1.5; }
+
+  .grid { display: grid; gap: var(--gap); flex: 1 1 auto; min-height: 0; }
+
+  .page-foot {
+    display: flex; align-items: baseline; justify-content: flex-end; gap: 10px;
+    border-top: 2px solid var(--ink); margin-top: 10px; padding-top: 8px;
+    flex: 0 0 auto;
+  }
+  .page-foot .lbl { font-size: 12px; font-weight: 700; color: var(--muted); }
+  .page-foot .sum { font-family: var(--mono); font-size: 17px; font-weight: 700; color: var(--accent); }
+
+  .cell {
+    border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+    display: flex; flex-direction: column; background: #fff; position: relative;
+    transition: box-shadow .15s;
+  }
+  .cell.dragging { opacity: .4; }
+  .cell.over { box-shadow: 0 0 0 2px var(--accent); }
+  .cell .imgwrap {
+    flex: 1; min-height: 0; background: #f7f5f0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cell .imgwrap img { width: 100%; height: 100%; object-fit: contain; transition: transform .2s; }
+  .cell .memo {
+    border-top: 1px dashed var(--line); padding: 6px 7px;
+    display: flex; gap: 6px; align-items: center;
+  }
+  .cell .memo input {
+    border: none; outline: none; font-family: inherit; background: transparent;
+    font-size: 11px; color: var(--ink); width: 100%; min-width: 0;
+  }
+  .cell .memo .desc { flex: 1 1 auto; font-weight: 600; }
+  .cell .memo .amtfield {
+    flex: 0 0 44%; display: flex; align-items: center; gap: 1px;
+    background: var(--accent-soft); border: 1px solid #f1d4c2;
+    border-radius: 7px; padding: 3px 7px;
+  }
+  .cell .memo .amtfield .won { color: var(--accent); font-weight: 800; font-size: 11px; }
+  .cell .memo .amt {
+    font-family: var(--mono); text-align: right; color: var(--accent); font-weight: 700;
+  }
+  .cell .memo .amt::placeholder { color: #d9a98e; font-family: inherit; }
+
+  /* 카드 위 액션 버튼 (화면에서만) */
+  .cell .actions {
+    position: absolute; top: 6px; right: 6px; display: flex; gap: 4px;
+    opacity: 0; transition: opacity .15s; z-index: 20;
+  }
+  .cell:hover .actions { opacity: 1; }
+  .cell .actions button {
+    width: 26px; height: 26px; border-radius: 6px; border: none; cursor: pointer;
+    background: rgba(28,26,23,.78); color: #fff; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+  }
+  .cell .actions button:hover { background: var(--accent); }
+  .cell .grip {
+    position: absolute; top: 6px; left: 6px; opacity: 0; cursor: grab;
+    background: rgba(28,26,23,.78); color: #fff; border-radius: 6px; padding: 3px 6px;
+    font-size: 11px; transition: opacity .15s; user-select: none; z-index: 20;
+  }
+  .cell .grip:active { cursor: grabbing; }
+  .cell:hover .grip { opacity: 1; }
+
+  .cell.empty {
+    border-style: dashed; align-items: center; justify-content: center;
+    color: var(--line); min-height: 120px; cursor: pointer;
+  }
+  .cell.empty:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .cell.empty span { font-size: 28px; }
+
+  .hint { color: var(--muted); font-size: 12px; text-align: center; max-width: 600px; line-height: 1.6; }
+
+  /* ---------- 저장 결과 오버레이 ---------- */
+  .result-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(28,26,23,.6); backdrop-filter: blur(4px);
+    display: flex; flex-direction: column; align-items: center;
+    overflow: auto; padding: 30px 16px 60px;
+  }
+  .result-card {
+    background: #fff; border-radius: 16px; padding: 20px 20px 22px;
+    max-width: 700px; width: 100%; box-shadow: var(--shadow);
+  }
+  .result-card h3 { margin: 0 0 4px; font-size: 17px; letter-spacing: -.3px; }
+  .result-card .desc { color: var(--muted); font-size: 13px; margin: 0 0 16px; line-height: 1.6; }
+  .result-block { margin-bottom: 22px; }
+  .result-block .label { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .result-img { width: 100%; border: 1px solid var(--line); border-radius: 10px; display: block; margin-bottom: 10px; }
+  .result-close {
+    position: fixed; top: 18px; right: 20px; z-index: 201;
+    background: #fff; border: none; border-radius: 10px; padding: 10px 16px;
+    font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: var(--shadow);
+  }
+
+  /* 내보내기 중 UI 숨김 */
+  .exporting .toolbar, .exporting .dropzone, .exporting .actions,
+  .exporting .grip, .exporting .hint, .exporting .noprint { display: none !important; }
+  .exporting .cell.empty { visibility: hidden; }
+
+  /* ---------- 인쇄 ---------- */
+  @media print {
+    @page { margin: 0; }
+    body { background: #fff; }
+    .toolbar, .dropzone, .actions, .grip, .hint, .cell.empty, .noprint { display: none !important; }
+    .stage { padding: 0; gap: 0; }
+    .page {
+      box-shadow: none; border-radius: 0; margin: 0; page-break-after: always;
+      width: 100% !important; height: 100vh !important;
+    }
+    .page:last-child { page-break-after: auto; }
+    .cell { border-color: #ccc; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+    .btn:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a class="back" href="tools.html">← 업무 Tools</a>
+
+  <div class="brand">
+    <span class="logo">RCPT</span>
+    <div>
+      <h1>영수증 한번에 정리</h1>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>제목</label>
+    <input class="ttl-input" id="docTitle" placeholder="예: 2026년 6월 경비 영수증" />
+  </div>
+
+  <div class="field">
+    <label>용지</label>
+    <select id="paperSize">
+      <option value="A4">A4 (세로)</option>
+      <option value="A4L">A4 (가로)</option>
+      <option value="A3">A3 (세로)</option>
+      <option value="Letter">Letter</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>페이지당</label>
+    <select id="perPage">
+      <option value="2">2개 (1×2)</option>
+      <option value="4">4개 (2×2)</option>
+      <option value="6" selected>6개 (2×3)</option>
+      <option value="9">9개 (3×3)</option>
+      <option value="12">12개 (3×4)</option>
+    </select>
+  </div>
+
+  <span class="stat" id="stat">영수증 <b>0</b>장 · <b>0</b>페이지</span>
+
+  <div class="spacer"></div>
+
+  <button class="btn" id="addBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    영수증 추가
+  </button>
+  <button class="btn primary" id="printBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg>
+    JPG로 저장
+  </button>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" multiple style="display:none" />
+
+<div class="stage" id="stage"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- 상태 ----
+  let receipts = []; // { id, src, rot, desc, amt }
+  let uid = 1;
+
+  const PAPER = {
+    A4:     { w: 210, h: 297, label: "A4 210×297mm" },
+    A4L:    { w: 297, h: 210, label: "A4 297×210mm" },
+    A3:     { w: 297, h: 420, label: "A3 297×420mm" },
+    Letter: { w: 216, h: 279, label: "Letter" },
+  };
+  const COLS = { 2: 1, 4: 2, 6: 2, 9: 3, 12: 3 };
+
+  const $ = (id) => document.getElementById(id);
+  const stage = $("stage");
+
+  // ---- 이미지 추가 ----
+  function addFiles(files) {
+    const imgs = [...files].filter((f) => f.type.startsWith("image/"));
+    let pending = imgs.length;
+    if (!pending) return;
+    imgs.forEach((f) => {
+      const r = new FileReader();
+      r.onload = (e) => {
+        receipts.push({ id: uid++, src: e.target.result, rot: 0, desc: "", amt: "" });
+        if (--pending === 0) render();
+      };
+      r.readAsDataURL(f);
+    });
+  }
+
+  // ---- 렌더 ----
+  function render() {
+    const perPage = +$("perPage").value;
+    const cols = COLS[perPage];
+    const paper = PAPER[$("paperSize").value];
+    const title = $("docTitle").value.trim();
+    const pageCount = Math.max(1, Math.ceil(receipts.length / perPage));
+
+    $("stat").innerHTML = `영수증 <b>${receipts.length}</b>장 · <b>${pageCount}</b>페이지`;
+
+    stage.innerHTML = "";
+
+    if (receipts.length === 0) {
+      const dz = document.createElement("div");
+      dz.className = "dropzone";
+      dz.id = "dropzone";
+      dz.innerHTML = `
+        <div class="ico">🧾</div>
+        <div class="big">영수증 사진을 여기로 끌어다 놓으세요</div>
+        <div class="sub">
+          클릭해서 파일 선택 · 여러 장 한번에 가능<br>
+          캡처한 영수증은 <kbd>Ctrl</kbd>+<kbd>V</kbd> 로 바로 붙여넣기
+        </div>`;
+      dz.onclick = () => $("fileInput").click();
+      wireDrop(dz);
+      stage.appendChild(dz);
+      return;
+    }
+
+    // 페이지 픽셀 폭 (화면 표시용). 297mm 기준 스케일.
+    const scale = 2.55; // px per mm (화면)
+    const pw = paper.w * scale;
+    const ph = paper.h * scale;
+    const pad = Math.round(paper.w * scale * 0.05);
+    const gap = Math.round(pad * 0.55);
+    const rows = Math.ceil(perPage / cols);
+
+    for (let p = 0; p < pageCount; p++) {
+      const page = document.createElement("div");
+      page.className = "page";
+      page.style.setProperty("--pad", pad + "px");
+      page.style.setProperty("--gap", gap + "px");
+      page.style.width = pw + "px";
+      page.style.height = ph + "px";
+
+      const head = document.createElement("div");
+      head.className = "page-head";
+      head.innerHTML = `
+        <span class="pt">${escapeHtml(title) || "영수증 정리"}</span>
+        <span class="pmeta">${paper.label}<br>page ${p + 1} / ${pageCount}</span>`;
+      page.appendChild(head);
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+      for (let i = 0; i < perPage; i++) {
+        const idx = p * perPage + i;
+        const rec = receipts[idx];
+        if (rec) grid.appendChild(buildCell(rec, idx));
+        else grid.appendChild(buildEmpty());
+      }
+      page.appendChild(grid);
+
+      const foot = document.createElement("div");
+      foot.className = "page-foot";
+      foot.innerHTML = `<span class="lbl">총 합계</span><span class="sum">${fmtWon(totalAmount())}</span>`;
+      page.appendChild(foot);
+
+      stage.appendChild(page);
+    }
+
+    const hint = document.createElement("div");
+    hint.className = "hint noprint";
+    hint.innerHTML = "왼쪽 손잡이(⠿)를 잡고 끌면 순서가 바뀌고, 카드에 마우스를 올리면 회전·삭제·메모 편집이 가능해요. " +
+      "<b>JPG로 저장</b>을 누르면 결과 이미지가 만들어집니다.";
+    stage.appendChild(hint);
+  }
+
+  function buildCell(rec, idx) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.dataset.idx = idx;
+
+    cell.innerHTML = `
+      <div class="grip">⠿</div>
+      <div class="actions noprint">
+        <button title="왼쪽 회전" data-act="rotL">↺</button>
+        <button title="오른쪽 회전" data-act="rotR">↻</button>
+        <button title="삭제" data-act="del">✕</button>
+      </div>
+      <div class="imgwrap"><img src="${rec.src}" style="transform:rotate(${rec.rot}deg)"></div>
+      <div class="memo">
+        <input class="desc" placeholder="거래처/항목" value="${escapeAttr(rec.desc)}">
+        <div class="amtfield"><span class="won">₩</span><input class="amt" placeholder="금액" inputmode="numeric" value="${escapeAttr(rec.amt)}"></div>
+      </div>`;
+
+    cell.querySelector('[data-act="rotL"]').onclick = (e) => { e.stopPropagation(); rec.rot -= 90; render(); };
+    cell.querySelector('[data-act="rotR"]').onclick = (e) => { e.stopPropagation(); rec.rot += 90; render(); };
+    cell.querySelector('[data-act="del"]').onclick = (e) => {
+      e.stopPropagation();
+      receipts = receipts.filter((r) => r.id !== rec.id); render();
+    };
+    cell.querySelector(".desc").oninput = (e) => { rec.desc = e.target.value; };
+    const amtEl = cell.querySelector(".amt");
+    amtEl.oninput = (e) => { rec.amt = e.target.value; updateTotals(); };
+    amtEl.onblur = (e) => {
+      const n = e.target.value.replace(/[^\d]/g, "");
+      rec.amt = n ? Number(n).toLocaleString("ko-KR") : "";
+      e.target.value = rec.amt;
+      updateTotals();
+    };
+
+    wireDrag(cell);
+    return cell;
+  }
+
+  function buildEmpty() {
+    const c = document.createElement("div");
+    c.className = "cell empty noprint";
+    c.innerHTML = "<span>+</span>";
+    c.onclick = () => $("fileInput").click();
+    return c;
+  }
+
+  // ---- 드래그 정렬 ----
+  let dragIdx = null;
+  function wireDrag(cell) {
+    const grip = cell.querySelector(".grip");
+    // 손잡이(⠿)만 드래그 가능 → 버튼/이미지/메모 클릭과 충돌하지 않음
+    grip.draggable = true;
+    grip.addEventListener("dragstart", (e) => {
+      dragIdx = +cell.dataset.idx;
+      cell.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", String(dragIdx)); // Firefox 호환
+    });
+    grip.addEventListener("dragend", () => {
+      cell.classList.remove("dragging"); dragIdx = null;
+    });
+
+    // 셀은 드롭 받는 자리
+    cell.addEventListener("dragover", (e) => {
+      if (dragIdx === null) return; // 외부 파일 드래그는 무시
+      e.preventDefault(); cell.classList.add("over");
+    });
+    cell.addEventListener("dragleave", () => cell.classList.remove("over"));
+    cell.addEventListener("drop", (e) => {
+      cell.classList.remove("over");
+      if (dragIdx === null) return; // 외부 파일은 window 핸들러가 처리
+      e.preventDefault();
+      const to = +cell.dataset.idx;
+      if (dragIdx === to) return;
+      const [moved] = receipts.splice(dragIdx, 1);
+      receipts.splice(to, 0, moved);
+      dragIdx = null; render();
+    });
+  }
+
+  // ---- 드롭존 (시각 효과만, 실제 파일 추가는 window 핸들러가 단독 처리) ----
+  function wireDrop(el) {
+    ["dragenter", "dragover"].forEach((ev) =>
+      el.addEventListener(ev, (e) => { e.preventDefault(); el.classList.add("drag"); }));
+    ["dragleave", "drop"].forEach((ev) =>
+      el.addEventListener(ev, (e) => { e.preventDefault(); el.classList.remove("drag"); }));
+  }
+
+  // ---- 유틸 ----
+  function escapeHtml(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+  function escapeAttr(s) { return (s || "").replace(/"/g, "&quot;"); }
+  function parseAmt(s) { const n = (s || "").replace(/[^\d]/g, ""); return n ? parseInt(n, 10) : 0; }
+  function totalAmount() { return receipts.reduce((sum, r) => sum + parseAmt(r.amt), 0); }
+  function fmtWon(n) { return "₩" + n.toLocaleString("ko-KR"); }
+  function updateTotals() {
+    const t = fmtWon(totalAmount());
+    document.querySelectorAll(".page-foot .sum").forEach((el) => { el.textContent = t; });
+  }
+
+  // ---- 전역 이벤트 ----
+  $("fileInput").addEventListener("change", (e) => { addFiles(e.target.files); e.target.value = ""; });
+  $("addBtn").onclick = () => $("fileInput").click();
+  $("printBtn").onclick = exportImages;
+
+  // ---- 저장 헬퍼 ----
+  const loadImg = (src) => new Promise((res, rej) => {
+    const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src;
+  });
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+  function clipText(ctx, text, maxW) {
+    if (!text) return "";
+    if (ctx.measureText(text).width <= maxW) return text;
+    let t = text;
+    while (t.length && ctx.measureText(t + "…").width > maxW) t = t.slice(0, -1);
+    return t + "…";
+  }
+  function drawContain(ctx, img, rot, x, y, w, h) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    const r = ((rot % 360) + 360) % 360;
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate((r * Math.PI) / 180);
+    const cw = (r === 90 || r === 270) ? h : w;
+    const ch = (r === 90 || r === 270) ? w : h;
+    const inset = Math.min(cw, ch) * 0.05;
+    const aw = cw - inset * 2, ah = ch - inset * 2;
+    const scale = Math.min(aw / img.naturalWidth, ah / img.naturalHeight);
+    const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
+    ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
+    ctx.restore();
+  }
+
+  // ---- JPG 생성 (외부 라이브러리 없이 Canvas로 직접 렌더) ----
+  async function exportImages() {
+    if (receipts.length === 0) { alert("먼저 영수증을 추가해 주세요."); return; }
+
+    const btn = $("printBtn");
+    const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = "이미지 만드는 중…";
+
+    try {
+      const perPage = +$("perPage").value;
+      const cols = COLS[perPage];
+      const rows = Math.ceil(perPage / cols);
+      const paper = PAPER[$("paperSize").value];
+      const title = $("docTitle").value.trim() || "영수증 정리";
+      const pageCount = Math.max(1, Math.ceil(receipts.length / perPage));
+
+      const DPI = 200, ppm = DPI / 25.4;
+      const W = Math.round(paper.w * ppm);
+      const H = Math.round(paper.h * ppm);
+      const pad = Math.round(W * 0.05);
+      const gap = Math.round(pad * 0.55);
+      const headH = Math.round(W * 0.05);
+
+      const imgEls = await Promise.all(receipts.map((r) => loadImg(r.src)));
+      const safeName = title.replace(/[\\/:*?"<>|]/g, "_");
+      const results = [];
+
+      for (let p = 0; p < pageCount; p++) {
+        const cv = document.createElement("canvas");
+        cv.width = W; cv.height = H;
+        const ctx = cv.getContext("2d");
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
+
+        // 헤더
+        ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+        ctx.fillStyle = "#1c1a17";
+        const tfs = Math.round(W * 0.024);
+        ctx.font = `800 ${tfs}px Pretendard, sans-serif`;
+        ctx.fillText(title, pad, pad + tfs);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#8a8378";
+        ctx.font = `${Math.round(W * 0.012)}px monospace`;
+        ctx.fillText(`${paper.label}   page ${p + 1}/${pageCount}`, W - pad, pad + tfs * 0.7);
+        ctx.textAlign = "left";
+
+        const lineY = pad + headH;
+        ctx.strokeStyle = "#1c1a17"; ctx.lineWidth = Math.max(2, W * 0.0016);
+        ctx.beginPath(); ctx.moveTo(pad, lineY); ctx.lineTo(W - pad, lineY); ctx.stroke();
+
+        // 그리드
+        const gridTop = lineY + gap;
+        const gridW = W - pad * 2;
+        const footH = Math.round(W * 0.05);
+        const gridH = H - gridTop - pad - footH;
+        const cellW = (gridW - gap * (cols - 1)) / cols;
+        const cellH = (gridH - gap * (rows - 1)) / rows;
+        const memoH = Math.max(34, Math.round(cellH * 0.14));
+        const radius = Math.round(W * 0.006);
+
+        for (let i = 0; i < perPage; i++) {
+          const idx = p * perPage + i;
+          if (idx >= receipts.length) break;
+          const col = i % cols, row = Math.floor(i / cols);
+          const cx = pad + col * (cellW + gap);
+          const cy = gridTop + row * (cellH + gap);
+          const imgH = cellH - memoH;
+
+          // 이미지 영역 배경
+          ctx.fillStyle = "#f7f5f0";
+          ctx.fillRect(cx, cy, cellW, imgH);
+          drawContain(ctx, imgEls[idx], receipts[idx].rot, cx, cy, cellW, imgH);
+
+          // 메모 구분선
+          ctx.strokeStyle = "#e4ded3"; ctx.lineWidth = Math.max(1, W * 0.0008);
+          ctx.setLineDash([5, 4]);
+          ctx.beginPath(); ctx.moveTo(cx, cy + imgH); ctx.lineTo(cx + cellW, cy + imgH); ctx.stroke();
+          ctx.setLineDash([]);
+
+          // 메모 텍스트
+          const fs = Math.round(memoH * 0.42);
+          const baseY = cy + imgH + memoH * 0.62;
+          ctx.font = `600 ${fs}px Pretendard, sans-serif`;
+          ctx.fillStyle = "#1c1a17"; ctx.textAlign = "left";
+          ctx.fillText(clipText(ctx, receipts[idx].desc, cellW * 0.62 - fs), cx + fs * 0.6, baseY);
+          ctx.fillStyle = "#c2410c"; ctx.textAlign = "right";
+          ctx.font = `600 ${fs}px monospace`;
+          ctx.fillText(receipts[idx].amt ? "₩" + receipts[idx].amt : "", cx + cellW - fs * 0.6, baseY);
+          ctx.textAlign = "left";
+
+          // 셀 테두리
+          ctx.strokeStyle = "#e4ded3"; ctx.lineWidth = Math.max(1, W * 0.0008);
+          roundRect(ctx, cx, cy, cellW, cellH, radius); ctx.stroke();
+        }
+
+        // 총 합계 (하단 우측)
+        const footTop = gridTop + gridH + gap;
+        ctx.strokeStyle = "#1c1a17"; ctx.lineWidth = Math.max(2, W * 0.0016);
+        ctx.beginPath(); ctx.moveTo(pad, footTop); ctx.lineTo(W - pad, footTop); ctx.stroke();
+
+        const sumStr = fmtWon(totalAmount());
+        const fy = footTop + footH * 0.62;
+        const afs = Math.round(footH * 0.5);
+        ctx.textAlign = "right"; ctx.fillStyle = "#c2410c";
+        ctx.font = `700 ${afs}px monospace`;
+        ctx.fillText(sumStr, W - pad, fy);
+        const sumW = ctx.measureText(sumStr).width;
+        const lfs = Math.round(footH * 0.36);
+        ctx.font = `700 ${lfs}px Pretendard, sans-serif`;
+        ctx.fillStyle = "#8a8378";
+        ctx.fillText("총 합계", W - pad - sumW - afs * 0.6, fy);
+        ctx.textAlign = "left";
+
+        const url = cv.toDataURL("image/jpeg", 0.92);
+        const fname = pageCount > 1 ? `${safeName}_${p + 1}.jpg` : `${safeName}.jpg`;
+        results.push({ url, fname });
+      }
+
+      showResults(results);
+    } catch (e) {
+      console.error(e);
+      alert("이미지 생성 중 문제가 발생했습니다. 영수증 수를 줄이거나 다시 시도해 주세요.");
+    } finally {
+      btn.disabled = false; btn.innerHTML = orig;
+    }
+  }
+
+  // ---- 결과 표시 (다운로드 + 길게 눌러 저장 모두 지원) ----
+  function showResults(results) {
+    const ov = document.createElement("div");
+    ov.className = "result-overlay";
+
+    const close = document.createElement("button");
+    close.className = "result-close";
+    close.textContent = "✕ 닫기";
+    close.onclick = () => ov.remove();
+
+    const card = document.createElement("div");
+    card.className = "result-card";
+    card.innerHTML = `
+      <h3>저장할 이미지가 준비됐어요 🧾</h3>
+      <p class="desc">아래 <b>다운로드</b> 버튼을 누르거나, 이미지를 <b>길게 눌러(PC는 우클릭) 저장</b>하셔도 됩니다.${results.length > 1 ? " 페이지가 여러 장이라 각각 받으시면 돼요." : ""}</p>`;
+
+    results.forEach((r, i) => {
+      const block = document.createElement("div");
+      block.className = "result-block";
+      const img = document.createElement("img");
+      img.className = "result-img"; img.src = r.url; img.alt = r.fname;
+      const dl = document.createElement("a");
+      dl.className = "btn primary"; dl.textContent = "⬇ 다운로드";
+      dl.href = r.url; dl.download = r.fname;
+      if (results.length > 1) {
+        const lbl = document.createElement("div");
+        lbl.className = "label"; lbl.textContent = `페이지 ${i + 1}`;
+        block.appendChild(lbl);
+      }
+      block.appendChild(img);
+      block.appendChild(dl);
+      card.appendChild(block);
+    });
+
+    ov.appendChild(close);
+    ov.appendChild(card);
+    ov.addEventListener("click", (e) => { if (e.target === ov) ov.remove(); });
+    document.body.appendChild(ov);
+  }
+
+  ["paperSize", "perPage"].forEach((id) => $(id).addEventListener("change", render));
+  $("docTitle").addEventListener("input", render);
+
+  // 화면 전체 드래그앤드롭 — 파일 추가는 여기 한 곳에서만 처리
+  window.addEventListener("dragover", (e) => e.preventDefault());
+  window.addEventListener("drop", (e) => {
+    e.preventDefault();
+    // 외부 파일이 있을 때만 추가. 카드 정렬용 내부 드래그는 files가 비어 무시됨
+    if (e.dataTransfer.files && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+
+  // Ctrl+V 붙여넣기
+  window.addEventListener("paste", (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const files = [...items].filter((i) => i.type.startsWith("image/")).map((i) => i.getAsFile()).filter(Boolean);
+    if (files.length) addFiles(files);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
