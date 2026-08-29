@@ -8,19 +8,20 @@ const SITE = {
   logo: 'ㄱㅍㄹ',
   title: '일 잘하는 강프로',
   /* 오른쪽 위 버튼 — 링크가 아니라 업무 등록 창을 엽니다 */
-  cta: { name: '＋ 잊지 말 업무', newtask: true },
+  cta: { name: '＋ 업무추가', newtask: true },
   menu: [
     { file:'index.html', name:'업무 리마인더', sub:[
-      { file:'index.html#late',   name:'지났는데 안 끝난 것' },
-      { file:'index.html#soon',   name:'오늘·이번 주' },
       { file:'index.html#follow', name:'후속 조치' },
       { file:'index.html#stale',  name:'오래 안 본 업무' },
       { file:'index.html#done',   name:'지난주에 한 일' }
     ]},
-    { file:'issues.html', name:'불편사항 & 개선', sub:[
-      { file:'issues.html#write',   name:'불편한 점 적기' },
-      { file:'issues.html#list',    name:'모인 불편' },
-      { file:'issues.html#done',    name:'개선한 것' }
+    { file:'issues.html', name:'문제 & 개선', sub:[
+      { file:'issues.html#write', name:'불편한 점' },
+      { file:'issues.html#list',  name:'개선 아이디어' },
+      { file:'issues.html#ref',   name:'레퍼런스' }
+    ]},
+    { file:'tools.html', name:'업무 Tools', sub:[
+      { file:'tools.html#lounge', name:'라운지 운영 체크리스트' }
     ]},
     { file:'reminder.html', name:'반복 업무', sub:[
       { file:'reminder.html#alert',   name:'알림 받기' },
@@ -33,7 +34,7 @@ const SITE = {
       { file:'files.html#template', name:'QR 안내물 템플릿' }
     ]},
     { file:'attic.html',  name:'딴짓 창고', sub:[
-      { file:'game.html', name:'모눈 회피 게임' },
+      { file:'game.html', name:'피지컬 120s' },
       { file:'attic.html#wip', name:'만들다 만 것들' }
     ]}
   ]
@@ -91,7 +92,6 @@ const SITE = {
     foot.outerHTML =
       '<footer><div class="wrap">'
       + '<span>© 2026 강프로</span>'
-      + '<span>이 페이지도 직접 만들었습니다</span>'
       + '</div></footer>'
       + '<div class="dock">' + ctaHtml() + '</div>';
   }

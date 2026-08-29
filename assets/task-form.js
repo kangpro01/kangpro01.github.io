@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════
-   '잊지 말 업무 등록' 창.
+   '업무추가' 창.
 
    오른쪽 위 버튼이나 [data-newtask] 를 누르면 열립니다.
    날짜는 "3일 뒤", "매주 금요일"처럼 사람 말로 적으면
@@ -23,8 +23,8 @@ const TaskForm = (function(){
     box.className = 'modal';
     box.innerHTML =
       '<div class="modal-bg" data-close></div>'
-      + '<form class="modal-box" role="dialog" aria-modal="true" aria-label="잊지 말 업무 등록">'
-      + '<div class="modal-head"><b>잊지 말 업무</b>'
+      + '<form class="modal-box" role="dialog" aria-modal="true" aria-label="업무추가">'
+      + '<div class="modal-head"><b>업무추가</b>'
       +   '<button type="button" class="modal-x" data-close aria-label="닫기">×</button></div>'
 
       + '<label><span>무슨 일입니까</span>'

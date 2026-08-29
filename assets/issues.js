@@ -162,5 +162,86 @@
     }
   });
 
-  DB.gate(load);
+  /* ── 레퍼런스 ── */
+  const refHost = document.getElementById('refList');
+  const refBtn  = document.getElementById('refAdd');
+
+  async function loadRefs(){
+    if(!refHost) return;
+    let rows;
+    try{
+      rows = await DB.q('refs', 'select=*&order=created_at.desc&limit=200');
+    }catch(err){
+      refHost.innerHTML = '<p class="board-load bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
+      return;
+    }
+    refHost.innerHTML = rows.length
+      ? rows.map(r =>
+          '<div class="ref" data-id="' + r.id + '">'
+          + '<div class="ref-top">'
+          +   (r.tag ? '<span class="isu-cat">' + esc(r.tag) + '</span>' : '')
+          +   '<span class="isu-date">' + day(r.created_at) + '</span>'
+          + '</div>'
+          + (r.url
+              ? '<a class="ref-t" href="' + esc(r.url) + '" target="_blank" rel="noopener">'
+                + esc(r.title) + ' ↗</a>'
+              : '<b class="ref-t">' + esc(r.title) + '</b>')
+          + (r.note ? '<p class="ref-n">' + esc(r.note) + '</p>' : '')
+          + '<div class="isu-acts"><button type="button" class="tk-btn" data-ref="del">지우기</button></div>'
+          + '</div>').join('')
+      : '<p class="board-load">아직 담아둔 레퍼런스가 없습니다. 참고할 글이나 사례를 담아두십시오.</p>';
+  }
+
+  if(refBtn){
+    refBtn.addEventListener('click', () => {
+      if(document.getElementById('refForm')) return;
+      const box = document.createElement('form');
+      box.id = 'refForm';
+      box.className = 'isu-form ref-form';
+      box.innerHTML =
+        '<label><span>제목</span><input name="title" maxlength="300" required placeholder="무엇을 참고했습니까"></label>'
+        + '<div class="modal-row">'
+        +   '<label><span>링크 <em>선택</em></span><input name="url" maxlength="600" placeholder="https://"></label>'
+        +   '<label><span>꼬리표 <em>선택</em></span><input name="tag" maxlength="40" placeholder="예: 응대, 서식"></label>'
+        + '</div>'
+        + '<label><span>메모 <em>선택</em></span><textarea name="note" rows="2" maxlength="1000" '
+        +   'placeholder="왜 참고할 만한지 한 줄"></textarea></label>'
+        + '<button class="btn lg" type="submit">담기</button>'
+        + '<p class="modal-msg" role="status" aria-live="polite"></p>';
+      refHost.parentNode.insertBefore(box, refHost);
+      box.title.focus();
+
+      box.addEventListener('submit', async e => {
+        e.preventDefault();
+        const t = box.title.value.trim();
+        if(!t) return;
+        const msg = box.querySelector('.modal-msg');
+        msg.textContent = '담는 중입니다…';
+        try{
+          await DB.insert('refs', {
+            title: t,
+            url:  box.url.value.trim()  || null,
+            tag:  box.tag.value.trim()  || null,
+            note: box.note.value.trim() || null
+          });
+          box.remove();
+          loadRefs();
+        }catch(err){
+          msg.textContent = err.message;
+          msg.classList.add('bad');
+        }
+      });
+    });
+  }
+
+  document.addEventListener('click', async e => {
+    const b = e.target.closest('.ref [data-ref="del"]');
+    if(!b) return;
+    const card = b.closest('.ref');
+    if(!confirm('이 레퍼런스를 지웁니까?')) return;
+    try{ await DB.remove('refs', 'id=eq.' + card.dataset.id); loadRefs(); }
+    catch(err){ alert('지우지 못했습니다. ' + err.message); }
+  });
+
+  DB.gate(() => { load(); loadRefs(); });
 })();

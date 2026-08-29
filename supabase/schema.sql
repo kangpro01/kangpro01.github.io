@@ -84,6 +84,21 @@ create index if not exists improvements_status_idx on public.improvements (statu
 create index if not exists improvements_cat_idx    on public.improvements (category);
 
 
+-- ══ 레퍼런스 ══════════════════════════════════════════════
+-- 참고한 것과 참고할 것. (references 는 SQL 예약어라 refs 로 씁니다)
+create table if not exists public.refs (
+  id         uuid        primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+
+  title      text        not null check (char_length(title) between 1 and 300),
+  url        text                 check (url  is null or char_length(url)  <= 600),
+  note       text                 check (note is null or char_length(note) <= 1000),
+  tag        text                 check (tag  is null or char_length(tag)  <= 40)
+);
+
+create index if not exists refs_created_idx on public.refs (created_at desc);
+
+
 -- ══ 고친 시각 자동 기록 ═══════════════════════════════════
 create or replace function public.touch_updated_at()
 returns trigger language plpgsql as $$
@@ -104,6 +119,13 @@ create trigger improvements_touch before update on public.improvements
 -- ══ 보안 ══════════════════════════════════════════════════
 alter table public.tasks        enable row level security;
 alter table public.improvements enable row level security;
+alter table public.refs         enable row level security;
+
+drop policy if exists "team reads and writes refs" on public.refs;
+create policy "team reads and writes refs"
+  on public.refs for all
+  to authenticated
+  using (true) with check (true);
 
 -- 로그인한 사람만. 로그인 안 하면 아무것도 못 봅니다.
 drop policy if exists "team reads and writes tasks" on public.tasks;

@@ -14,12 +14,13 @@
 ## 폴더 구조
 
 ```
-index.html        메인 — 업무 리마인더 (놓친 것 / 이번 주 / 후속 / 방치 / 지난주 한 일)
-issues.html       불편사항 & 개선 — 기록 → 개선 아이디어 → 축적
+index.html        메인 — 다섯 칸(캘린더·당장 할 일·일간·주간·월간) + 후속/방치/지난주
+issues.html       문제 & 개선 — 불편한 점 → 개선 아이디어 → 축적, 레퍼런스
+tools.html        업무 Tools — 체크리스트
 reminder.html     반복 업무 — 월별 할 일, 알림 켜기, 캘린더(.ics) 내려받기
 files.html        자료실 — 서식·템플릿
 attic.html        딴짓 창고 — 게임. 잠깐 쉬고 돌아오는 정도로만 둔다
-game.html         모눈 회피 게임 (단일 파일, 자기완결형)
+game.html         피지컬 120s (단일 파일, 자기완결형)
 assets/
   style.css       모든 페이지의 디자인
   site.js         메뉴·헤더·푸터 생성
@@ -31,6 +32,8 @@ assets/
   cal.js          홈 달력
   notify.js       일간·주간·월간 알림 켜고 끄기
   tasks.js        일반적인 총무 반복 업무 목록 (개인 업무 아님)
+  checklists.js   체크리스트 내용. 여기만 고치면 tools.html이 따라 바뀐다
+  checklist.js    체크리스트 그리기·저장 (브라우저에만 남고 주기가 지나면 비워짐)
   favicon.svg / kang.png
 supabase/
   schema.sql      표와 보안 정책. 대시보드 SQL Editor에서 실행한다
