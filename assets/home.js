@@ -2,7 +2,7 @@
    메인 화면.
 
    위쪽 다섯 칸 — 지금 무엇을 해야 하는지
-     캘린더 · 당장 해야 할 일 · 일간 · 주간 · 월간
+     캘린더 · 지금 해야 할 일 · 일간 · 주간 · 월간
 
    아래쪽 블록 — 놓친 것이 없는지
      후속 조치 · 오래 안 본 업무 · 지난주에 끝낸 일
@@ -100,11 +100,11 @@
       .sort((a,b) => (a.due_on||'').localeCompare(b.due_on||''));
 
     fill(document.getElementById('dailyList'),   rep('daily'),
-         '＋ 로 매일 하는 일을 넣어두십시오.', { slim:true, hideRepeat:true });
+         '+ 버튼을 눌러 일간 업무를 등록하세요.', { slim:true, hideRepeat:true });
     fill(document.getElementById('weeklyList'),  rep('weekly'),
-         '＋ 로 매주 하는 일을 넣어두십시오.', { slim:true });
+         '+ 버튼을 눌러 주간 업무를 등록하세요.', { slim:true });
     fill(document.getElementById('monthlyList'), rep('monthly').concat(rep('yearly')),
-         '＋ 로 매달 하는 일을 넣어두십시오.', { slim:true });
+         '+ 버튼을 눌러 월간 업무를 등록하세요.', { slim:true });
 
     /* 아래쪽 블록 */
     if(!board) return;

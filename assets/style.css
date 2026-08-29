@@ -330,7 +330,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .page-head.slim p{font-size:14.5px}
 
 /* ══ 메인 다섯 칸 ══
-   위: 캘린더(넓게) + 당장 해야 할 일
+   위: 캘린더(넓게) + 지금 해야 할 일
    아래: 일간 · 주간 · 월간 */
 .hub{
   max-width:var(--wrap-wide);
@@ -338,8 +338,8 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   padding-top:24px;padding-bottom:8px;
 }
 .board{max-width:var(--wrap-wide)}
-.card-cal{grid-column:span 7}
-.card-now{grid-column:span 5}
+.card-cal{grid-column:span 8}
+.card-now{grid-column:span 4}
 .hub > .card:nth-child(n+3){grid-column:span 4}
 
 /* 넓은 화면에서는 다섯 칸이 한 화면에 들어갑니다.
@@ -347,11 +347,11 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
    이래야 페이지가 세로로 길어지지 않습니다. */
 @media (min-width:901px){
   .hub{
-    /* 캘린더가 들어가야 하므로 첫 줄을 조금 더 높입니다 */
-    grid-template-rows:1.1fr 0.9fr;
-    height:calc(100vh - var(--gnb) - 78px);
-    height:calc(100dvh - var(--gnb) - 78px);
-    min-height:540px;max-height:900px;
+    /* 날짜 칸 안에 일정을 적으므로 첫 줄을 넉넉히 줍니다 */
+    grid-template-rows:1.45fr 0.55fr;
+    height:calc(100vh - var(--gnb) - 40px);
+    height:calc(100dvh - var(--gnb) - 40px);
+    min-height:600px;max-height:980px;
   }
   .hub > .card{display:flex;flex-direction:column;overflow:hidden}
   .hub > .card > .card-body{flex:1;min-height:0;overflow-y:auto;max-height:none}
@@ -378,31 +378,13 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   transition:border-color .15s ease,color .15s ease;
 }
 .card-add:hover{border-color:var(--ink);color:var(--ink)}
-/* 캘린더 칸 — 넓을 때는 달력 옆에 그 날 할 일을 나란히 둡니다.
-   좁을 때는 예전처럼 달력 아래로 내려갑니다. */
-.card-cal .cal{border:0;border-radius:0;padding:0}
-@media (min-width:1060px){
-  .card-cal > .card-body{overflow:hidden}
-  .card-cal .cal{
-    display:grid;height:100%;
-    grid-template-columns:minmax(0,1fr) minmax(190px,250px);
-    grid-template-rows:auto minmax(0,1fr);
-    grid-template-areas:"head list" "grid list";
-    column-gap:20px;
-  }
-  .card-cal .cal-head{grid-area:head}
-
-  /* 날짜 줄이 남는 높이를 나눠 가집니다. 화면이 낮아도 넘치지 않습니다. */
-  .card-cal .cal-grid{
-    grid-area:grid;align-content:stretch;
-    grid-template-rows:auto;grid-auto-rows:minmax(22px,1fr);
-  }
-  .card-cal .cal-day{height:auto;min-height:0}
-
-  .card-cal .cal-list{
-    grid-area:list;margin-top:0;padding:0 0 0 20px;overflow-y:auto;
-    border-top:0;border-left:1px solid var(--rule);
-  }
+/* 캘린더 칸 — 달력이 칸 전체를 씁니다.
+   날짜 줄이 남는 높이를 나눠 가져 화면이 낮아도 넘치지 않습니다. */
+.card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
+.card-cal .cal-grid{flex:1;min-height:0;align-content:stretch}
+@media (max-width:900px){
+  /* 좁을 때는 달력이 잘리지 않게 칸 안에서 다 보여줍니다 */
+  .hub > .card-cal > .card-body{max-height:none;overflow:visible}
 }
 .card-empty{margin:12px 2px;font-size:13.5px;color:var(--ink-3);line-height:1.65}
 .card-empty.bad{color:var(--ink-2)}
@@ -412,10 +394,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card .tk:last-child{border-bottom:0}
 .card .tk-body b{font-size:14.5px;line-height:1.55}
 .card .tk-acts{gap:4px}
-
-/* 직접 담은 업무가 있는 날 — 점을 진하게 */
-.cal-day.mine::after{background:var(--ink);width:4px;height:4px}
-.cal-item.is-mine b{font-weight:800}
 
 /* ══ 떠 있는 단추 ══ */
 .fab-wrap{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
@@ -656,34 +634,56 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
   transition:border-color .15s ease,color .15s ease;
 }
 .cal-nav:hover{border-color:var(--ink);color:var(--ink)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:2px;
+  /* 첫 줄은 요일 이름이라 글자 높이만, 날짜 줄은 남는 높이를 나눠 갖습니다 */
+  grid-template-rows:auto;grid-auto-rows:minmax(56px,1fr);
+}
 .cal-dow{
   text-align:center;font-size:11px;font-weight:700;color:var(--ink-3);
   padding-bottom:6px;font-family:var(--fs);
 }
 .cal-day{
-  position:relative;height:clamp(30px,2.6vw,40px);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--fs-num);font-size:13px;color:var(--ink-2);
-  border:0;background:transparent;border-radius:8px;padding:0;
+  position:relative;min-height:0;overflow:hidden;
+  display:flex;flex-direction:column;align-items:stretch;gap:2px;
+  border:0;background:transparent;border-radius:8px;padding:4px 4px 3px;
 }
 .cal-day.off{visibility:hidden}
-.cal-day.has{color:var(--ink);font-weight:700;cursor:pointer}
-.cal-day.has::after{
-  content:'';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
-  width:3px;height:3px;border-radius:50%;background:var(--ink-3);
+.cal-day.has{background:var(--paper-2)}
+/* 날짜 숫자 줄 — 오른쪽에 못 적은 건수 */
+.cal-top{display:flex;align-items:center;justify-content:space-between;gap:4px;flex:none}
+.cal-n{
+  font-style:normal;
+  font-family:var(--fs-num);font-size:12px;line-height:1.3;color:var(--ink-3);
+  padding:0 3px;
 }
-.cal-day.has:hover{background:var(--paper-2)}
-.cal-day.today{box-shadow:inset 0 0 0 1.5px var(--ink-3)}
-.cal-day.sel{background:var(--ink);color:#fff}
-.cal-day.sel::after{background:#fff}
-.cal-list{margin-top:12px;border-top:1px solid var(--rule);padding-top:8px}
-.cal-item{display:block;padding:8px 2px;border-bottom:1px solid var(--rule)}
-.cal-item:last-child{border-bottom:0}
-.cal-item b{display:block;font-size:13.5px;font-weight:700;letter-spacing:-.025em}
-.cal-item span{font-family:var(--fs-num);font-size:11px;color:var(--ink-3)}
-.cal-item:hover b{text-decoration:underline;text-underline-offset:3px}
-.cal-none{margin:6px 2px 4px;font-size:13px;color:var(--ink-3)}
+.cal-day.has .cal-n{color:var(--ink);font-weight:700}
+.cal-day.today .cal-n{background:var(--ink);color:#fff;border-radius:5px;font-weight:700}
+/* 그 날의 일정 — 길면 잘리고, 마우스를 올리면 전체가 보입니다 */
+.cal-ev{
+  font-family:var(--fs);font-size:10.5px;line-height:1.4;font-weight:600;
+  color:var(--ink);background:var(--paper);border:1px solid var(--rule);
+  border-radius:4px;padding:1px 4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cal-more{
+  font-style:normal;font-family:var(--fs-num);font-size:10px;font-weight:700;
+  color:var(--ink-2);line-height:1.3;padding-right:2px;flex:none;
+}
+/* 좁은 화면용 건수. 넓을 때는 제목을 적으므로 숨겨둡니다 */
+.cal-count{display:none}
+@media (max-width:760px){
+  .cal-ev,.cal-more{display:none}
+  .cal-count{
+    display:block;font-style:normal;font-family:var(--fs-num);
+    font-size:10px;font-weight:700;line-height:1.4;
+    background:var(--ink);color:#fff;border-radius:4px;
+    padding:0 4px;margin:2px 2px 0;text-align:center;flex:none;
+  }
+  .cal-top{flex-direction:column;align-items:stretch;gap:1px}
+  .cal-day{min-height:44px;padding:3px}
+  .cal-grid{grid-auto-rows:minmax(44px,1fr)}
+}
 
 /* ══ 알림 켜고 끄기 ══ */
 .switches{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:stretch}
@@ -723,12 +723,6 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 }
 .toast-x:hover{color:#fff;background:rgba(255,255,255,.12)}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
-
-/* ══ 아래 딴짓 한 줄 ══ */
-.attic-line{
-  text-align:center;padding:34px 0 0;font-size:14px;color:var(--ink-2);
-}
-.attic-line a{font-weight:800;color:var(--ink);border-bottom:1.5px solid var(--ink)}
 
 
 /* ══ 업무 리마인더 ══ */

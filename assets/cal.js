@@ -2,7 +2,8 @@
    홈의 달력.
 
    담아둔 업무를 달력 위에 얹습니다.
-   할 일이 있는 날에 점이 찍히고, 누르면 아래에 내용이 나옵니다.
+   점을 찍고 옆에 목록을 따로 두는 대신, 날짜 칸 안에 제목을 바로 적습니다.
+   무엇이 있는지 달력만 보고 알 수 있어야 하기 때문입니다.
    업무를 불러온 뒤 CAL.setTasks(rows) 를 부르면 다시 그립니다.
    ══════════════════════════════════════════════════════════ */
 const CAL = (function(){
@@ -12,22 +13,19 @@ const CAL = (function(){
   const NOW = new Date();
   const TY = NOW.getFullYear(), TM = NOW.getMonth() + 1, TD = NOW.getDate();
   const DOW = ['일','월','화','수','목','금','토'];
-  const has = n => typeof n !== 'undefined';
+  const SHOW = 2;                      // 한 칸에 적어 넣을 최대 건수. 넘으면 +N
 
-  let y = TY, m = TM, sel = TD;
+  let y = TY, m = TM;
   let mine = [];                       // 직접 담은 업무 (로그인 뒤 채워집니다)
 
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
-  /* 그 날짜에 걸린 업무 모으기 */
+  /* 그 날짜에 걸린 업무 제목 모으기 */
   const pad = n => String(n).padStart(2,'0');
-  function itemsOn(year, month, day){
+  function titlesOn(year, month, day){
     const key = year + '-' + pad(month) + '-' + pad(day);
-    return mine.filter(t => t.due_on === key).map(t => ({
-      t: t.title,
-      tag: [t.owner, t.category].filter(Boolean).join(' · ') || '담아둔 업무'
-    }));
+    return mine.filter(t => t.due_on === key).map(t => t.title);
   }
 
   function render(){
@@ -35,20 +33,31 @@ const CAL = (function(){
     const last = new Date(y, m, 0).getDate();
 
     let cells = '';
-    for(let i = 0; i < lead; i++) cells += '<span class="cal-day off"></span>';
+    for(let i = 0; i < lead; i++) cells += '<div class="cal-day off"></div>';
 
     for(let d = 1; d <= last; d++){
-      const list = itemsOn(y, m, d);
-      const isToday = (y === TY && m === TM && d === TD);
+      const list = titlesOn(y, m, d);
       let cls = 'cal-day';
-      if(list.length) cls += ' has mine';
-      if(isToday) cls += ' today';
-      if(d === sel) cls += ' sel';
+      if(list.length) cls += ' has';
+      if(y === TY && m === TM && d === TD) cls += ' today';
 
-      cells += list.length
-        ? '<button type="button" class="' + cls + '" data-d="' + d + '"'
-          + ' aria-label="' + m + '월 ' + d + '일, 할 일 ' + list.length + '건">' + d + '</button>'
-        : '<span class="' + cls + '">' + d + '</span>';
+      /* 넘치는 건수는 줄을 하나 더 쓰지 않도록 날짜 숫자 옆에 적습니다 */
+      const more = list.length > SHOW
+        ? '<em class="cal-more">+' + (list.length - SHOW) + '</em>' : '';
+      const evs = list.slice(0, SHOW).map(t =>
+        '<span class="cal-ev" title="' + esc(t) + '">' + esc(t) + '</span>').join('');
+
+      /* 칸이 좁은 화면에서는 제목이 서너 글자만 보여 쓸모가 없습니다.
+         그때는 CSS가 제목을 감추고 이 건수만 남깁니다. */
+      const count = list.length
+        ? '<em class="cal-count">' + list.length + '</em>' : '';
+
+      cells += '<div class="' + cls + '">'
+             +   '<div class="cal-top">'
+             +     '<i class="cal-n">' + d + '</i>' + more + count
+             +   '</div>'
+             +   evs
+             + '</div>';
     }
 
     host.innerHTML =
@@ -60,40 +69,16 @@ const CAL = (function(){
       + '<div class="cal-grid">'
       + DOW.map(d => '<span class="cal-dow">' + d + '</span>').join('')
       + cells
-      + '</div>'
-      + '<div class="cal-list" id="calList"></div>';
-
-    paintList();
-  }
-
-  function paintList(){
-    const el = host.querySelector('#calList');
-    if(!el) return;
-    const list = sel ? itemsOn(y, m, sel) : [];
-
-    if(!list.length){
-      el.innerHTML = '<p class="cal-none">'
-        + (sel ? m + '월 ' + sel + '일에는 예정된 일이 없습니다.' : '점이 찍힌 날을 눌러보십시오.')
-        + '</p>';
-      return;
-    }
-    el.innerHTML = list.map(x =>
-      '<div class="cal-item"><b>' + esc(x.t) + '</b><span>' + esc(x.tag) + '</span></div>'
-    ).join('');
+      + '</div>';
   }
 
   host.addEventListener('click', e => {
     const nav = e.target.closest('.cal-nav');
-    if(nav){
-      m += Number(nav.dataset.go);
-      if(m < 1){ m = 12; y--; }
-      if(m > 12){ m = 1; y++; }
-      sel = (y === TY && m === TM) ? TD : null;
-      render();
-      return;
-    }
-    const day = e.target.closest('.cal-day[data-d]');
-    if(day){ sel = Number(day.dataset.d); render(); }
+    if(!nav) return;
+    m += Number(nav.dataset.go);
+    if(m < 1){ m = 12; y--; }
+    if(m > 12){ m = 1; y++; }
+    render();
   });
 
   render();
