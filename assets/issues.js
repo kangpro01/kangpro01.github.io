@@ -1,7 +1,10 @@
 /* ══════════════════════════════════════════════════════════
    불편사항 & 개선.
 
-   흐름 — 불편한 점 기록 → 개선 아이디어 → 업무로 옮김 → 쌓임
+   흐름 — 불편한 점 기록 → 개선 아이디어 → 개선한 것
+
+   적는 칸은 기본으로 접혀 있습니다. 대개는 쌓인 것을 보러 오지
+   새로 적으러 오는 것이 아니라서, 펴 두면 목록이 아래로 밀립니다.
 
    같은 분류에 여러 건이 몰리면 '반복'이라고 표시합니다.
    무엇을 먼저 고쳐야 하는지는 대개 그 숫자가 알려줍니다.
@@ -44,6 +47,18 @@
       + '<p class="modal-msg" role="status" aria-live="polite"></p>'
       + '</form>';
 
+    /* 접고 펴기 */
+    const toggle = document.getElementById('isuToggle');
+    function setOpen(open){
+      writeHost.hidden = !open;
+      if(toggle){
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.textContent = open ? '접기' : '+ 새로운 불편함 기록';
+      }
+      if(open) writeHost.querySelector('textarea').focus();
+    }
+    if(toggle) toggle.addEventListener('click', () => setOpen(writeHost.hidden));
+
     const form = writeHost.querySelector('form');
     const msg  = writeHost.querySelector('.modal-msg');
     form.addEventListener('submit', async e => {
@@ -62,7 +77,8 @@
           priority: form.priority.value
         });
         form.reset();
-        msg.textContent = '기록했어요.';
+        msg.textContent = '';
+        setOpen(false);
         load();
       }catch(err){
         msg.textContent = err.message;
@@ -71,25 +87,47 @@
     });
   }
 
-  /* ── 한 건 그리기 ── */
+  /* ── 한 건 그리기 ──
+     칩은 [분류] [우선순위] [작성자] 순서로 왼쪽에, [작성일]은 오른쪽 끝에 둡니다. */
+  const chip = (text, cls) =>
+    '<span class="isu-chip' + (cls ? ' ' + cls : '') + '">' + esc(text) + '</span>';
+
   function card(x, repeat){
-    const acts = x.status === 'done' || x.status === 'dropped'
+    const shut = x.status === 'done' || x.status === 'dropped';
+
+    const acts = shut
       ? '<button type="button" class="tk-btn" data-do="reopen">다시 열기</button>'
-      : '<button type="button" class="tk-btn" data-do="idea">개선 아이디어</button>'
+      : '<button type="button" class="tk-btn" data-do="idea">'
+        +   (x.idea ? '아이디어 고치기' : '아이디어 제안') + '</button>'
         + '<button type="button" class="tk-btn" data-do="task">업무로 만들기</button>'
-        + (x.status === 'new' ? '<button type="button" class="tk-btn" data-do="doing">개선 시작</button>' : '')
-        + '<button type="button" class="tk-btn" data-do="done">개선 완료</button>';
+        + '<button type="button" class="tk-btn on" data-do="done">개선 완료</button>';
+
+    const prioCls = x.priority === 'high' ? 'hi' : x.priority === 'low' ? 'lo' : '';
 
     return '<div class="isu" data-id="' + x.id + '">'
       + '<div class="isu-top">'
       +   '<span class="isu-step s-' + x.status + '">' + STEP[x.status] + '</span>'
-      +   (x.priority === 'high' ? '<span class="isu-prio">' + PRIO.high + '</span>' : '')
-      +   (x.category ? '<span class="isu-cat">' + esc(x.category) + '</span>' : '')
+      +   (x.category ? chip(x.category) : '')
+      +   chip(PRIO[x.priority] || PRIO.normal, prioCls)
+      +   (x.writer ? chip(x.writer) : '')
       +   (repeat > 1 ? '<span class="isu-rep">비슷한 것 ' + repeat + '건</span>' : '')
-      +   '<span class="isu-date">' + day(x.created_at) + (x.writer ? ' · ' + esc(x.writer) : '') + '</span>'
+      +   '<span class="isu-date">' + day(x.created_at) + '</span>'
       + '</div>'
       + '<p class="isu-body">' + esc(x.body) + '</p>'
       + (x.idea ? '<p class="isu-idea"><b>개선 아이디어</b>' + esc(x.idea) + '</p>' : '')
+
+      /* 아이디어는 카드 안에서 바로 적습니다. 창을 띄우면 흐름이 끊깁니다.
+         끝난 카드에는 적을 일이 없으니 아예 만들지 않습니다. */
+      + (shut ? '' :
+          '<div class="isu-write" hidden>'
+          + '<textarea rows="2" maxlength="2000" '
+          +   'placeholder="이 불편을 어떻게 없앨 수 있을까요?">' + esc(x.idea) + '</textarea>'
+          + '<div class="isu-write-acts">'
+          +   '<button type="button" class="tk-btn" data-do="idea-cancel">취소</button>'
+          +   '<button type="button" class="tk-btn on" data-do="idea-save">저장</button>'
+          + '</div>'
+          + '</div>')
+
       + '<div class="isu-acts">' + acts + '</div>'
       + '</div>';
   }
@@ -132,11 +170,21 @@
     const act = btn.dataset.do;
 
     try{
-      if(act === 'idea'){
-        const cur = (await DB.q('improvements', 'select=idea&id=eq.' + id))[0];
-        const v = prompt('이 불편을 어떻게 없앨 수 있을까요?', cur?.idea || '');
-        if(v === null) return;
-        await DB.update('improvements', 'id=eq.' + id, { idea: v.trim() || null });
+      if(act === 'idea' || act === 'idea-cancel'){
+        /* 카드 안 적는 칸을 열고 닫습니다. 다시 그리지 않습니다. */
+        const w = card.querySelector('.isu-write');
+        const open = act === 'idea';
+        w.hidden = !open;
+        card.querySelector('.isu-acts').hidden = open;
+        if(open) w.querySelector('textarea').focus();
+        return;
+      }
+      else if(act === 'idea-save'){
+        const v = card.querySelector('.isu-write textarea').value.trim();
+        /* 아이디어를 적으면 '개선 중'으로 넘어갑니다. 따로 누를 것을 만들지 않습니다. */
+        const patch = { idea: v || null };
+        if(v && card.querySelector('.isu-step').classList.contains('s-new')) patch.status = 'doing';
+        await DB.update('improvements', 'id=eq.' + id, patch);
       }
       else if(act === 'task'){
         const cur = (await DB.q('improvements', 'select=*&id=eq.' + id))[0];

@@ -674,9 +674,17 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 .isu-step.s-doing{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .isu-step.s-done{background:var(--marker);color:var(--ink);border-color:var(--marker)}
-.isu-prio{font-size:11px;font-weight:800;color:var(--ink);border-bottom:2px solid var(--ink)}
-.isu-cat,.isu-rep{font-family:var(--fs-num);font-size:11px;color:var(--ink-3)}
-.isu-rep{color:var(--ink);font-weight:800;background:var(--marker);border-radius:4px;padding:1px 7px}
+/* [분류] [우선순위] [작성자] — 작고 은은한 칩 */
+.isu-chip{
+  font-family:var(--fs-num);font-size:10.5px;font-weight:700;letter-spacing:.02em;
+  color:var(--ink-2);background:var(--paper-2);border-radius:5px;padding:2px 7px;
+}
+.isu-chip.hi{color:var(--ink);background:var(--marker);font-weight:800}
+.isu-chip.lo{color:var(--ink-3);background:transparent;padding-left:0;padding-right:0}
+.isu-rep{
+  font-family:var(--fs-num);font-size:11px;
+  color:var(--ink);font-weight:800;background:var(--marker);border-radius:4px;padding:1px 7px;
+}
 .isu-date{margin-left:auto;font-family:var(--fs-num);font-size:11px;color:var(--ink-3)}
 .isu-body{margin:0;font-size:15px;line-height:1.65;white-space:pre-wrap}
 .isu-idea{
@@ -684,7 +692,21 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   font-size:13.5px;color:var(--ink-2);line-height:1.6;
 }
 .isu-idea b{display:block;font-size:11px;color:var(--ink-3);font-family:var(--fs-num);margin-bottom:3px}
-.isu-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.isu-acts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin-top:12px}
+/* display:flex 가 hidden 을 이깁니다. 감출 때는 이 줄이 있어야 합니다. */
+.isu-acts[hidden]{display:none}
+.tk-btn.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.tk-btn.on:hover{background:var(--hover);border-color:var(--hover);color:var(--on-ink)}
+
+/* 카드 안에서 아이디어 적기 */
+.isu-write{margin-top:12px}
+.isu-write textarea{
+  width:100%;font-family:var(--fs);font-size:14px;line-height:1.6;color:var(--ink);
+  background:var(--paper);border:1.5px solid var(--rule);border-radius:10px;padding:10px 12px;
+  resize:vertical;
+}
+.isu-write textarea:focus{outline:none;border-color:var(--ink)}
+.isu-write-acts{display:flex;justify-content:flex-end;gap:6px;margin-top:8px}
 @media (max-width:520px){.isu-date{margin-left:0;width:100%}}
 
 /* ══ 레퍼런스 ══ */
