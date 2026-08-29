@@ -80,14 +80,17 @@ const SITE = {
       + '</div></div></nav>';
 
   /* ── 서랍 ──
-     삼선을 누르면 열립니다. 메뉴 전체가 한 화면에 보이게 칸으로 나눕니다. */
+     삼선을 누르면 열립니다. 메뉴 전체가 한 화면에 보이게 칸으로 나눕니다.
+     칸 제목이 곧 그 페이지로 가는 링크입니다. '전체 보기'를 따로 두면
+     칸마다 같은 말이 네 번 반복될 뿐입니다. */
   let drawer = '<div class="drawer" id="drawer" hidden><div class="drawer-in">'
              + '<div class="drawer-grid">';
   for(const m of SITE.menu){
     drawer += '<div class="drawer-col">'
-           +   '<p>' + esc(m.name) + '</p>'
-           +   '<a class="' + (isOn(m.file)?'on':'') + '" href="' + m.file + '">전체 보기</a>'
-           +   (m.sub ? m.sub.map(x => '<a href="' + x.file + '">' + esc(x.name) + '</a>').join('') : '')
+           +   '<a class="drawer-title' + (isOn(m.file) ? ' on' : '') + '" href="' + m.file + '">'
+           +     esc(m.name) + '</a>'
+           +   (m.sub ? m.sub.map(x =>
+                 '<a class="drawer-sub" href="' + x.file + '">' + esc(x.name) + '</a>').join('') : '')
            + '</div>';
   }
   drawer += '</div>'
