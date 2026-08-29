@@ -13,7 +13,8 @@ const CAL = (function(){
   const NOW = new Date();
   const TY = NOW.getFullYear(), TM = NOW.getMonth() + 1, TD = NOW.getDate();
   const DOW = ['일','월','화','수','목','금','토'];
-  const SHOW = 2;                      // 한 칸에 적어 넣을 최대 건수. 넘으면 +N
+  const SHOW_MAX = 2;                  // 한 칸에 적어 넣을 최대 건수. 넘으면 +N
+  let show = SHOW_MAX;                 // 칸 높이에 맞춰 실제로 적는 줄 수
 
   let y = TY, m = TM;
   let mine = [];                       // 직접 담은 업무 (로그인 뒤 채워집니다)
@@ -28,7 +29,7 @@ const CAL = (function(){
     return mine.filter(t => t.due_on === key).map(t => t.title);
   }
 
-  function render(){
+  function draw(){
     const lead = new Date(y, m - 1, 1).getDay();
     const last = new Date(y, m, 0).getDate();
 
@@ -42,9 +43,9 @@ const CAL = (function(){
       if(y === TY && m === TM && d === TD) cls += ' today';
 
       /* 넘치는 건수는 줄을 하나 더 쓰지 않도록 날짜 숫자 옆에 적습니다 */
-      const more = list.length > SHOW
-        ? '<em class="cal-more">+' + (list.length - SHOW) + '</em>' : '';
-      const evs = list.slice(0, SHOW).map(t =>
+      const more = list.length > show
+        ? '<em class="cal-more">+' + (list.length - show) + '</em>' : '';
+      const evs = list.slice(0, show).map(t =>
         '<span class="cal-ev" title="' + esc(t) + '">' + esc(t) + '</span>').join('');
 
       /* 칸이 좁은 화면에서는 제목이 서너 글자만 보여 쓸모가 없습니다.
@@ -71,6 +72,36 @@ const CAL = (function(){
       + cells
       + '</div>';
   }
+
+  /* 칸 높이에 맞춰 몇 줄까지 적을지 정합니다.
+     화면이 낮으면 한 줄만 적고 나머지는 +N 으로 넘깁니다.
+     이래야 칸이 넘쳐 달력에 스크롤 막대가 생기지 않습니다. */
+  function fitShow(){
+    const ev = host.querySelector('.cal-day.has .cal-ev');
+    if(!ev || !ev.offsetHeight) return show;      // 잴 것이 없으면 그대로
+    const cell = ev.closest('.cal-day');          // 줄 높이는 어느 칸이든 같습니다
+    const st = getComputedStyle(cell);
+    const gap = parseFloat(st.rowGap) || 2;
+    const top = cell.querySelector('.cal-top');
+    const avail = cell.clientHeight
+                - parseFloat(st.paddingTop) - parseFloat(st.paddingBottom)
+                - (top ? top.offsetHeight : 0) - gap;
+    const unit = ev.offsetHeight + gap;
+    return Math.max(1, Math.min(SHOW_MAX, Math.floor(avail / unit)));
+  }
+
+  function render(){
+    draw();
+    const n = fitShow();
+    if(n !== show){ show = n; draw(); }          // 한 번만 다시 그립니다
+  }
+
+  /* 창 크기가 바뀌면 칸 높이도 바뀝니다 */
+  let tid = null;
+  addEventListener('resize', () => {
+    clearTimeout(tid);
+    tid = setTimeout(render, 150);
+  });
 
   host.addEventListener('click', e => {
     const nav = e.target.closest('.cal-nav');

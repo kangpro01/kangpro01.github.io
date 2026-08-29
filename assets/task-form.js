@@ -27,11 +27,11 @@ const TaskForm = (function(){
       + '<div class="modal-head"><b>업무추가</b>'
       +   '<button type="button" class="modal-x" data-close aria-label="닫기">×</button></div>'
 
-      + '<label><span>무슨 일입니까</span>'
+      + '<label><span>업무 내용 입력</span>'
       +   '<textarea name="title" rows="2" maxlength="300" required '
       +   'placeholder="예: 소화기 유효기간 확인하고 대장에 기록"></textarea></label>'
 
-      + '<label><span>언제 <em>사람 말로 적으셔도 됩니다</em></span>'
+      + '<label><span>일정</span>'
       +   '<input name="when" maxlength="60" autocomplete="off" '
       +   'placeholder="3일 뒤 · 다음 주 금요일 · 매주 금요일 · 매달 25일 · 9/15" '
       +   'value="' + (preset.when || '') + '"></label>'
@@ -46,7 +46,7 @@ const TaskForm = (function(){
       + '<datalist id="catList">' + CATS.map(c => '<option value="'+c+'">').join('') + '</datalist>'
       + '<datalist id="ownerList"></datalist>'
 
-      + '<label><span>메모 <em>선택</em></span>'
+      + '<label><span>메모</span>'
       +   '<textarea name="note" rows="2" maxlength="2000" '
       +   'placeholder="다음에 볼 때 도움이 될 내용"></textarea></label>'
 

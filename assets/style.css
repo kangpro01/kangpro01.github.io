@@ -381,7 +381,12 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 /* 캘린더 칸 — 달력이 칸 전체를 씁니다.
    날짜 줄이 남는 높이를 나눠 가져 화면이 낮아도 넘치지 않습니다. */
 .card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
+/* 높이가 정해진 칸 안에서는 날짜 줄이 남는 높이를 정확히 나눠 갖습니다.
+   하한을 두면 화면이 낮을 때 넘쳐 스크롤 막대가 생깁니다. */
 .card-cal .cal-grid{flex:1;min-height:0;align-content:stretch}
+@media (min-width:901px){
+  .card-cal .cal-grid{grid-auto-rows:minmax(0,1fr)}
+}
 @media (max-width:900px){
   /* 좁을 때는 달력이 잘리지 않게 칸 안에서 다 보여줍니다 */
   .hub > .card-cal > .card-body{max-height:none;overflow:visible}
@@ -637,7 +642,7 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .cal-grid{
   display:grid;grid-template-columns:repeat(7,1fr);gap:2px;
   /* 첫 줄은 요일 이름이라 글자 높이만, 날짜 줄은 남는 높이를 나눠 갖습니다 */
-  grid-template-rows:auto;grid-auto-rows:minmax(56px,1fr);
+  grid-template-rows:auto;grid-auto-rows:minmax(52px,1fr);
 }
 .cal-dow{
   text-align:center;font-size:11px;font-weight:700;color:var(--ink-3);
