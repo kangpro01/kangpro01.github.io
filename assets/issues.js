@@ -208,7 +208,7 @@
         await DB.update('improvements', 'id=eq.' + id, { status:'new' });
       }
       else if(act === 'del'){
-        if(!confirm('이 건을 지울까요? 되돌릴 수 없어요.')) return;
+        if(!confirm('해당 항목을 삭제하시겠습니까? 삭제된 데이터는 복구되지 않습니다.')) return;
         await DB.remove('improvements', 'id=eq.' + id);
       }
       else {
@@ -296,7 +296,7 @@
     const b = e.target.closest('.ref [data-ref="del"]');
     if(!b) return;
     const card = b.closest('.ref');
-    if(!confirm('이 레퍼런스를 지울까요?')) return;
+    if(!confirm('해당 항목을 삭제하시겠습니까? 삭제된 데이터는 복구되지 않습니다.')) return;
     try{ await DB.remove('refs', 'id=eq.' + card.dataset.id); loadRefs(); }
     catch(err){ alert('지우지 못했어요. ' + err.message); }
   });

@@ -118,7 +118,7 @@ const TaskForm = (function(){
     /* 지우기 — 되돌릴 수 없으니 한 번 물어봅니다 */
     const del = box.querySelector('#taskDel');
     if(del) del.addEventListener('click', async () => {
-      if(!confirm('이 업무를 지울까요? 되돌릴 수 없어요.')) return;
+      if(!confirm('해당 항목을 삭제하시겠습니까? 삭제된 데이터는 복구되지 않습니다.')) return;
       del.disabled = true;
       msg.className = 'modal-msg';
       msg.textContent = '지우는 중이에요…';
