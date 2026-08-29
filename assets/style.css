@@ -13,8 +13,9 @@
   /* 마감 칩. 한 색 규칙의 유일한 예외 — 디자인 규칙 참고 */
   --dday-over-bg:#F7E9E6;  --dday-over-ink:#8C3A2E;
   --dday-today-bg:#FAEEDF; --dday-today-ink:#8A5620;
-  /* 달력 요일 머리 — 일요일·토요일만 옅게 */
-  --dow-sun:#B4564B;  --dow-sat:#4E6E9E;
+  /* 달력 — 일요일·공휴일은 빨강, 토요일은 파랑 */
+  --dow-sun:#E53E3E;  --dow-sat:#3182CE;
+  --holi-ink:#E88A88;   /* 공휴일 이름 — 숫자보다 옅게 */
   --panel:#333132;      /* 늘 어두운 판 — 드롭다운·서랍·문지기·쪽지 */
   --gnb-bg:rgba(255,255,255,.88);
   --dock-bg:rgba(255,255,255,.94);
@@ -46,7 +47,9 @@
     --drawer-bg:rgba(12,11,11,.86);
     --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
     --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
-    --dow-sun:#D79A92;  --dow-sat:#9DB4D6;
+    /* 어두운 바탕에서 #E53E3E · #3182CE 는 너무 어두워 읽히지 않습니다 */
+    --dow-sun:#FF7B72;  --dow-sat:#6FA8DC;
+    --holi-ink:#C9807C;
     color-scheme:dark;
   }
 }
@@ -66,7 +69,8 @@
   --drawer-bg:rgba(12,11,11,.86);
   --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
   --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
-  --dow-sun:#D79A92;  --dow-sat:#9DB4D6;
+  --dow-sun:#FF7B72;  --dow-sat:#6FA8DC;
+  --holi-ink:#C9807C;
   color-scheme:dark;
 }
 
@@ -830,6 +834,17 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 /* 오늘 — 배지 대신 칸 전체를 옅게 칠하고 테두리로 구분합니다 */
 .cal-day.today{background:var(--dday-today-bg);box-shadow:inset 0 0 0 1.5px var(--ink)}
 .cal-day.today .cal-n{color:var(--ink);font-weight:800}
+
+/* 일요일·공휴일·토요일. 위의 .has / .today 색을 덮어야 하므로 뒤에 둡니다. */
+.cal-day .cal-n.sun{color:var(--dow-sun)}
+.cal-day .cal-n.sat{color:var(--dow-sat)}
+/* 공휴일 이름 — 숫자 아래 아주 작게 */
+.cal-holi{
+  font-style:normal;flex:none;
+  font-family:var(--fs);font-size:9.5px;line-height:1.25;font-weight:700;
+  color:var(--holi-ink);padding:0 3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 /* 그 날의 일정 — 길면 잘리고, 마우스를 올리면 전체가 보입니다 */
 .cal-ev{
   display:block;width:100%;text-align:left;flex:none;cursor:pointer;

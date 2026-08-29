@@ -46,10 +46,16 @@ const CAL = (function(){
       const key = keyOf(y, m, d);
       const list = itemsOn(key);
       const wide = openDay === key;                 // 펼쳐둔 날은 전부 보여줍니다
+      const wd = (lead + d - 1) % 7;                // 0=일 … 6=토
+      const holi = (typeof HOLIDAY !== 'undefined') ? HOLIDAY.on(key) : null;
+
       let cls = 'cal-day';
       if(list.length) cls += ' has';
       if(y === TY && m === TM && d === TD) cls += ' today';
       if(wide) cls += ' open';
+
+      /* 일요일과 공휴일은 빨강, 토요일은 파랑 */
+      const nCls = 'cal-n' + (wd === 0 || holi ? ' sun' : wd === 6 ? ' sat' : '');
 
       /* 넘치는 건수는 줄을 하나 더 쓰지 않도록 날짜 숫자 옆에 적습니다 */
       const hidden = list.length - show;
@@ -71,8 +77,9 @@ const CAL = (function(){
 
       cells += '<div class="' + cls + '">'
              +   '<div class="cal-top">'
-             +     '<i class="cal-n">' + d + '</i>' + more + count
+             +     '<i class="' + nCls + '">' + d + '</i>' + more + count
              +   '</div>'
+             +   (holi ? '<em class="cal-holi">' + esc(holi) + '</em>' : '')
              +   evs
              + '</div>';
     }
@@ -111,9 +118,13 @@ const CAL = (function(){
     const st = getComputedStyle(cell);
     const gap = parseFloat(st.rowGap) || 2;
     const top = cell.querySelector('.cal-top');
+    /* 공휴일 이름이 한 줄을 차지합니다. 그 달에 공휴일이 하나라도 있으면
+       모든 칸을 같은 기준으로 줄여야 어느 칸도 잘리지 않습니다. */
+    const holi = host.querySelector('.cal-holi');
+    const holiH = holi ? holi.offsetHeight + gap : 0;
     const avail = cell.clientHeight
                 - parseFloat(st.paddingTop) - parseFloat(st.paddingBottom)
-                - (top ? top.offsetHeight : 0) - gap;
+                - (top ? top.offsetHeight : 0) - gap - holiH;
     const unit = ev.offsetHeight + gap;
     return Math.max(1, Math.min(SHOW_MAX, Math.floor(avail / unit)));
   }
