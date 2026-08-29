@@ -335,42 +335,56 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
    위: 캘린더(넓게) + 당장 해야 할 일
    아래: 일간 · 주간 · 월간 */
 .hub{
-  display:grid;grid-template-columns:repeat(12,1fr);gap:14px;
-  padding-top:30px;padding-bottom:6px;align-items:start;
+  display:grid;grid-template-columns:repeat(12,1fr);gap:16px;
+  padding-top:24px;padding-bottom:8px;
 }
 .card-cal{grid-column:span 7}
 .card-now{grid-column:span 5}
-.hub > .card:nth-child(3),
-.hub > .card:nth-child(4),
-.hub > .card:nth-child(5){grid-column:span 4}
+.hub > .card:nth-child(n+3){grid-column:span 4}
+
+/* 넓은 화면에서는 다섯 칸이 한 화면에 들어갑니다.
+   칸 높이를 맞추고, 넘치는 내용은 페이지가 아니라 칸 안에서 스크롤합니다.
+   이래야 페이지가 세로로 길어지지 않습니다. */
+@media (min-width:901px){
+  .hub{
+    grid-template-rows:1fr 1fr;
+    height:calc(100vh - var(--gnb) - 78px);
+    height:calc(100dvh - var(--gnb) - 78px);
+    min-height:600px;max-height:900px;
+  }
+  .hub > .card{display:flex;flex-direction:column;overflow:hidden}
+  .hub > .card > .card-body{flex:1;min-height:0;overflow-y:auto;max-height:none}
+}
 @media (max-width:900px){
-  .card-cal,.card-now{grid-column:span 12}
-  .hub > .card:nth-child(3),
-  .hub > .card:nth-child(4),
-  .hub > .card:nth-child(5){grid-column:span 12}
+  .card-cal,.card-now,.hub > .card:nth-child(n+3){grid-column:span 12}
+  .hub > .card > .card-body{max-height:300px;overflow-y:auto}
 }
 
 .card{
-  border:1px solid var(--rule);border-radius:14px;padding:16px 18px 14px;
+  border:1px solid var(--rule);border-radius:14px;padding:18px 20px 16px;
   background:var(--paper);min-width:0;
 }
-.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.card-head h2{margin:0;font-size:15.5px;font-weight:800;letter-spacing:-.035em}
-.card-hint{font-family:var(--fs-num);font-size:11.5px;font-weight:700;color:var(--ink-2)}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--rule);flex:none;
+}
+.card-head h2{margin:0;font-size:16.5px;font-weight:800;letter-spacing:-.035em}
+.card-hint{font-family:var(--fs-num);font-size:12px;font-weight:700;color:var(--ink-2)}
 .card-add{
-  width:26px;height:26px;line-height:1;flex:none;
+  width:28px;height:28px;line-height:1;flex:none;
   border:1px solid var(--rule);border-radius:8px;background:var(--paper);
-  color:var(--ink-2);font-size:14px;cursor:pointer;
+  color:var(--ink-2);font-size:15px;cursor:pointer;
   transition:border-color .15s ease,color .15s ease;
 }
 .card-add:hover{border-color:var(--ink);color:var(--ink)}
-.card-body{max-height:264px;overflow-y:auto}
 .card-cal .cal{border:0;border-radius:0;padding:0}
-.card-empty{margin:10px 2px;font-size:13px;color:var(--ink-3);line-height:1.6}
+.card-empty{margin:12px 2px;font-size:13.5px;color:var(--ink-3);line-height:1.65}
 .card-empty.bad{color:var(--ink-2)}
-.card .tks{border-top:1px solid var(--rule)}
-.card .tk{padding:11px 2px;gap:10px}
-.card .tk-body b{font-size:14px}
+.card .tks{border-top:0}
+.card .tk{padding:12px 2px;gap:11px}
+.card .tk:first-child{padding-top:2px}
+.card .tk:last-child{border-bottom:0}
+.card .tk-body b{font-size:14.5px;line-height:1.55}
 .card .tk-acts{gap:4px}
 
 /* 직접 담은 업무가 있는 날 — 점을 진하게 */
