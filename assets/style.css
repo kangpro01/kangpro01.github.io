@@ -745,22 +745,52 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .ref-n{margin:6px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.6}
 
 /* ══ 업무 Tools 목록 ══ */
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.tools-sec{padding:44px 0 64px}
+/* 넓으면 세 개씩. 카드가 늘어도 줄이 흐트러지지 않습니다. */
+.tool-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:600px){ .tool-grid{grid-template-columns:repeat(2,1fr)} }
+@media (min-width:900px){ .tool-grid{grid-template-columns:repeat(3,1fr)} }
+
 .tool{
-  display:flex;flex-direction:column;
-  border:1px solid var(--rule);border-radius:16px;padding:24px;background:var(--paper);
-  transition:border-color .2s ease,transform .15s ease,box-shadow .2s ease;
+  display:flex;flex-direction:column;height:100%;
+  border:1px solid var(--rule);border-radius:16px;padding:22px;background:var(--paper);
+  transition:border-color .2s ease,transform .18s ease,box-shadow .2s ease;
 }
-.tool:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 26px rgba(51,49,50,.08)}
+.tool:hover{
+  border-color:var(--ink);transform:translateY(-4px);
+  box-shadow:0 14px 32px rgba(51,49,50,.14);
+}
+.tool:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+.tool-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.tool-ico{width:20px;height:20px;flex:none;color:var(--ink-2)}
+.tool:hover .tool-ico{color:var(--ink)}
 .tool-tag{
-  align-self:flex-start;font-family:var(--fs-num);font-size:10.5px;font-weight:700;letter-spacing:.06em;
-  color:var(--ink-2);border:1px solid var(--rule);border-radius:999px;padding:3px 10px;margin-bottom:12px;
+  font-family:var(--fs-num);font-size:10.5px;font-weight:700;letter-spacing:.06em;
+  color:var(--ink-2);border:1px solid var(--rule);border-radius:999px;padding:3px 10px;
 }
-.tool b{font-size:18px;font-weight:800;letter-spacing:-.035em;line-height:1.4}
-.tool p{margin:8px 0 0;font-size:14px;color:var(--ink-2);line-height:1.65}
-.tool-go{margin-top:16px;font-size:13.5px;font-weight:800;color:var(--ink)}
-.tool:hover .tool-go{text-decoration:underline;text-underline-offset:4px}
-@media (prefers-reduced-motion:reduce){.tool:hover{transform:none}}
+
+.tool b{font-size:18px;font-weight:800;letter-spacing:-.035em;line-height:1.4;word-break:keep-all}
+/* 한국어는 어절 단위로 끊어야 읽기 좋습니다. 긴 낱말만 예외로 자릅니다. */
+.tool p{
+  margin:9px 0 0;font-size:14px;color:var(--ink-2);line-height:1.6;
+  word-break:keep-all;overflow-wrap:break-word;
+}
+
+/* 아래에 붙여 카드 높이가 달라도 화살표 줄이 나란합니다 */
+.tool-go{
+  margin-top:auto;padding-top:18px;
+  font-size:13.5px;font-weight:800;color:var(--ink);
+  display:inline-flex;align-items:center;gap:6px;
+}
+.tool-go i{font-style:normal;transition:transform .18s ease}
+.tool:hover .tool-go i{transform:translateX(4px)}
+
+@media (prefers-reduced-motion:reduce){
+  .tool,.tool-go i{transition:none}
+  .tool:hover{transform:none}
+  .tool:hover .tool-go i{transform:none}
+}
 
 /* ══ 홈: 리마인더 + 달력 좌우 배치 ══ */
 .home-rem{display:grid;grid-template-columns:1fr 330px;gap:30px;align-items:start}

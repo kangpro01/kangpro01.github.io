@@ -8,9 +8,9 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/style.css?v=20260830j">
+<link rel="stylesheet" href="assets/style.css?v=20260830k">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
-<script src="assets/theme.js?v=20260830j"></script>
+<script src="assets/theme.js?v=20260830k"></script>
 </head>
 <body>
 
@@ -24,7 +24,7 @@
   </div>
 </div>
 
-<section>
+<section class="tools-sec">
   <div class="wrap">
     <div class="tool-grid" id="toolList"></div>
   </div>
@@ -32,8 +32,8 @@
 
 <div id="site-footer"></div>
 
-<script src="assets/site.js?v=20260830j"></script>
-<script src="assets/tools.js?v=20260830j"></script>
+<script src="assets/site.js?v=20260830k"></script>
+<script src="assets/tools.js?v=20260830k"></script>
 <script>
 /* 목록은 assets/tools.js 에 있습니다. 여기는 그리기만 합니다. */
 (function(){
@@ -42,13 +42,23 @@
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
+  /* 카드 전체가 하나의 링크입니다. 그림은 tools.js 에 적어 둔 선 그림을
+     그대로 감싸 씁니다. 색을 넣지 않아 글자색을 따라갑니다. */
+  const svg = d => d
+    ? '<svg class="tool-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+      + ' stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"'
+      + ' aria-hidden="true">' + d + '</svg>'
+    : '';
+
   host.innerHTML = TOOLS.length
     ? TOOLS.map(t =>
         '<a class="tool" href="' + esc(t.file) + '">'
-        + '<span class="tool-tag">' + esc(t.tag) + '</span>'
+        + '<span class="tool-head">' + svg(t.icon)
+        +   '<span class="tool-tag">' + esc(t.tag) + '</span>'
+        + '</span>'
         + '<b>' + esc(t.name) + '</b>'
         + '<p>' + esc(t.desc) + '</p>'
-        + '<span class="tool-go">열기 →</span>'
+        + '<span class="tool-go">열기 <i aria-hidden="true">→</i></span>'
         + '</a>').join('')
     : '<p class="card-empty">아직 만든 도구가 없어요.</p>';
 })();
