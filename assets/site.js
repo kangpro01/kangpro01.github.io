@@ -12,9 +12,9 @@ const SITE = {
   cta: { name: '＋ 업무추가', newtask: true },
   menu: [
     { file:'index.html', name:'업무 리마인더', sub:[
-      { file:'index.html#follow', name:'후속 조치' },
-      { file:'index.html#stale',  name:'오래 안 본 업무' },
-      { file:'index.html#done',   name:'지난주에 한 일' }
+      { file:'index.html#daily',   name:'일간 업무' },
+      { file:'index.html#weekly',  name:'주간 업무' },
+      { file:'index.html#monthly', name:'월간 업무' }
     ]},
     { file:'issues.html', name:'문제 & 개선', sub:[
       { file:'issues.html#write', name:'불편한 점' },

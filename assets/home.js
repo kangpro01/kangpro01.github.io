@@ -231,6 +231,28 @@
     setTimeout(kill, 10000);
   }
 
+  /* ── 한 칸만 펼쳐 보기 ──
+     메뉴에서 '일간 업무'를 고르면 #daily 로 옵니다.
+     그 칸의 높이 제한을 풀어 담아둔 것을 끝까지 보여줍니다.
+     칸 안에서만 스크롤하는 평소 배치로는 서너 줄밖에 안 보이기 때문입니다. */
+  const hub = document.querySelector('.hub');
+
+  function focusFromHash(){
+    if(!hub) return;
+    hub.querySelectorAll('.card.focused').forEach(c => c.classList.remove('focused'));
+
+    const id = (location.hash || '').slice(1);
+    const el = id ? document.getElementById(id) : null;
+    if(!el || !hub.contains(el)){ hub.classList.remove('has-focus'); return; }
+
+    el.classList.add('focused');
+    hub.classList.add('has-focus');
+    el.scrollIntoView({ block:'start', behavior:'smooth' });
+  }
+
+  addEventListener('hashchange', focusFromHash);
+  focusFromHash();
+
   document.addEventListener('tasks:changed', load);
   DB.gate(() => {
     load();

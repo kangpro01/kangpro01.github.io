@@ -464,6 +464,12 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card .tk-title{font-size:14.5px;line-height:1.55}
 .card .tk-acts{gap:4px}
 
+/* 메뉴에서 골라 온 칸 — 높이 제한을 풀어 목록을 끝까지 보여줍니다.
+   격자 행까지 같이 풀어야 합니다. 안 그러면 칸만 커지고 목록은 그대로 잘립니다. */
+.hub.has-focus{height:auto;max-height:none;grid-template-rows:auto auto}
+.hub .card.focused{box-shadow:0 0 0 1.5px var(--ink);overflow:visible}
+.hub .card.focused > .card-body{flex:none;max-height:none;overflow:visible}
+
 /* ══ 떠 있는 단추 ══ */
 .fab-wrap{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 /* 강프로 그림이 단추입니다. 누르면 판이 열립니다. */
