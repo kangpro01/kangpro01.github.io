@@ -136,7 +136,10 @@ const TaskForm = (function(){
   /* 버튼 연결 — 페이지 어디든 [data-newtask]면 열립니다 */
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-newtask]');
-    if(b){ e.preventDefault(); open({ follow_up_of: b.dataset.followup || null }); }
+    if(b){
+      e.preventDefault();
+      open({ follow_up_of: b.dataset.followup || null, when: b.dataset.when || '' });
+    }
   });
 
   return { open, close };

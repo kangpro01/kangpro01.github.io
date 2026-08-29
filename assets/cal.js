@@ -1,46 +1,68 @@
 /* ══════════════════════════════════════════════════════════
    홈의 달력.
 
-   assets/tasks.js의 목록을 달력 위에 얹습니다.
-   할 일이 있는 날에는 점이 찍히고, 누르면 아래에 내용이 나옵니다.
-   목록을 고치면 달력도 따라 바뀝니다. 여기를 손댈 일은 없습니다.
+   두 가지를 함께 얹습니다.
+     · assets/tasks.js 의 일반적인 총무 반복 업무
+     · 로그인해서 불러온, 직접 담아둔 업무
+
+   할 일이 있는 날에 점이 찍히고, 누르면 아래에 내용이 나옵니다.
+   업무를 불러온 뒤 CAL.setTasks(rows) 를 부르면 다시 그립니다.
    ══════════════════════════════════════════════════════════ */
-(function(){
+const CAL = (function(){
   const host = document.getElementById('homeCal');
-  if(!host || typeof TASKS === 'undefined' || typeof MONTHLY === 'undefined') return;
+  if(!host) return { setTasks(){} };
 
   const NOW = new Date();
   const TY = NOW.getFullYear(), TM = NOW.getMonth() + 1, TD = NOW.getDate();
   const DOW = ['일','월','화','수','목','금','토'];
+  const has = n => typeof n !== 'undefined';
 
   let y = TY, m = TM, sel = TD;
+  let mine = [];                       // 직접 담은 업무 (로그인 뒤 채워집니다)
 
-  /* 그 날짜에 걸린 일 — 이 달만 하는 일 + 매달 반복되는 일 */
-  function itemsOn(month, day){
-    return TASKS.filter(t => t.m === month && t.d === day)
-                .map(t => ({ t:t.t, tag:month + '월 ' + day + '일', to:'#month' }))
-      .concat(MONTHLY.filter(t => t.d === day)
-                .map(t => ({ t:t.t, tag:'매달 ' + day + '일', to:'#always' })));
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
+  /* 그 날짜에 걸린 것 모으기 */
+  function itemsOn(year, month, day){
+    const out = [];
+
+    // 직접 담은 업무 — 마감일이 그 날인 것
+    const pad = n => String(n).padStart(2,'0');
+    const key = year + '-' + pad(month) + '-' + pad(day);
+    mine.forEach(t => {
+      if(t.due_on === key) out.push({ t:t.title, tag:'내 업무', mine:true, to:'#board' });
+    });
+
+    // 일반 총무 업무
+    if(has(window.TASKS) || typeof TASKS !== 'undefined'){
+      TASKS.filter(t => t.m === month && t.d === day)
+           .forEach(t => out.push({ t:t.t, tag:month + '월 ' + day + '일', to:'#month' }));
+      MONTHLY.filter(t => t.d === day)
+             .forEach(t => out.push({ t:t.t, tag:'매달 ' + day + '일', to:'#always' }));
+    }
+    return out;
   }
 
   function render(){
-    const lead = new Date(y, m - 1, 1).getDay();   // 1일의 요일
-    const last = new Date(y, m, 0).getDate();      // 이 달의 마지막 날
+    const lead = new Date(y, m - 1, 1).getDay();
+    const last = new Date(y, m, 0).getDate();
 
     let cells = '';
     for(let i = 0; i < lead; i++) cells += '<span class="cal-day off"></span>';
 
     for(let d = 1; d <= last; d++){
-      const n = itemsOn(m, d).length;
+      const list = itemsOn(y, m, d);
       const isToday = (y === TY && m === TM && d === TD);
       let cls = 'cal-day';
-      if(n) cls += ' has';
+      if(list.length) cls += ' has';
+      if(list.some(x => x.mine)) cls += ' mine';
       if(isToday) cls += ' today';
       if(d === sel) cls += ' sel';
 
-      cells += n
+      cells += list.length
         ? '<button type="button" class="' + cls + '" data-d="' + d + '"'
-          + ' aria-label="' + m + '월 ' + d + '일, 할 일 ' + n + '건">' + d + '</button>'
+          + ' aria-label="' + m + '월 ' + d + '일, 할 일 ' + list.length + '건">' + d + '</button>'
         : '<span class="' + cls + '">' + d + '</span>';
     }
 
@@ -62,7 +84,7 @@
   function paintList(){
     const el = host.querySelector('#calList');
     if(!el) return;
-    const list = sel ? itemsOn(m, sel) : [];
+    const list = sel ? itemsOn(y, m, sel) : [];
 
     if(!list.length){
       el.innerHTML = '<p class="cal-none">'
@@ -71,8 +93,9 @@
       return;
     }
     el.innerHTML = list.map(x =>
-      '<a class="cal-item" href="reminder.html' + x.to + '">'
-      + '<b>' + x.t + '</b><span>' + x.tag + '</span>'
+      '<a class="cal-item' + (x.mine ? ' is-mine' : '') + '" href="'
+      + (x.mine ? '#board' : 'reminder.html' + x.to) + '">'
+      + '<b>' + esc(x.t) + '</b><span>' + esc(x.tag) + '</span>'
       + '</a>'
     ).join('');
   }
@@ -88,11 +111,12 @@
       return;
     }
     const day = e.target.closest('.cal-day[data-d]');
-    if(day){
-      sel = Number(day.dataset.d);
-      render();
-    }
+    if(day){ sel = Number(day.dataset.d); render(); }
   });
 
   render();
+
+  return {
+    setTasks(rows){ mine = rows || []; render(); }
+  };
 })();

@@ -46,6 +46,7 @@ def main() -> int:
         "assets/home.js",
         "assets/tasks.js",
         "assets/cal.js",
+        "assets/fab.js",
         "assets/notify.js",
     ]
 

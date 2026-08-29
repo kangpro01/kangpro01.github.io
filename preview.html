@@ -329,8 +329,101 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .page-head.slim h1{font-size:clamp(24px,5vw,34px)}
 .page-head.slim p{font-size:14.5px}
 
-/* 메인은 머리말 없이 업무 목록부터 시작합니다 */
-.board{padding-top:36px}
+/* ══ 메인 다섯 칸 ══
+   위: 캘린더(넓게) + 당장 해야 할 일
+   아래: 일간 · 주간 · 월간 */
+.hub{
+  display:grid;grid-template-columns:repeat(12,1fr);gap:14px;
+  padding-top:30px;padding-bottom:6px;align-items:start;
+}
+.card-cal{grid-column:span 7}
+.card-now{grid-column:span 5}
+.hub > .card:nth-child(3),
+.hub > .card:nth-child(4),
+.hub > .card:nth-child(5){grid-column:span 4}
+@media (max-width:900px){
+  .card-cal,.card-now{grid-column:span 12}
+  .hub > .card:nth-child(3),
+  .hub > .card:nth-child(4),
+  .hub > .card:nth-child(5){grid-column:span 12}
+}
+
+.card{
+  border:1px solid var(--rule);border-radius:14px;padding:16px 18px 14px;
+  background:var(--paper);min-width:0;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card-head h2{margin:0;font-size:15.5px;font-weight:800;letter-spacing:-.035em}
+.card-hint{font-family:var(--fs-num);font-size:11.5px;font-weight:700;color:var(--ink-2)}
+.card-add{
+  width:26px;height:26px;line-height:1;flex:none;
+  border:1px solid var(--rule);border-radius:8px;background:var(--paper);
+  color:var(--ink-2);font-size:14px;cursor:pointer;
+  transition:border-color .15s ease,color .15s ease;
+}
+.card-add:hover{border-color:var(--ink);color:var(--ink)}
+.card-body{max-height:264px;overflow-y:auto}
+.card-cal .cal{border:0;border-radius:0;padding:0}
+.card-empty{margin:10px 2px;font-size:13px;color:var(--ink-3);line-height:1.6}
+.card-empty.bad{color:var(--ink-2)}
+.card .tks{border-top:1px solid var(--rule)}
+.card .tk{padding:11px 2px;gap:10px}
+.card .tk-body b{font-size:14px}
+.card .tk-acts{gap:4px}
+
+/* 직접 담은 업무가 있는 날 — 점을 진하게 */
+.cal-day.mine::after{background:var(--ink);width:4px;height:4px}
+.cal-item.is-mine b{font-weight:800}
+
+/* ══ 떠 있는 단추 ══ */
+.fab-wrap{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.fab{
+  width:56px;height:56px;border-radius:50%;flex:none;
+  border:0;background:var(--ink);cursor:pointer;position:relative;
+  box-shadow:0 10px 26px rgba(51,49,50,.32);
+  transition:transform .16s ease,background .2s ease;
+}
+.fab::before,.fab::after{
+  content:'';position:absolute;left:50%;top:50%;background:#fff;border-radius:2px;
+  transform:translate(-50%,-50%);transition:transform .18s ease;
+}
+.fab::before{width:18px;height:2px}
+.fab::after{width:2px;height:18px}
+.fab:hover{background:var(--hover);transform:translateY(-2px)}
+.fab.on{background:var(--hover)}
+.fab.on::before{transform:translate(-50%,-50%) rotate(45deg)}
+.fab.on::after{transform:translate(-50%,-50%) rotate(45deg)}
+.fab:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+.fab-pop{
+  width:min(300px,calc(100vw - 40px));
+  background:var(--paper);border:1px solid var(--rule);border-radius:16px;padding:16px;
+  box-shadow:0 18px 44px rgba(51,49,50,.22);
+  animation:fabIn .16s ease both;
+}
+.fab-pop[hidden]{display:none}
+@keyframes fabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fab-sec + .fab-sec{margin-top:16px;padding-top:16px;border-top:1px solid var(--rule)}
+.fab-sec > b{display:block;font-size:12px;font-weight:800;color:var(--ink-3);letter-spacing:.02em;margin-bottom:8px}
+.fab-sec .btn{width:100%;border:0;cursor:pointer;font-family:var(--fs);padding:11px}
+.fab-note{margin:0 0 9px;font-size:12px;color:var(--ink-3);line-height:1.5}
+/* 판 안에서는 알림 스위치를 세로로 좁게 */
+.fab-pop .switches{grid-template-columns:1fr;gap:7px}
+.fab-pop .switch{padding:10px 12px;border-radius:10px;gap:9px}
+.fab-pop .switch input{width:16px;height:16px}
+.fab-pop .switch-t{font-size:12px;line-height:1.45}
+.fab-pop .switch-t b{font-size:13.5px;margin-bottom:0}
+.fab-pop .switches .ics{font-size:11px;padding:5px 10px}
+.fab-pop .switch-state{font-size:11.5px;line-height:1.5}
+@media (max-width:760px){
+  .fab-wrap{right:16px;bottom:calc(76px + env(safe-area-inset-bottom))}
+}
+@media (prefers-reduced-motion:reduce){
+  .fab-pop{animation:none}
+  .fab:hover{transform:none}
+}
+
+.board{padding-top:20px}
 
 /* ══ 리마인더 판 ══ */
 .board{padding-top:30px;padding-bottom:10px}
@@ -595,22 +688,60 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 <div id="site-header"></div>
 
+<div class="wrap hub">
+
+  <section class="card card-cal">
+    <div class="card-head"><h2>캘린더</h2></div>
+    <div class="cal" id="homeCal"></div>
+  </section>
+
+  <section class="card card-now">
+    <div class="card-head"><h2>당장 해야 할 일</h2>
+      <span class="card-hint" id="nowCount"></span></div>
+    <div class="card-body" id="nowList"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>일간 업무</h2>
+      <button type="button" class="card-add" data-newtask data-when="매일" aria-label="일간 업무 담기">＋</button></div>
+    <div class="card-body" id="dailyList"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>주간 업무</h2>
+      <button type="button" class="card-add" data-newtask data-when="매주 금요일" aria-label="주간 업무 담기">＋</button></div>
+    <div class="card-body" id="weeklyList"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>월간 업무</h2>
+      <button type="button" class="card-add" data-newtask data-when="매달 25일" aria-label="월간 업무 담기">＋</button></div>
+    <div class="card-body" id="monthlyList"></div>
+  </section>
+
+</div>
+
 <div class="wrap board" id="board"></div>
 
 <div class="wrap">
-  <div class="sec-head row" style="margin-top:8px">
-    <div>
-      <span class="tag">CALENDAR</span>
-      <h2>이번 달</h2>
-      <p>점이 찍힌 날에 할 일이 있습니다</p>
+  <p class="attic-line">잠깐 쉬어가려면 — <a href="attic.html">딴짓 창고</a></p>
+</div>
+
+<!-- ══ 떠 있는 단추 — 누르면 업무 담기와 알림 설정이 열립니다 ══ -->
+<div class="fab-wrap">
+  <div class="fab-pop" id="fabPop" hidden>
+    <div class="fab-sec">
+      <b>업무 담기</b>
+      <button class="btn" type="button" data-newtask>＋ 잊지 말 업무</button>
+    </div>
+    <div class="fab-sec">
+      <b>알림 받기</b>
+      <p class="fab-note">켜두면 들어왔을 때 알려드립니다.</p>
+      <div class="switches" id="notifySwitches"></div>
     </div>
   </div>
-  <div class="home-rem">
-    <div class="mini" id="homeReminder"></div>
-    <div class="cal" id="homeCal"></div>
-  </div>
-
-  <p class="attic-line">잠깐 쉬어가려면 — <a href="attic.html">딴짓 창고</a></p>
+  <button type="button" class="fab" id="fabBtn" aria-expanded="false" aria-controls="fabPop"
+          aria-label="업무 담기와 알림 설정 열기"></button>
 </div>
 
 <div class="wrap"><p style="font-size:12px;color:var(--ink-3);text-align:center;padding:0 0 8px">미리보기 파일입니다. 메뉴 링크는 폴더째 올린 뒤 동작합니다.</p></div>
@@ -1290,202 +1421,13 @@ const TaskForm = (function(){
   /* 버튼 연결 — 페이지 어디든 [data-newtask]면 열립니다 */
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-newtask]');
-    if(b){ e.preventDefault(); open({ follow_up_of: b.dataset.followup || null }); }
+    if(b){
+      e.preventDefault();
+      open({ follow_up_of: b.dataset.followup || null, when: b.dataset.when || '' });
+    }
   });
 
   return { open, close };
-})();
-
-</script>
-<script>
-/* ══════════════════════════════════════════════════════════
-   메인 화면 — 업무 리마인더.
-
-   들어오자마자 두 가지가 보여야 합니다.
-     "오늘 뭘 해야 하지?"   "전에 하던 것 중 놓친 게 없나?"
-
-   그래서 블록을 이 순서로 둡니다.
-     ① 지났는데 안 끝남   가장 급합니다
-     ② 오늘 · 이번 주
-     ③ 후속 조치 필요     "그거 그 뒤로 어떻게 됐지?"
-     ④ 오래 안 본 업무    묻혀버린 것
-     ⑤ 지난주에 한 일     "저번 주에 뭐 했더라?"
-   ══════════════════════════════════════════════════════════ */
-(function(){
-  const host = document.getElementById('board');
-  if(!host) return;
-
-  const STALE = 14;                 // 며칠 넘게 안 보면 '묻힌' 것으로 봅니다
-  const T = WHEN.midnight();
-  const ymd = WHEN.ymd;
-  const shift = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
-
-  const today   = ymd(T);
-  const weekEnd = ymd(shift(T, 7));
-  const staleAt = new Date(Date.now() - STALE*86400000).toISOString();
-  const lastWeek= new Date(Date.now() - 7*86400000).toISOString();
-
-  const esc = s => String(s == null ? '' : s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-
-  /* ── 한 줄 그리기 ── */
-  function row(t, opt){
-    opt = opt || {};
-    const u = WHEN.untilLabel(t.due_on);
-    const meta = [];
-    if(t.owner) meta.push(esc(t.owner));
-    if(t.category) meta.push(esc(t.category));
-    if(t.repeat_rule) meta.push(WHEN.repeatLabel(t.repeat_rule));
-
-    return '<div class="tk" data-id="' + t.id + '">'
-      + (opt.done
-          ? '<span class="tk-check done" aria-hidden="true">✓</span>'
-          : '<button type="button" class="tk-check" data-do="done" aria-label="완료">'
-            + '<span></span></button>')
-      + '<div class="tk-body">'
-      +   '<b>' + esc(t.title) + '</b>'
-      +   (t.note ? '<p>' + esc(t.note) + '</p>' : '')
-      +   '<span class="tk-meta">'
-      +     (opt.seen
-            ? '<i class="tk-when late">' + opt.seen + '</i>'
-            : '<i class="tk-when ' + u.tone + '">' + u.text + '</i>')
-      +     (meta.length ? '<em>' + meta.join(' · ') + '</em>' : '')
-      +   '</span>'
-      + '</div>'
-      + (opt.done ? '' :
-          '<div class="tk-acts">'
-          + '<button type="button" class="tk-btn" data-do="snooze" data-n="3">3일 뒤</button>'
-          + '<button type="button" class="tk-btn" data-do="snooze" data-n="7">다음 주</button>'
-          + '</div>')
-      + '</div>';
-  }
-
-  function block(id, tag, title, hint, rows, opt){
-    if(!rows.length) return '';
-    return '<section class="blk' + (opt && opt.warn ? ' warn' : '') + '" id="' + id + '">'
-      + '<div class="blk-head"><span class="tag">' + tag + '</span>'
-      +   '<h2>' + title + '</h2><p>' + hint + '</p></div>'
-      + '<div class="tks">' + rows.join('') + '</div>'
-      + '</section>';
-  }
-
-  /* ── 불러오기 ── */
-  async function load(){
-    host.innerHTML = '<p class="board-load">불러오는 중입니다…</p>';
-
-    let late, soon, follow, stale, done;
-    try{
-      [late, soon, follow, stale, done] = await Promise.all([
-        DB.q('tasks', 'select=*&status=eq.open&due_on=lt.' + today + '&order=due_on.asc&limit=50'),
-        DB.q('tasks', 'select=*&status=eq.open&due_on=gte.' + today + '&due_on=lte.' + weekEnd + '&order=due_on.asc&limit=50'),
-        DB.q('tasks', 'select=*&status=eq.open&follow_up_of=not.is.null&order=due_on.asc&limit=30'),
-        DB.q('tasks', 'select=*&status=eq.open&last_seen_at=lt.' + staleAt + '&order=last_seen_at.asc&limit=30'),
-        DB.q('tasks', 'select=*&status=eq.done&done_at=gte.' + lastWeek + '&order=done_at.desc&limit=30')
-      ]);
-    }catch(err){
-      host.innerHTML = '<p class="board-load bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
-      return;
-    }
-
-    // 후속·묻힌 업무가 위 블록과 겹치지 않게 걸러냅니다
-    const shown = new Set([].concat(late, soon).map(t => t.id));
-    follow = follow.filter(t => !shown.has(t.id));
-    follow.forEach(t => shown.add(t.id));
-    stale = stale.filter(t => !shown.has(t.id));
-
-    const html =
-        block('late',   'OVERDUE',    '지났는데 안 끝났습니다', '가장 먼저 보셔야 합니다',
-              late.map(t => row(t)), {warn:true})
-      + block('soon',   'THIS WEEK',  '오늘과 이번 주',         '앞으로 7일',
-              soon.map(t => row(t)))
-      + block('follow', 'FOLLOW UP',  '후속 조치가 남았습니다', '전에 한 일에서 이어진 것',
-              follow.map(t => row(t)))
-      + block('stale',  'FORGOTTEN',  '오래 들여다보지 않았습니다', STALE + '일 넘게 손대지 않은 업무',
-              stale.map(t => row(t, { seen: daysSince(t.last_seen_at) + '일째 안 봄' })))
-      + block('done',   'LAST WEEK',  '지난 7일 동안 끝낸 일',  '주간 보고에 그대로 쓰십시오',
-              done.map(t => row(t, { done:true })));
-
-    host.innerHTML = html || empty();
-    if(stale.length) markSeen(stale.map(t => t.id));
-  }
-
-  const daysSince = iso => Math.floor((Date.now() - new Date(iso)) / 86400000);
-
-  function empty(){
-    return '<div class="board-empty">'
-      + '<b>아직 담아둔 업무가 없습니다.</b>'
-      + '<p>오른쪽 위 <b>잊지 말 업무</b>를 눌러 하나 담아보십시오.<br>'
-      + '"3일 뒤", "매주 금요일"처럼 사람 말로 적으셔도 됩니다.</p>'
-      + '<button class="btn lg" type="button" data-newtask>업무 담기</button>'
-      + '</div>';
-  }
-
-  /* 목록에 띄운 순간 '봤다'고 기록합니다 — 방치 감지의 기준입니다 */
-  function markSeen(ids){
-    if(!ids.length) return;
-    DB.update('tasks', 'id=in.(' + ids.join(',') + ')',
-              { last_seen_at: new Date().toISOString() }).catch(()=>{});
-  }
-
-  /* ── 완료 · 미루기 ── */
-  host.addEventListener('click', async e => {
-    const btn = e.target.closest('[data-do]');
-    if(!btn) return;
-    const card = btn.closest('.tk');
-    const id = card.dataset.id;
-    card.classList.add('busy');
-
-    try{
-      if(btn.dataset.do === 'snooze'){
-        const n = Number(btn.dataset.n);
-        await DB.update('tasks', 'id=eq.' + id, {
-          due_on: ymd(shift(T, n)),
-          last_seen_at: new Date().toISOString()
-        });
-      }else{
-        // 반복 업무는 끝내도 다음 차례로 넘어갑니다
-        const cur = (await DB.q('tasks', 'select=*&id=eq.' + id))[0];
-        const next = cur && WHEN.nextDue(cur.repeat_rule, cur.due_on);
-        if(next){
-          await DB.update('tasks', 'id=eq.' + id,
-                          { due_on: next, last_seen_at: new Date().toISOString() });
-        }else{
-          await DB.update('tasks', 'id=eq.' + id,
-                          { status:'done', done_at: new Date().toISOString() });
-          askFollowUp(cur);
-        }
-      }
-      load();
-    }catch(err){
-      card.classList.remove('busy');
-      alert('처리하지 못했습니다. ' + err.message);
-    }
-  });
-
-  /* 끝낼 때 한 번 묻습니다 — 이래야 후속 조치가 쌓입니다 */
-  function askFollowUp(t){
-    if(!t) return;
-    const el = document.createElement('div');
-    el.className = 'toast-wrap';
-    el.innerHTML =
-      '<div class="toast">'
-      + '<button type="button" class="toast-x" aria-label="닫기">×</button>'
-      + '<b>' + esc(t.title) + ' — 끝냈습니다</b>'
-      + '<ul><li>이어서 확인할 일이 있습니까?</li></ul>'
-      + '<button type="button" class="toast-go">후속 업무 담기</button>'
-      + '</div>';
-    document.body.appendChild(el);
-    const kill = () => el.remove();
-    el.querySelector('.toast-x').addEventListener('click', kill);
-    el.querySelector('.toast-go').addEventListener('click', () => {
-      kill();
-      TaskForm.open({ follow_up_of: t.id, when: '다음 주' });
-    });
-    setTimeout(kill, 10000);
-  }
-
-  document.addEventListener('tasks:changed', load);
-  DB.gate(load);
 })();
 
 </script>
@@ -1540,46 +1482,68 @@ const MONTHLY = [
 /* ══════════════════════════════════════════════════════════
    홈의 달력.
 
-   assets/tasks.js의 목록을 달력 위에 얹습니다.
-   할 일이 있는 날에는 점이 찍히고, 누르면 아래에 내용이 나옵니다.
-   목록을 고치면 달력도 따라 바뀝니다. 여기를 손댈 일은 없습니다.
+   두 가지를 함께 얹습니다.
+     · assets/tasks.js 의 일반적인 총무 반복 업무
+     · 로그인해서 불러온, 직접 담아둔 업무
+
+   할 일이 있는 날에 점이 찍히고, 누르면 아래에 내용이 나옵니다.
+   업무를 불러온 뒤 CAL.setTasks(rows) 를 부르면 다시 그립니다.
    ══════════════════════════════════════════════════════════ */
-(function(){
+const CAL = (function(){
   const host = document.getElementById('homeCal');
-  if(!host || typeof TASKS === 'undefined' || typeof MONTHLY === 'undefined') return;
+  if(!host) return { setTasks(){} };
 
   const NOW = new Date();
   const TY = NOW.getFullYear(), TM = NOW.getMonth() + 1, TD = NOW.getDate();
   const DOW = ['일','월','화','수','목','금','토'];
+  const has = n => typeof n !== 'undefined';
 
   let y = TY, m = TM, sel = TD;
+  let mine = [];                       // 직접 담은 업무 (로그인 뒤 채워집니다)
 
-  /* 그 날짜에 걸린 일 — 이 달만 하는 일 + 매달 반복되는 일 */
-  function itemsOn(month, day){
-    return TASKS.filter(t => t.m === month && t.d === day)
-                .map(t => ({ t:t.t, tag:month + '월 ' + day + '일', to:'#month' }))
-      .concat(MONTHLY.filter(t => t.d === day)
-                .map(t => ({ t:t.t, tag:'매달 ' + day + '일', to:'#always' })));
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
+  /* 그 날짜에 걸린 것 모으기 */
+  function itemsOn(year, month, day){
+    const out = [];
+
+    // 직접 담은 업무 — 마감일이 그 날인 것
+    const pad = n => String(n).padStart(2,'0');
+    const key = year + '-' + pad(month) + '-' + pad(day);
+    mine.forEach(t => {
+      if(t.due_on === key) out.push({ t:t.title, tag:'내 업무', mine:true, to:'#board' });
+    });
+
+    // 일반 총무 업무
+    if(has(window.TASKS) || typeof TASKS !== 'undefined'){
+      TASKS.filter(t => t.m === month && t.d === day)
+           .forEach(t => out.push({ t:t.t, tag:month + '월 ' + day + '일', to:'#month' }));
+      MONTHLY.filter(t => t.d === day)
+             .forEach(t => out.push({ t:t.t, tag:'매달 ' + day + '일', to:'#always' }));
+    }
+    return out;
   }
 
   function render(){
-    const lead = new Date(y, m - 1, 1).getDay();   // 1일의 요일
-    const last = new Date(y, m, 0).getDate();      // 이 달의 마지막 날
+    const lead = new Date(y, m - 1, 1).getDay();
+    const last = new Date(y, m, 0).getDate();
 
     let cells = '';
     for(let i = 0; i < lead; i++) cells += '<span class="cal-day off"></span>';
 
     for(let d = 1; d <= last; d++){
-      const n = itemsOn(m, d).length;
+      const list = itemsOn(y, m, d);
       const isToday = (y === TY && m === TM && d === TD);
       let cls = 'cal-day';
-      if(n) cls += ' has';
+      if(list.length) cls += ' has';
+      if(list.some(x => x.mine)) cls += ' mine';
       if(isToday) cls += ' today';
       if(d === sel) cls += ' sel';
 
-      cells += n
+      cells += list.length
         ? '<button type="button" class="' + cls + '" data-d="' + d + '"'
-          + ' aria-label="' + m + '월 ' + d + '일, 할 일 ' + n + '건">' + d + '</button>'
+          + ' aria-label="' + m + '월 ' + d + '일, 할 일 ' + list.length + '건">' + d + '</button>'
         : '<span class="' + cls + '">' + d + '</span>';
     }
 
@@ -1601,7 +1565,7 @@ const MONTHLY = [
   function paintList(){
     const el = host.querySelector('#calList');
     if(!el) return;
-    const list = sel ? itemsOn(m, sel) : [];
+    const list = sel ? itemsOn(y, m, sel) : [];
 
     if(!list.length){
       el.innerHTML = '<p class="cal-none">'
@@ -1610,8 +1574,9 @@ const MONTHLY = [
       return;
     }
     el.innerHTML = list.map(x =>
-      '<a class="cal-item" href="reminder.html' + x.to + '">'
-      + '<b>' + x.t + '</b><span>' + x.tag + '</span>'
+      '<a class="cal-item' + (x.mine ? ' is-mine' : '') + '" href="'
+      + (x.mine ? '#board' : 'reminder.html' + x.to) + '">'
+      + '<b>' + esc(x.t) + '</b><span>' + esc(x.tag) + '</span>'
       + '</a>'
     ).join('');
   }
@@ -1627,13 +1592,260 @@ const MONTHLY = [
       return;
     }
     const day = e.target.closest('.cal-day[data-d]');
-    if(day){
-      sel = Number(day.dataset.d);
-      render();
-    }
+    if(day){ sel = Number(day.dataset.d); render(); }
   });
 
   render();
+
+  return {
+    setTasks(rows){ mine = rows || []; render(); }
+  };
+})();
+
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   메인 화면.
+
+   위쪽 다섯 칸 — 지금 무엇을 해야 하는지
+     캘린더 · 당장 해야 할 일 · 일간 · 주간 · 월간
+
+   아래쪽 블록 — 놓친 것이 없는지
+     후속 조치 · 오래 안 본 업무 · 지난주에 끝낸 일
+   ══════════════════════════════════════════════════════════ */
+(function(){
+  const nowEl   = document.getElementById('nowList');
+  const board   = document.getElementById('board');
+  if(!nowEl && !board) return;
+
+  const STALE = 14;                 // 며칠 넘게 안 보면 '묻힌' 것으로 봅니다
+  const T = WHEN.midnight();
+  const ymd = WHEN.ymd;
+  const shift = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+
+  const today    = ymd(T);
+  const weekEnd  = ymd(shift(T, 7));
+  const staleAt  = new Date(Date.now() - STALE*86400000).toISOString();
+  const lastWeek = new Date(Date.now() - 7*86400000).toISOString();
+
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  const daysSince = iso => Math.floor((Date.now() - new Date(iso)) / 86400000);
+
+  /* ── 한 줄 ── */
+  function row(t, opt){
+    opt = opt || {};
+    const u = WHEN.untilLabel(t.due_on);
+    const meta = [];
+    if(t.owner) meta.push(esc(t.owner));
+    if(t.category) meta.push(esc(t.category));
+    if(!opt.hideRepeat && t.repeat_rule) meta.push(WHEN.repeatLabel(t.repeat_rule));
+
+    return '<div class="tk" data-id="' + t.id + '">'
+      + (opt.done
+          ? '<span class="tk-check done" aria-hidden="true">✓</span>'
+          : '<button type="button" class="tk-check" data-do="done" aria-label="완료"><span></span></button>')
+      + '<div class="tk-body">'
+      +   '<b>' + esc(t.title) + '</b>'
+      +   (opt.slim || !t.note ? '' : '<p>' + esc(t.note) + '</p>')
+      +   '<span class="tk-meta">'
+      +     (opt.seen ? '<i class="tk-when late">' + opt.seen + '</i>'
+                      : '<i class="tk-when ' + u.tone + '">' + u.text + '</i>')
+      +     (meta.length ? '<em>' + meta.join(' · ') + '</em>' : '')
+      +   '</span>'
+      + '</div>'
+      + (opt.done || opt.slim ? '' :
+          '<div class="tk-acts">'
+          + '<button type="button" class="tk-btn" data-do="snooze" data-n="3">3일 뒤</button>'
+          + '<button type="button" class="tk-btn" data-do="snooze" data-n="7">다음 주</button>'
+          + '</div>')
+      + '</div>';
+  }
+
+  function fill(el, rows, emptyText, opt){
+    if(!el) return;
+    el.innerHTML = rows.length
+      ? '<div class="tks">' + rows.map(t => row(t, opt)).join('') + '</div>'
+      : '<p class="card-empty">' + emptyText + '</p>';
+  }
+
+  function block(id, tag, title, hint, rows, opt){
+    if(!rows.length) return '';
+    return '<section class="blk' + (opt && opt.warn ? ' warn' : '') + '" id="' + id + '">'
+      + '<div class="blk-head"><span class="tag">' + tag + '</span>'
+      +   '<h2>' + title + '</h2><p>' + hint + '</p></div>'
+      + '<div class="tks">' + rows.join('') + '</div>'
+      + '</section>';
+  }
+
+  /* ── 불러오기 ── */
+  async function load(){
+    if(board) board.innerHTML = '';
+    if(nowEl) nowEl.innerHTML = '<p class="card-empty">불러오는 중입니다…</p>';
+
+    let all;
+    try{
+      all = await DB.q('tasks', 'select=*&status=eq.open&order=due_on.asc&limit=400');
+    }catch(err){
+      const m = '<p class="card-empty bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
+      if(nowEl) nowEl.innerHTML = m;
+      return;
+    }
+
+    CAL.setTasks(all);
+
+    /* 위쪽 네 칸 */
+    const now = all.filter(t => t.due_on && t.due_on <= today);
+    fill(nowEl, now, '급한 것이 없습니다. 좋은 상태입니다.');
+    const cnt = document.getElementById('nowCount');
+    if(cnt) cnt.textContent = now.length ? now.length + '건' : '';
+
+    const rep = (pre) => all.filter(t => t.repeat_rule &&
+      (pre === 'daily' ? t.repeat_rule === 'daily' : t.repeat_rule.startsWith(pre)))
+      .sort((a,b) => (a.due_on||'').localeCompare(b.due_on||''));
+
+    fill(document.getElementById('dailyList'),   rep('daily'),
+         '매일 하는 일을 ＋ 로 담아보십시오.', { slim:true, hideRepeat:true });
+    fill(document.getElementById('weeklyList'),  rep('weekly'),
+         '매주 하는 일을 ＋ 로 담아보십시오.', { slim:true });
+    fill(document.getElementById('monthlyList'), rep('monthly').concat(rep('yearly')),
+         '매달 하는 일을 ＋ 로 담아보십시오.', { slim:true });
+
+    /* 아래쪽 블록 */
+    if(!board) return;
+    let follow, stale, done;
+    try{
+      [follow, stale, done] = await Promise.all([
+        DB.q('tasks', 'select=*&status=eq.open&follow_up_of=not.is.null&order=due_on.asc&limit=30'),
+        DB.q('tasks', 'select=*&status=eq.open&last_seen_at=lt.' + staleAt + '&order=last_seen_at.asc&limit=30'),
+        DB.q('tasks', 'select=*&status=eq.done&done_at=gte.' + lastWeek + '&order=done_at.desc&limit=30')
+      ]);
+    }catch(err){ return; }
+
+    const shown = new Set(now.map(t => t.id));
+    follow = follow.filter(t => !shown.has(t.id));
+    follow.forEach(t => shown.add(t.id));
+    stale = stale.filter(t => !shown.has(t.id));
+
+    board.innerHTML =
+        block('follow', 'FOLLOW UP', '후속 조치가 남았습니다', '전에 한 일에서 이어진 것',
+              follow.map(t => row(t)))
+      + block('stale',  'FORGOTTEN', '오래 들여다보지 않았습니다', STALE + '일 넘게 손대지 않은 업무',
+              stale.map(t => row(t, { seen: daysSince(t.last_seen_at) + '일째 안 봄' })))
+      + block('done',   'LAST WEEK', '지난 7일 동안 끝낸 일', '주간 보고에 그대로 쓰십시오',
+              done.map(t => row(t, { done:true })));
+
+    if(stale.length) markSeen(stale.map(t => t.id));
+  }
+
+  function markSeen(ids){
+    if(!ids.length) return;
+    DB.update('tasks', 'id=in.(' + ids.join(',') + ')',
+              { last_seen_at: new Date().toISOString() }).catch(()=>{});
+  }
+
+  /* ── 완료 · 미루기 ── */
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('.tk [data-do]');
+    if(!btn) return;
+    const card = btn.closest('.tk');
+    const id = card.dataset.id;
+    card.classList.add('busy');
+
+    try{
+      if(btn.dataset.do === 'snooze'){
+        await DB.update('tasks', 'id=eq.' + id, {
+          due_on: ymd(shift(T, Number(btn.dataset.n))),
+          last_seen_at: new Date().toISOString()
+        });
+      }else{
+        const cur = (await DB.q('tasks', 'select=*&id=eq.' + id))[0];
+        const next = cur && WHEN.nextDue(cur.repeat_rule, cur.due_on);
+        if(next){
+          // 반복 업무는 사라지지 않고 다음 차례로 넘어갑니다
+          await DB.update('tasks', 'id=eq.' + id,
+                          { due_on: next, last_seen_at: new Date().toISOString() });
+        }else{
+          await DB.update('tasks', 'id=eq.' + id,
+                          { status:'done', done_at: new Date().toISOString() });
+          askFollowUp(cur);
+        }
+      }
+      load();
+    }catch(err){
+      card.classList.remove('busy');
+      alert('처리하지 못했습니다. ' + err.message);
+    }
+  });
+
+  /* 끝낼 때 한 번 묻습니다 — 이래야 후속 조치가 쌓입니다 */
+  function askFollowUp(t){
+    if(!t) return;
+    const el = document.createElement('div');
+    el.className = 'toast-wrap';
+    el.innerHTML =
+      '<div class="toast">'
+      + '<button type="button" class="toast-x" aria-label="닫기">×</button>'
+      + '<b>' + esc(t.title) + ' — 끝냈습니다</b>'
+      + '<ul><li>이어서 확인할 일이 있습니까?</li></ul>'
+      + '<button type="button" class="toast-go">후속 업무 담기</button>'
+      + '</div>';
+    document.body.appendChild(el);
+    const kill = () => el.remove();
+    el.querySelector('.toast-x').addEventListener('click', kill);
+    el.querySelector('.toast-go').addEventListener('click', () => {
+      kill();
+      TaskForm.open({ follow_up_of: t.id, when: '다음 주' });
+    });
+    setTimeout(kill, 10000);
+  }
+
+  document.addEventListener('tasks:changed', load);
+  DB.gate(load);
+})();
+
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   떠 있는 동그란 단추.
+
+   누르면 위로 작은 판이 열립니다.
+     · 잊지 말 업무 담기
+     · 일간·주간·월간 알림 켜고 끄기 (내용은 notify.js가 채웁니다)
+
+   다시 누르거나 바깥을 누르면 닫힙니다. Esc로도 닫힙니다.
+   ══════════════════════════════════════════════════════════ */
+(function(){
+  const btn = document.getElementById('fabBtn');
+  const pop = document.getElementById('fabPop');
+  if(!btn || !pop) return;
+
+  function setOpen(open){
+    pop.hidden = !open;
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.setAttribute('aria-label', open ? '닫기' : '업무 담기와 알림 설정 열기');
+    btn.classList.toggle('on', open);
+  }
+
+  btn.addEventListener('click', () => setOpen(pop.hidden));
+
+  /* 바깥을 누르면 닫습니다.
+     전파를 막지 않고 눌린 자리로 판단합니다. 막아버리면 판 안의
+     '업무 담기' 같은 단추가 바깥의 처리까지 닿지 못합니다. */
+  document.addEventListener('click', e => {
+    if(pop.hidden) return;
+    if(btn.contains(e.target)) return;              // 단추는 위에서 처리
+    if(pop.contains(e.target)){
+      // 판 안에서 무언가를 실행했으면 판은 닫아줍니다
+      if(e.target.closest('[data-newtask]')) setOpen(false);
+      return;
+    }
+    setOpen(false);
+  });
+
+  addEventListener('keydown', e => { if(e.key === 'Escape' && !pop.hidden) setOpen(false); });
+
+  setOpen(false);
 })();
 
 </script>
@@ -1812,24 +2024,6 @@ const MONTHLY = [
   run(false);
 })();
 
-</script>
-<script>
-/* 홈의 이번 달 미리보기 — 반복되는 일반 업무 목록에서 뽑습니다 */
-(function(){
-  const el = document.getElementById('homeReminder');
-  if(!el || typeof TASKS === 'undefined') return;
-  const M = new Date().getMonth() + 1;
-
-  const peek = TASKS.filter(t => t.m === M).sort((a,b) => a.d - b.d)
-    .map(t => ({ t:t.t, when:M + '월 ' + t.d + '일', to:'#month' }));
-  MONTHLY.slice().sort((a,b) => a.d - b.d).forEach(t => {
-    if(peek.length < 3) peek.push({ t:t.t, when:'매월 ' + t.d + '일', to:'#always' });
-  });
-
-  el.innerHTML = peek.slice(0,3).map(x =>
-    '<a href="reminder.html' + x.to + '">' + x.t + ' <span>' + x.when + '</span></a>'
-  ).join('');
-})();
 </script>
 </body>
 </html>

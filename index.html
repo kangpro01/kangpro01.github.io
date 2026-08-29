@@ -14,22 +14,60 @@
 
 <div id="site-header"></div>
 
+<div class="wrap hub">
+
+  <section class="card card-cal">
+    <div class="card-head"><h2>캘린더</h2></div>
+    <div class="cal" id="homeCal"></div>
+  </section>
+
+  <section class="card card-now">
+    <div class="card-head"><h2>당장 해야 할 일</h2>
+      <span class="card-hint" id="nowCount"></span></div>
+    <div class="card-body" id="nowList"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>일간 업무</h2>
+      <button type="button" class="card-add" data-newtask data-when="매일" aria-label="일간 업무 담기">＋</button></div>
+    <div class="card-body" id="dailyList"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>주간 업무</h2>
+      <button type="button" class="card-add" data-newtask data-when="매주 금요일" aria-label="주간 업무 담기">＋</button></div>
+    <div class="card-body" id="weeklyList"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>월간 업무</h2>
+      <button type="button" class="card-add" data-newtask data-when="매달 25일" aria-label="월간 업무 담기">＋</button></div>
+    <div class="card-body" id="monthlyList"></div>
+  </section>
+
+</div>
+
 <div class="wrap board" id="board"></div>
 
 <div class="wrap">
-  <div class="sec-head row" style="margin-top:8px">
-    <div>
-      <span class="tag">CALENDAR</span>
-      <h2>이번 달</h2>
-      <p>점이 찍힌 날에 할 일이 있습니다</p>
+  <p class="attic-line">잠깐 쉬어가려면 — <a href="attic.html">딴짓 창고</a></p>
+</div>
+
+<!-- ══ 떠 있는 단추 — 누르면 업무 담기와 알림 설정이 열립니다 ══ -->
+<div class="fab-wrap">
+  <div class="fab-pop" id="fabPop" hidden>
+    <div class="fab-sec">
+      <b>업무 담기</b>
+      <button class="btn" type="button" data-newtask>＋ 잊지 말 업무</button>
+    </div>
+    <div class="fab-sec">
+      <b>알림 받기</b>
+      <p class="fab-note">켜두면 들어왔을 때 알려드립니다.</p>
+      <div class="switches" id="notifySwitches"></div>
     </div>
   </div>
-  <div class="home-rem">
-    <div class="mini" id="homeReminder"></div>
-    <div class="cal" id="homeCal"></div>
-  </div>
-
-  <p class="attic-line">잠깐 쉬어가려면 — <a href="attic.html">딴짓 창고</a></p>
+  <button type="button" class="fab" id="fabBtn" aria-expanded="false" aria-controls="fabPop"
+          aria-label="업무 담기와 알림 설정 열기"></button>
 </div>
 
 <div id="site-footer"></div>
@@ -39,27 +77,10 @@
 <script src="assets/db.js"></script>
 <script src="assets/when.js"></script>
 <script src="assets/task-form.js"></script>
-<script src="assets/home.js"></script>
 <script src="assets/tasks.js"></script>
 <script src="assets/cal.js"></script>
+<script src="assets/home.js"></script>
+<script src="assets/fab.js"></script>
 <script src="assets/notify.js"></script>
-<script>
-/* 홈의 이번 달 미리보기 — 반복되는 일반 업무 목록에서 뽑습니다 */
-(function(){
-  const el = document.getElementById('homeReminder');
-  if(!el || typeof TASKS === 'undefined') return;
-  const M = new Date().getMonth() + 1;
-
-  const peek = TASKS.filter(t => t.m === M).sort((a,b) => a.d - b.d)
-    .map(t => ({ t:t.t, when:M + '월 ' + t.d + '일', to:'#month' }));
-  MONTHLY.slice().sort((a,b) => a.d - b.d).forEach(t => {
-    if(peek.length < 3) peek.push({ t:t.t, when:'매월 ' + t.d + '일', to:'#always' });
-  });
-
-  el.innerHTML = peek.slice(0,3).map(x =>
-    '<a href="reminder.html' + x.to + '">' + x.t + ' <span>' + x.when + '</span></a>'
-  ).join('');
-})();
-</script>
 </body>
 </html>

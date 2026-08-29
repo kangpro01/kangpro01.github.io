@@ -1,63 +1,66 @@
 /* ══════════════════════════════════════════════════════════
-   메인 화면 — 업무 리마인더.
+   메인 화면.
 
-   들어오자마자 두 가지가 보여야 합니다.
-     "오늘 뭘 해야 하지?"   "전에 하던 것 중 놓친 게 없나?"
+   위쪽 다섯 칸 — 지금 무엇을 해야 하는지
+     캘린더 · 당장 해야 할 일 · 일간 · 주간 · 월간
 
-   그래서 블록을 이 순서로 둡니다.
-     ① 지났는데 안 끝남   가장 급합니다
-     ② 오늘 · 이번 주
-     ③ 후속 조치 필요     "그거 그 뒤로 어떻게 됐지?"
-     ④ 오래 안 본 업무    묻혀버린 것
-     ⑤ 지난주에 한 일     "저번 주에 뭐 했더라?"
+   아래쪽 블록 — 놓친 것이 없는지
+     후속 조치 · 오래 안 본 업무 · 지난주에 끝낸 일
    ══════════════════════════════════════════════════════════ */
 (function(){
-  const host = document.getElementById('board');
-  if(!host) return;
+  const nowEl   = document.getElementById('nowList');
+  const board   = document.getElementById('board');
+  if(!nowEl && !board) return;
 
   const STALE = 14;                 // 며칠 넘게 안 보면 '묻힌' 것으로 봅니다
   const T = WHEN.midnight();
   const ymd = WHEN.ymd;
   const shift = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
 
-  const today   = ymd(T);
-  const weekEnd = ymd(shift(T, 7));
-  const staleAt = new Date(Date.now() - STALE*86400000).toISOString();
-  const lastWeek= new Date(Date.now() - 7*86400000).toISOString();
+  const today    = ymd(T);
+  const weekEnd  = ymd(shift(T, 7));
+  const staleAt  = new Date(Date.now() - STALE*86400000).toISOString();
+  const lastWeek = new Date(Date.now() - 7*86400000).toISOString();
 
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  const daysSince = iso => Math.floor((Date.now() - new Date(iso)) / 86400000);
 
-  /* ── 한 줄 그리기 ── */
+  /* ── 한 줄 ── */
   function row(t, opt){
     opt = opt || {};
     const u = WHEN.untilLabel(t.due_on);
     const meta = [];
     if(t.owner) meta.push(esc(t.owner));
     if(t.category) meta.push(esc(t.category));
-    if(t.repeat_rule) meta.push(WHEN.repeatLabel(t.repeat_rule));
+    if(!opt.hideRepeat && t.repeat_rule) meta.push(WHEN.repeatLabel(t.repeat_rule));
 
     return '<div class="tk" data-id="' + t.id + '">'
       + (opt.done
           ? '<span class="tk-check done" aria-hidden="true">✓</span>'
-          : '<button type="button" class="tk-check" data-do="done" aria-label="완료">'
-            + '<span></span></button>')
+          : '<button type="button" class="tk-check" data-do="done" aria-label="완료"><span></span></button>')
       + '<div class="tk-body">'
       +   '<b>' + esc(t.title) + '</b>'
-      +   (t.note ? '<p>' + esc(t.note) + '</p>' : '')
+      +   (opt.slim || !t.note ? '' : '<p>' + esc(t.note) + '</p>')
       +   '<span class="tk-meta">'
-      +     (opt.seen
-            ? '<i class="tk-when late">' + opt.seen + '</i>'
-            : '<i class="tk-when ' + u.tone + '">' + u.text + '</i>')
+      +     (opt.seen ? '<i class="tk-when late">' + opt.seen + '</i>'
+                      : '<i class="tk-when ' + u.tone + '">' + u.text + '</i>')
       +     (meta.length ? '<em>' + meta.join(' · ') + '</em>' : '')
       +   '</span>'
       + '</div>'
-      + (opt.done ? '' :
+      + (opt.done || opt.slim ? '' :
           '<div class="tk-acts">'
           + '<button type="button" class="tk-btn" data-do="snooze" data-n="3">3일 뒤</button>'
           + '<button type="button" class="tk-btn" data-do="snooze" data-n="7">다음 주</button>'
           + '</div>')
       + '</div>';
+  }
+
+  function fill(el, rows, emptyText, opt){
+    if(!el) return;
+    el.innerHTML = rows.length
+      ? '<div class="tks">' + rows.map(t => row(t, opt)).join('') + '</div>'
+      : '<p class="card-empty">' + emptyText + '</p>';
   }
 
   function block(id, tag, title, hint, rows, opt){
@@ -71,56 +74,64 @@
 
   /* ── 불러오기 ── */
   async function load(){
-    host.innerHTML = '<p class="board-load">불러오는 중입니다…</p>';
+    if(board) board.innerHTML = '';
+    if(nowEl) nowEl.innerHTML = '<p class="card-empty">불러오는 중입니다…</p>';
 
-    let late, soon, follow, stale, done;
+    let all;
     try{
-      [late, soon, follow, stale, done] = await Promise.all([
-        DB.q('tasks', 'select=*&status=eq.open&due_on=lt.' + today + '&order=due_on.asc&limit=50'),
-        DB.q('tasks', 'select=*&status=eq.open&due_on=gte.' + today + '&due_on=lte.' + weekEnd + '&order=due_on.asc&limit=50'),
+      all = await DB.q('tasks', 'select=*&status=eq.open&order=due_on.asc&limit=400');
+    }catch(err){
+      const m = '<p class="card-empty bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
+      if(nowEl) nowEl.innerHTML = m;
+      return;
+    }
+
+    CAL.setTasks(all);
+
+    /* 위쪽 네 칸 */
+    const now = all.filter(t => t.due_on && t.due_on <= today);
+    fill(nowEl, now, '급한 것이 없습니다. 좋은 상태입니다.');
+    const cnt = document.getElementById('nowCount');
+    if(cnt) cnt.textContent = now.length ? now.length + '건' : '';
+
+    const rep = (pre) => all.filter(t => t.repeat_rule &&
+      (pre === 'daily' ? t.repeat_rule === 'daily' : t.repeat_rule.startsWith(pre)))
+      .sort((a,b) => (a.due_on||'').localeCompare(b.due_on||''));
+
+    fill(document.getElementById('dailyList'),   rep('daily'),
+         '매일 하는 일을 ＋ 로 담아보십시오.', { slim:true, hideRepeat:true });
+    fill(document.getElementById('weeklyList'),  rep('weekly'),
+         '매주 하는 일을 ＋ 로 담아보십시오.', { slim:true });
+    fill(document.getElementById('monthlyList'), rep('monthly').concat(rep('yearly')),
+         '매달 하는 일을 ＋ 로 담아보십시오.', { slim:true });
+
+    /* 아래쪽 블록 */
+    if(!board) return;
+    let follow, stale, done;
+    try{
+      [follow, stale, done] = await Promise.all([
         DB.q('tasks', 'select=*&status=eq.open&follow_up_of=not.is.null&order=due_on.asc&limit=30'),
         DB.q('tasks', 'select=*&status=eq.open&last_seen_at=lt.' + staleAt + '&order=last_seen_at.asc&limit=30'),
         DB.q('tasks', 'select=*&status=eq.done&done_at=gte.' + lastWeek + '&order=done_at.desc&limit=30')
       ]);
-    }catch(err){
-      host.innerHTML = '<p class="board-load bad">불러오지 못했습니다. ' + esc(err.message) + '</p>';
-      return;
-    }
+    }catch(err){ return; }
 
-    // 후속·묻힌 업무가 위 블록과 겹치지 않게 걸러냅니다
-    const shown = new Set([].concat(late, soon).map(t => t.id));
+    const shown = new Set(now.map(t => t.id));
     follow = follow.filter(t => !shown.has(t.id));
     follow.forEach(t => shown.add(t.id));
     stale = stale.filter(t => !shown.has(t.id));
 
-    const html =
-        block('late',   'OVERDUE',    '지났는데 안 끝났습니다', '가장 먼저 보셔야 합니다',
-              late.map(t => row(t)), {warn:true})
-      + block('soon',   'THIS WEEK',  '오늘과 이번 주',         '앞으로 7일',
-              soon.map(t => row(t)))
-      + block('follow', 'FOLLOW UP',  '후속 조치가 남았습니다', '전에 한 일에서 이어진 것',
+    board.innerHTML =
+        block('follow', 'FOLLOW UP', '후속 조치가 남았습니다', '전에 한 일에서 이어진 것',
               follow.map(t => row(t)))
-      + block('stale',  'FORGOTTEN',  '오래 들여다보지 않았습니다', STALE + '일 넘게 손대지 않은 업무',
+      + block('stale',  'FORGOTTEN', '오래 들여다보지 않았습니다', STALE + '일 넘게 손대지 않은 업무',
               stale.map(t => row(t, { seen: daysSince(t.last_seen_at) + '일째 안 봄' })))
-      + block('done',   'LAST WEEK',  '지난 7일 동안 끝낸 일',  '주간 보고에 그대로 쓰십시오',
+      + block('done',   'LAST WEEK', '지난 7일 동안 끝낸 일', '주간 보고에 그대로 쓰십시오',
               done.map(t => row(t, { done:true })));
 
-    host.innerHTML = html || empty();
     if(stale.length) markSeen(stale.map(t => t.id));
   }
 
-  const daysSince = iso => Math.floor((Date.now() - new Date(iso)) / 86400000);
-
-  function empty(){
-    return '<div class="board-empty">'
-      + '<b>아직 담아둔 업무가 없습니다.</b>'
-      + '<p>오른쪽 위 <b>잊지 말 업무</b>를 눌러 하나 담아보십시오.<br>'
-      + '"3일 뒤", "매주 금요일"처럼 사람 말로 적으셔도 됩니다.</p>'
-      + '<button class="btn lg" type="button" data-newtask>업무 담기</button>'
-      + '</div>';
-  }
-
-  /* 목록에 띄운 순간 '봤다'고 기록합니다 — 방치 감지의 기준입니다 */
   function markSeen(ids){
     if(!ids.length) return;
     DB.update('tasks', 'id=in.(' + ids.join(',') + ')',
@@ -128,8 +139,8 @@
   }
 
   /* ── 완료 · 미루기 ── */
-  host.addEventListener('click', async e => {
-    const btn = e.target.closest('[data-do]');
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('.tk [data-do]');
     if(!btn) return;
     const card = btn.closest('.tk');
     const id = card.dataset.id;
@@ -137,16 +148,15 @@
 
     try{
       if(btn.dataset.do === 'snooze'){
-        const n = Number(btn.dataset.n);
         await DB.update('tasks', 'id=eq.' + id, {
-          due_on: ymd(shift(T, n)),
+          due_on: ymd(shift(T, Number(btn.dataset.n))),
           last_seen_at: new Date().toISOString()
         });
       }else{
-        // 반복 업무는 끝내도 다음 차례로 넘어갑니다
         const cur = (await DB.q('tasks', 'select=*&id=eq.' + id))[0];
         const next = cur && WHEN.nextDue(cur.repeat_rule, cur.due_on);
         if(next){
+          // 반복 업무는 사라지지 않고 다음 차례로 넘어갑니다
           await DB.update('tasks', 'id=eq.' + id,
                           { due_on: next, last_seen_at: new Date().toISOString() });
         }else{
