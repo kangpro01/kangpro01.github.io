@@ -61,10 +61,16 @@ const CAL = (function(){
              + '</div>';
     }
 
+    const onToday = (y === TY && m === TM);
+
     host.innerHTML =
       '<div class="cal-head">'
       + '<button type="button" class="cal-nav" data-go="-1" aria-label="이전 달">‹</button>'
-      + '<b>' + y + '년 ' + m + '월</b>'
+      + '<span class="cal-title">'
+      +   '<b>' + y + '년 ' + m + '월</b>'
+      +   '<button type="button" class="cal-today" data-today'
+      +     (onToday ? ' disabled' : '') + '>오늘</button>'
+      + '</span>'
       + '<button type="button" class="cal-nav" data-go="1" aria-label="다음 달">›</button>'
       + '</div>'
       + '<div class="cal-grid">'
@@ -104,6 +110,10 @@ const CAL = (function(){
   });
 
   host.addEventListener('click', e => {
+    if(e.target.closest('[data-today]')){
+      y = TY; m = TM; render();
+      return;
+    }
     const nav = e.target.closest('.cal-nav');
     if(!nav) return;
     m += Number(nav.dataset.go);

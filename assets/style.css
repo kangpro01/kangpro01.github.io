@@ -10,6 +10,9 @@
   --marker:#E7E5E5;     /* 형광펜 자리 — 회색 하이라이트 */
   --rule:#E3E1E2;
   --on-ink:#FFFFFF;     /* --ink 를 배경으로 깔았을 때 그 위 글자색 */
+  /* 마감 칩. 한 색 규칙의 유일한 예외 — 디자인 규칙 참고 */
+  --dday-over-bg:#F7E9E6;  --dday-over-ink:#8C3A2E;
+  --dday-today-bg:#FAEEDF; --dday-today-ink:#8A5620;
   --panel:#333132;      /* 늘 어두운 판 — 드롭다운·서랍·문지기·쪽지 */
   --gnb-bg:rgba(255,255,255,.88);
   --dock-bg:rgba(255,255,255,.94);
@@ -37,6 +40,8 @@
     --panel:#2A2829;
     --gnb-bg:rgba(27,26,26,.88);
     --dock-bg:rgba(27,26,26,.94);
+    --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
+    --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
     color-scheme:dark;
   }
 }
@@ -53,6 +58,8 @@
   --panel:#2A2829;
   --gnb-bg:rgba(27,26,26,.88);
   --dock-bg:rgba(27,26,26,.94);
+  --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
+  --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
   color-scheme:dark;
 }
 
@@ -565,6 +572,23 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .tk-when.soon{color:var(--ink-2)}
 .tk-when.far,.tk-when.none{color:var(--ink-3)}
 .tk-meta em{font-style:normal;font-size:11.5px;color:var(--ink-3)}
+/* 마감 칩 — 줄 오른쪽 끝. 글자 하나 크기로만 둡니다 */
+.dday{
+  flex:none;align-self:center;margin-left:4px;
+  font-family:var(--fs-num);font-size:10.5px;font-weight:700;letter-spacing:.02em;
+  border-radius:5px;padding:2px 6px;white-space:nowrap;
+  background:var(--paper-2);color:var(--ink-3);
+}
+.dday.today{background:var(--dday-today-bg);color:var(--dday-today-ink)}
+.dday.over{background:var(--dday-over-bg);color:var(--dday-over-ink)}
+
+/* 오늘 끝낸 반복 업무 — 줄 긋고 흐리게. 그 밖에는 그대로 둡니다 */
+.tk.cycled .tk-body b{text-decoration:line-through;text-decoration-thickness:1px;color:var(--ink-3)}
+.tk.cycled .tk-meta{opacity:.55}
+.tk.cycled .tk-check{border-color:var(--ink-3);background:var(--paper-2)}
+.tk.cycled .tk-check span{background:var(--ink-3)}
+.tk.cycled .tk-check:hover{border-color:var(--ink)}
+
 .tk-acts{flex:none;display:flex;gap:5px;opacity:0;transition:opacity .15s ease}
 .tk:hover .tk-acts,.tk:focus-within .tk-acts{opacity:1}
 .tk-btn{
@@ -690,6 +714,15 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .cal{border:1px solid var(--rule);border-radius:14px;padding:16px 16px 12px;background:var(--paper)}
 .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .cal-head b{font-size:15px;font-weight:800;letter-spacing:-.03em}
+.cal-title{display:flex;align-items:center;gap:8px;min-width:0}
+.cal-today{
+  flex:none;font-family:var(--fs);font-size:11px;font-weight:700;letter-spacing:-.02em;
+  color:var(--ink-2);background:var(--paper);border:1px solid var(--rule);
+  border-radius:999px;padding:2px 9px;cursor:pointer;
+  transition:border-color .15s ease,color .15s ease;
+}
+.cal-today:hover{border-color:var(--ink);color:var(--ink)}
+.cal-today[disabled]{opacity:.35;cursor:default;border-color:var(--rule);color:var(--ink-3)}
 .cal-nav{
   width:28px;height:28px;line-height:1;border:1px solid var(--rule);border-radius:8px;
   background:var(--paper);color:var(--ink-2);font-size:16px;cursor:pointer;

@@ -26,19 +26,36 @@
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
   const daysSince = iso => Math.floor((Date.now() - new Date(iso)) / 86400000);
 
+  /* 마감까지 며칠 — 오른쪽 끝에 붙이는 작은 칩 */
+  function dday(due){
+    if(!due) return '';
+    const left = Math.round((new Date(due + 'T00:00:00') - T) / 86400000);
+    const tone = left < 0 ? 'over' : left === 0 ? 'today' : 'far';
+    const text = left < 0 ? 'D+' + (-left) : left === 0 ? 'D-DAY' : 'D-' + left;
+    return '<span class="dday ' + tone + '">' + text + '</span>';
+  }
+
+  /* 반복 업무를 오늘 눌렀는지. 눌렀으면 이번 차례는 끝난 것으로 봅니다.
+     due_on 만으로는 알 수 없습니다. 매주 금요일 업무를 월요일에 보면
+     due_on 이 미래라서 끝낸 것처럼 보이기 때문입니다. */
+  const doneToday = t => !!t.done_at && ymd(new Date(t.done_at)) === today;
+
   /* ── 한 줄 ── */
   function row(t, opt){
     opt = opt || {};
     const u = WHEN.untilLabel(t.due_on);
+    const cycled = opt.slim && doneToday(t);      // 오늘 끝낸 반복 업무
     const meta = [];
     if(t.owner) meta.push(esc(t.owner));
     if(t.category) meta.push(esc(t.category));
     if(!opt.hideRepeat && t.repeat_rule) meta.push(WHEN.repeatLabel(t.repeat_rule));
 
-    return '<div class="tk" data-id="' + t.id + '">'
+    return '<div class="tk' + (cycled ? ' cycled' : '') + '" data-id="' + t.id + '">'
       + (opt.done
           ? '<span class="tk-check done" aria-hidden="true">✓</span>'
-          : '<button type="button" class="tk-check" data-do="done" aria-label="완료"><span></span></button>')
+          : '<button type="button" class="tk-check" data-do="' + (cycled ? 'undo' : 'done') + '"'
+            + ' aria-pressed="' + (cycled ? 'true' : 'false') + '"'
+            + ' aria-label="' + (cycled ? '완료 취소' : '완료') + '"><span></span></button>')
       + '<div class="tk-body">'
       +   '<b>' + esc(t.title) + '</b>'
       +   (opt.slim || !t.note ? '' : '<p>' + esc(t.note) + '</p>')
@@ -53,6 +70,7 @@
           + '<button type="button" class="tk-btn" data-do="snooze" data-n="3">3일 뒤</button>'
           + '<button type="button" class="tk-btn" data-do="snooze" data-n="7">다음 주</button>'
           + '</div>')
+      + (opt.dday ? dday(t.due_on) : '')
       + '</div>';
   }
 
@@ -91,7 +109,7 @@
 
     /* 위쪽 네 칸 */
     const now = all.filter(t => t.due_on && t.due_on <= today);
-    fill(nowEl, now, '오늘까지인 일이 없어요.');
+    fill(nowEl, now, '오늘까지인 일이 없어요.', { dday:true });
     const cnt = document.getElementById('nowCount');
     if(cnt) cnt.textContent = now.length ? now.length + '건' : '';
 
@@ -148,7 +166,13 @@
     card.classList.add('busy');
 
     try{
-      if(btn.dataset.do === 'snooze'){
+      if(btn.dataset.do === 'undo'){
+        /* 잘못 눌렀을 때. 다시 오늘 할 일로 되돌립니다. */
+        await DB.update('tasks', 'id=eq.' + id, {
+          due_on: today, done_at: null,
+          last_seen_at: new Date().toISOString()
+        });
+      }else if(btn.dataset.do === 'snooze'){
         await DB.update('tasks', 'id=eq.' + id, {
           due_on: ymd(shift(T, Number(btn.dataset.n))),
           last_seen_at: new Date().toISOString()
@@ -157,9 +181,11 @@
         const cur = (await DB.q('tasks', 'select=*&id=eq.' + id))[0];
         const next = cur && WHEN.nextDue(cur.repeat_rule, cur.due_on);
         if(next){
-          // 반복 업무는 사라지지 않고 다음 차례로 넘어갑니다
+          /* 반복 업무는 사라지지 않고 다음 차례로 넘어갑니다.
+             done_at 을 남겨야 오늘 끝냈다는 표시를 할 수 있습니다. */
+          const nowIso = new Date().toISOString();
           await DB.update('tasks', 'id=eq.' + id,
-                          { due_on: next, last_seen_at: new Date().toISOString() });
+                          { due_on: next, done_at: nowIso, last_seen_at: nowIso });
         }else{
           await DB.update('tasks', 'id=eq.' + id,
                           { status:'done', done_at: new Date().toISOString() });
