@@ -23,19 +23,8 @@ const SITE = {
     { file:'tools.html', name:'업무 Tools', sub:[
       { file:'tools.html#lounge', name:'라운지 운영 체크리스트' }
     ]},
-    { file:'reminder.html', name:'반복 업무', sub:[
-      { file:'reminder.html#alert',   name:'알림 받기' },
-      { file:'reminder.html#month',   name:'월별 할 일' },
-      { file:'reminder.html#always',  name:'매달 반복' }
-    ]},
-    { file:'files.html',  name:'자료실', sub:[
-      { file:'files.html#form',     name:'리포트 서식' },
-      { file:'files.html#reply',    name:'응대 문구 모음' },
-      { file:'files.html#template', name:'QR 안내물 템플릿' }
-    ]},
     { file:'attic.html',  name:'딴짓 창고', sub:[
-      { file:'game.html', name:'피지컬 120s' },
-      { file:'attic.html#wip', name:'만들다 만 것들' }
+      { file:'game.html', name:'피지컬 120s' }
     ]}
   ]
 };

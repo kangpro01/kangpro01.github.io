@@ -1,10 +1,7 @@
 /* ══════════════════════════════════════════════════════════
    홈의 달력.
 
-   두 가지를 함께 얹습니다.
-     · assets/tasks.js 의 일반적인 총무 반복 업무
-     · 로그인해서 불러온, 직접 담아둔 업무
-
+   담아둔 업무를 달력 위에 얹습니다.
    할 일이 있는 날에 점이 찍히고, 누르면 아래에 내용이 나옵니다.
    업무를 불러온 뒤 CAL.setTasks(rows) 를 부르면 다시 그립니다.
    ══════════════════════════════════════════════════════════ */
@@ -23,25 +20,14 @@ const CAL = (function(){
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
-  /* 그 날짜에 걸린 것 모으기 */
+  /* 그 날짜에 걸린 업무 모으기 */
+  const pad = n => String(n).padStart(2,'0');
   function itemsOn(year, month, day){
-    const out = [];
-
-    // 직접 담은 업무 — 마감일이 그 날인 것
-    const pad = n => String(n).padStart(2,'0');
     const key = year + '-' + pad(month) + '-' + pad(day);
-    mine.forEach(t => {
-      if(t.due_on === key) out.push({ t:t.title, tag:'내 업무', mine:true, to:'#board' });
-    });
-
-    // 일반 총무 업무
-    if(has(window.TASKS) || typeof TASKS !== 'undefined'){
-      TASKS.filter(t => t.m === month && t.d === day)
-           .forEach(t => out.push({ t:t.t, tag:month + '월 ' + day + '일', to:'#month' }));
-      MONTHLY.filter(t => t.d === day)
-             .forEach(t => out.push({ t:t.t, tag:'매달 ' + day + '일', to:'#always' }));
-    }
-    return out;
+    return mine.filter(t => t.due_on === key).map(t => ({
+      t: t.title,
+      tag: [t.owner, t.category].filter(Boolean).join(' · ') || '담아둔 업무'
+    }));
   }
 
   function render(){
@@ -55,8 +41,7 @@ const CAL = (function(){
       const list = itemsOn(y, m, d);
       const isToday = (y === TY && m === TM && d === TD);
       let cls = 'cal-day';
-      if(list.length) cls += ' has';
-      if(list.some(x => x.mine)) cls += ' mine';
+      if(list.length) cls += ' has mine';
       if(isToday) cls += ' today';
       if(d === sel) cls += ' sel';
 
@@ -93,10 +78,7 @@ const CAL = (function(){
       return;
     }
     el.innerHTML = list.map(x =>
-      '<a class="cal-item' + (x.mine ? ' is-mine' : '') + '" href="'
-      + (x.mine ? '#board' : 'reminder.html' + x.to) + '">'
-      + '<b>' + esc(x.t) + '</b><span>' + esc(x.tag) + '</span>'
-      + '</a>'
+      '<div class="cal-item"><b>' + esc(x.t) + '</b><span>' + esc(x.tag) + '</span></div>'
     ).join('');
   }
 

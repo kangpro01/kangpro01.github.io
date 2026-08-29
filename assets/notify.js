@@ -15,8 +15,8 @@
    알림 방식
      브라우저 알림 권한이 있으면 시스템 알림으로, 없으면 화면 위 쪽지로 띄웁니다.
    ══════════════════════════════════════════════════════════ */
-(function(){
-  if(typeof TASKS === 'undefined' || typeof MONTHLY === 'undefined') return;
+const NOTIFY = (function(){
+  let tasks = [];        // 담아둔 업무. home.js가 불러온 뒤 넣어줍니다.
 
   const KINDS = [
     { k:'daily',   name:'일간', desc:'오늘 할 일이 있으면 알립니다.' },
@@ -50,23 +50,21 @@
     return ymd(mon);
   }
 
-  /* ── 무엇이 걸려 있나 ── */
-  const ofMonth = mm => TASKS.filter(t => t.m === mm).map(t => ({ t:t.t, d:t.d, m:mm }))
-    .concat(MONTHLY.map(t => ({ t:t.t, d:t.d, m:mm })));
-
+  /* ── 무엇이 걸려 있나 ──
+     마감일이 지난 것은 어느 쪽에서든 함께 알립니다. 놓친 것이 먼저이기 때문입니다. */
   function due(kind){
-    if(kind === 'monthly') return ofMonth(M).sort((a,b) => a.d - b.d);
-    if(kind === 'daily')   return ofMonth(M).filter(x => x.d === D);
+    const upto =
+        kind === 'daily'  ? ymd(midnight)
+      : kind === 'weekly' ? ymd(new Date(Y, NOW.getMonth(), D + 7))
+      :                     ymd(new Date(Y, NOW.getMonth() + 1, 0));   // 이 달 말일
 
-    // 주간 — 오늘부터 7일. 달을 넘어가는 경우까지 본다.
-    const out = [];
-    for(let i = 0; i < 7; i++){
-      const day = new Date(Y, NOW.getMonth(), D + i);
-      ofMonth(day.getMonth() + 1)
-        .filter(x => x.d === day.getDate())
-        .forEach(x => out.push({ t:x.t, d:x.d, m:day.getMonth() + 1 }));
-    }
-    return out;
+    return tasks
+      .filter(t => t.due_on && t.due_on <= upto)
+      .sort((a,b) => a.due_on.localeCompare(b.due_on))
+      .map(t => {
+        const d = new Date(t.due_on + 'T00:00:00');
+        return { t: t.title, d: d.getDate(), m: d.getMonth() + 1 };
+      });
   }
 
   /* ── 화면 위 쪽지 (알림 권한이 없을 때) ──
@@ -169,5 +167,9 @@
     });
   }
 
-  run(false);
+  /* 업무를 불러온 뒤 넣어주면 그때 판단합니다.
+     로그인 전에는 알릴 것이 없으므로 아무 일도 하지 않습니다. */
+  return {
+    setTasks(rows){ tasks = rows || []; run(false); }
+  };
 })();

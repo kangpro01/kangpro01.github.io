@@ -20,7 +20,6 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # (원본, 만들 미리보기 파일)
 TARGETS = [
     ("index.html", "preview.html"),
-    ("reminder.html", "preview-reminder.html"),
 ]
 
 NOTE = (
@@ -44,10 +43,9 @@ def main() -> int:
         "assets/when.js",
         "assets/task-form.js",
         "assets/home.js",
-        "assets/tasks.js",
         "assets/cal.js",
-        "assets/fab.js",
         "assets/notify.js",
+        "assets/fab.js",
     ]
 
     for src_name, out_name in TARGETS:

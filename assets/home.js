@@ -87,6 +87,7 @@
     }
 
     CAL.setTasks(all);
+    if(typeof NOTIFY !== 'undefined') NOTIFY.setTasks(all);
 
     /* 위쪽 네 칸 */
     const now = all.filter(t => t.due_on && t.due_on <= today);
