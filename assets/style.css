@@ -692,7 +692,10 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   font-size:13.5px;color:var(--ink-2);line-height:1.6;
 }
 .isu-idea b{display:block;font-size:11px;color:var(--ink-3);font-family:var(--fs-num);margin-bottom:3px}
-.isu-acts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin-top:12px}
+.isu-acts{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;margin-top:12px}
+.isu-acts-main{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+.tk-btn.quiet{border-color:transparent;color:var(--ink-3)}
+.tk-btn.quiet:hover{border-color:var(--rule);color:var(--ink-2)}
 /* display:flex 가 hidden 을 이깁니다. 감출 때는 이 줄이 있어야 합니다. */
 .isu-acts[hidden]{display:none}
 .tk-btn.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}

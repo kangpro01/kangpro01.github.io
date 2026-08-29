@@ -53,7 +53,7 @@
       writeHost.hidden = !open;
       if(toggle){
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.textContent = open ? '접기' : '+ 새로운 불편함 기록';
+        toggle.textContent = open ? '접기' : '+ 불편사항 등록';
       }
       if(open) writeHost.querySelector('textarea').focus();
     }
@@ -128,7 +128,11 @@
           + '</div>'
           + '</div>')
 
-      + '<div class="isu-acts">' + acts + '</div>'
+      /* 지우는 것은 되돌릴 수 없으니 다른 단추와 떼어 왼쪽에 둡니다 */
+      + '<div class="isu-acts">'
+      +   '<button type="button" class="tk-btn quiet" data-do="del">지우기</button>'
+      +   '<span class="isu-acts-main">' + acts + '</span>'
+      + '</div>'
       + '</div>';
   }
 
@@ -188,18 +192,24 @@
       }
       else if(act === 'task'){
         const cur = (await DB.q('improvements', 'select=*&id=eq.' + id))[0];
+        /* 마감을 일주일 뒤로 잡으면 이번 달 달력 밖으로 나가 아무 데도 안 보입니다.
+           오늘로 잡아야 '지금 해야 할 일'과 달력 오늘 칸에 바로 뜹니다. */
         const t = await DB.insert('tasks', {
           title: (cur.idea || cur.body).slice(0,300),
           note: cur.idea ? ('불편사항: ' + cur.body) : null,
           category: cur.category || null,
-          due_on: WHEN.ymd(new Date(Date.now() + 7*86400000))
+          due_on: WHEN.ymd(WHEN.midnight())
         });
         await DB.update('improvements', 'id=eq.' + id,
                         { status:'doing', task_id: t[0].id });
-        alert('업무로 담았어요. 메인 화면에서 볼 수 있어요.');
+        alert('업무로 담았어요. 메인 화면 \'지금 해야 할 일\'에 오늘 날짜로 들어갔어요.');
       }
       else if(act === 'reopen'){
         await DB.update('improvements', 'id=eq.' + id, { status:'new' });
+      }
+      else if(act === 'del'){
+        if(!confirm('이 건을 지울까요? 되돌릴 수 없어요.')) return;
+        await DB.remove('improvements', 'id=eq.' + id);
       }
       else {
         await DB.update('improvements', 'id=eq.' + id, { status: act });
