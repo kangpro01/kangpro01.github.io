@@ -13,7 +13,7 @@
   if(!listHost) return;
 
   const CATS = ['자료 찾기','반복 입력','승인·결재','연락·응대','시설','비품','일정','기타'];
-  const PRIO = { high:'급함', normal:'보통', low:'천천히' };
+  const PRIO = { high:'긴급 업무', normal:'일반 업무', low:'보류/여유 업무' };
   const STEP = { new:'접수', doing:'개선 중', done:'개선함', dropped:'접음' };
 
   const esc = s => String(s == null ? '' : s)
@@ -36,9 +36,9 @@
       + '<datalist id="isuCats">' + CATS.map(c => '<option value="'+c+'">').join('') + '</datalist>'
       + '<label><span>우선순위</span>'
       +   '<select name="priority">'
-      +     '<option value="normal">보통</option>'
-      +     '<option value="high">급함</option>'
-      +     '<option value="low">천천히</option>'
+      +     '<option value="normal">일반 업무</option>'
+      +     '<option value="high">긴급 업무</option>'
+      +     '<option value="low">보류/여유 업무</option>'
       +   '</select></label>'
       + '<button class="btn lg" type="submit">기록</button>'
       + '<p class="modal-msg" role="status" aria-live="polite"></p>'
@@ -83,7 +83,7 @@
     return '<div class="isu" data-id="' + x.id + '">'
       + '<div class="isu-top">'
       +   '<span class="isu-step s-' + x.status + '">' + STEP[x.status] + '</span>'
-      +   (x.priority === 'high' ? '<span class="isu-prio">급함</span>' : '')
+      +   (x.priority === 'high' ? '<span class="isu-prio">' + PRIO.high + '</span>' : '')
       +   (x.category ? '<span class="isu-cat">' + esc(x.category) + '</span>' : '')
       +   (repeat > 1 ? '<span class="isu-rep">비슷한 것 ' + repeat + '건</span>' : '')
       +   '<span class="isu-date">' + day(x.created_at) + (x.writer ? ' · ' + esc(x.writer) : '') + '</span>'
@@ -114,12 +114,12 @@
 
     listHost.innerHTML = open.length
       ? open.map(x => card(x, count[x.category] || 1)).join('')
-      : '<p class="board-load">아직 기록된 불편이 없습니다. 위에 한 줄 적어보십시오.</p>';
+      : '<p class="board-load">아직 기록된 불편함이 없어요. 생각나는 아이디어를 한 줄 적어보세요.</p>';
 
     if(doneHost){
       doneHost.innerHTML = shut.length
         ? shut.map(x => card(x, count[x.category] || 1)).join('')
-        : '<p class="board-load">개선을 마친 것이 여기에 쌓입니다.</p>';
+        : '<p class="board-load">개선을 마친 업무나 아이디어가 여기에 하나씩 쌓여요.</p>';
     }
   }
 
@@ -189,7 +189,7 @@
           + (r.note ? '<p class="ref-n">' + esc(r.note) + '</p>' : '')
           + '<div class="isu-acts"><button type="button" class="tk-btn" data-ref="del">지우기</button></div>'
           + '</div>').join('')
-      : '<p class="board-load">아직 담아둔 레퍼런스가 없습니다. 참고할 글이나 사례를 담아두십시오.</p>';
+      : '<p class="board-load">아직 담아둔 자료가 없어요. 참고할 글이나 아이디어를 담아두세요.</p>';
   }
 
   if(refBtn){
