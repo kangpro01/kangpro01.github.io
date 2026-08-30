@@ -8,13 +8,17 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/style.css?v=20260831b">
+<link rel="stylesheet" href="assets/style.css?v=20260831c">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
-<script src="assets/theme.js?v=20260831b"></script>
+<script src="assets/theme.js?v=20260831c"></script>
 </head>
 <body>
 
 <div id="site-header"></div>
+
+<header class="feed-head">
+  <h1>문제 &amp; 개선</h1>
+</header>
 
 <div class="split">
 
@@ -30,23 +34,16 @@
 
   <!-- 오른쪽 — 피드 -->
   <main class="feed">
-    <header class="feed-head">
-      <h1>문제 &amp; 개선</h1>
-    </header>
-
-    <div class="feed-act">
-      <button class="btn-primary" type="button" id="isuToggle"
-              aria-expanded="false" aria-controls="issueForm">+ 문제등록</button>
-    </div>
-    <div id="issueForm" hidden></div>
 
     <section class="feed-card" id="write">
       <div class="feed-card-head">
         <h2>불편한 점</h2>
         <em class="cnt" data-cnt="new">0</em>
+        <button class="kan-add" type="button" id="isuToggle"
+                aria-expanded="false" aria-controls="issueForm">+ 추가</button>
       </div>
+      <div id="issueForm" hidden></div>
       <div class="kan-body" id="issueNew"></div>
-      <p class="feed-note">최신순으로 표시돼요.</p>
     </section>
 
     <section class="feed-card" id="list">
@@ -55,7 +52,6 @@
         <em class="cnt" data-cnt="doing">0</em>
       </div>
       <div class="kan-body" id="issueList"></div>
-      <p class="feed-note">최신순으로 표시돼요.</p>
     </section>
 
     <section class="feed-card" id="done">
@@ -64,7 +60,6 @@
         <em class="cnt" data-cnt="done">0</em>
       </div>
       <div class="kan-body" id="issueDone"></div>
-      <p class="feed-note">최신순으로 표시돼요.</p>
     </section>
 
     <section class="feed-card" id="ref">
@@ -74,7 +69,6 @@
         <button class="kan-add" type="button" id="refAdd">+ 추가</button>
       </div>
       <div class="kan-body" id="refList"></div>
-      <p class="feed-note">최신순으로 표시돼요.</p>
     </section>
 
     <div id="site-footer"></div>
@@ -82,11 +76,11 @@
 
 </div>
 
-<script src="assets/site.js?v=20260831b"></script>
-<script src="assets/supabase.js?v=20260831b"></script>
-<script src="assets/db.js?v=20260831b"></script>
-<script src="assets/when.js?v=20260831b"></script>
-<script src="assets/task-form.js?v=20260831b"></script>
-<script src="assets/issues.js?v=20260831b"></script>
+<script src="assets/site.js?v=20260831c"></script>
+<script src="assets/supabase.js?v=20260831c"></script>
+<script src="assets/db.js?v=20260831c"></script>
+<script src="assets/when.js?v=20260831c"></script>
+<script src="assets/task-form.js?v=20260831c"></script>
+<script src="assets/issues.js?v=20260831c"></script>
 </body>
 </html>

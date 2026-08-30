@@ -13,8 +13,6 @@
   /* 마감 칩. 한 색 규칙의 유일한 예외 — 디자인 규칙 참고 */
   --dday-over-bg:#F7E9E6;  --dday-over-ink:#8C3A2E;
   --dday-today-bg:#FAEEDF; --dday-today-ink:#8A5620;
-  /* 문제 & 개선의 '등록' 단추 하나에만 쓰는 강조색 */
-  --primary:#2563EB;  --primary-2:#1D4ED8;
   /* 달력 — 일요일·공휴일은 빨강, 토요일은 파랑 */
   --dow-sun:#E53E3E;  --dow-sat:#3182CE;
   --holi-ink:#E88A88;   /* 공휴일 이름 — 숫자보다 옅게 */
@@ -49,7 +47,6 @@
     --drawer-bg:rgba(12,11,11,.86);
     --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
     --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
-    --primary:#3B82F6;  --primary-2:#60A5FA;
     /* 어두운 바탕에서 #E53E3E · #3182CE 는 너무 어두워 읽히지 않습니다 */
     --dow-sun:#FF7B72;  --dow-sat:#6FA8DC;
     --holi-ink:#C9807C;
@@ -72,7 +69,6 @@
   --drawer-bg:rgba(12,11,11,.86);
   --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
   --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
-  --primary:#3B82F6;  --primary-2:#60A5FA;
   --dow-sun:#FF7B72;  --dow-sat:#6FA8DC;
   --holi-ink:#C9807C;
   color-scheme:dark;
@@ -725,7 +721,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 /* ══ 문제 & 개선 — 왼쪽 메뉴 + 오른쪽 피드 ══ */
 .split{
-  max-width:1560px;margin:0 auto;padding:26px 24px 40px;
+  max-width:1560px;margin:0 auto;padding:0 24px 40px;
   display:grid;grid-template-columns:1fr;gap:22px;
 }
 @media (min-width:1000px){
@@ -756,19 +752,8 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 
 /* ── 오른쪽 ── */
-.feed-head{text-align:center;padding:4px 0 18px}
+.feed-head{max-width:1560px;margin:0 auto;padding:20px 24px 16px;text-align:center}
 .feed-head h1{margin:0;font-size:clamp(26px,3.2vw,36px);font-weight:900;letter-spacing:-.04em;line-height:1.2}
-
-.feed-act{display:flex;justify-content:flex-end;margin-bottom:16px}
-.btn-primary{
-  font-family:var(--fs);font-size:13.5px;font-weight:800;letter-spacing:-.02em;
-  background:var(--primary);color:#fff;border:0;border-radius:999px;
-  padding:11px 20px;cursor:pointer;white-space:nowrap;
-  box-shadow:0 6px 16px rgba(37,99,235,.2);
-  transition:background .15s ease,transform .12s ease;
-}
-.btn-primary:hover{background:var(--primary-2);transform:translateY(-1px)}
-.btn-primary:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
 
 .feed-card{
   background:var(--paper);border:1px solid var(--rule);border-radius:16px;
@@ -778,7 +763,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .feed-card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .feed-card-head h2{margin:0;font-size:15.5px;font-weight:800;letter-spacing:-.035em}
 .feed-card-head .kan-add{margin-left:auto}
-.feed-note{margin:12px 2px 0;font-size:11.5px;color:var(--ink-3);text-align:right}
 
 /* 비어 있을 때 — 점선 없이 흰 판에 안내만 */
 .feed-empty{
@@ -814,15 +798,9 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .feed footer{border-top:0;padding:8px 0 0;text-align:center}
 .feed footer .wrap{justify-content:center;padding:0}
 
-@media (prefers-reduced-motion:reduce){.btn-primary:hover{transform:none}}
-
 /* ══ 불편사항 ══ */
 .isu-form{max-width:none}
-#issueForm{
-  background:var(--paper);border:1px solid var(--rule);border-radius:16px;
-  box-shadow:0 1px 2px rgba(51,49,50,.04), 0 8px 20px rgba(51,49,50,.05);
-  padding:20px 22px;margin-bottom:16px;
-}
+#issueForm{margin-bottom:16px}
 #issueForm[hidden]{display:none}
 .isu-form label{display:block;margin-bottom:12px}
 .isu-form label > span{display:block;font-size:12.5px;font-weight:700;color:var(--ink-2);margin-bottom:5px}

@@ -78,7 +78,7 @@
       writeHost.hidden = !open;
       if(toggle){
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.textContent = open ? '접기' : '+ 문제등록';
+        toggle.textContent = open ? '접기' : '+ 추가';
       }
       if(open) writeHost.querySelector('textarea').focus();
     }
