@@ -340,7 +340,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 /* ══ 서브페이지 머리말 ══ */
 .page-head{border-bottom:1px solid var(--rule);padding:56px 0 40px}
 .page-head h1{margin:10px 0 0;font-size:clamp(30px,6.4vw,46px);letter-spacing:-.035em;line-height:1.15}
-.page-head p{margin:14px 0 0;font-size:15.5px;color:var(--ink-2);max-width:34em}
 
 /* 현재 보고 있는 메뉴 */
 .menu > li > a.on{color:var(--ink)}
@@ -411,13 +410,9 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 /* ══ 머리말 (얇은 형) ══ */
 .page-head.slim{padding:34px 0 26px}
 .page-head.slim h1{font-size:clamp(24px,5vw,34px)}
-.page-head.slim p{font-size:14.5px}
-/* 제목과 설명을 한 줄에 — 세로로 세 단을 쓰지 않습니다 */
+/* 제목 한 줄만 둡니다 */
 .page-head.tight{padding:22px 0 18px}
-@media (min-width:900px){
-  .page-head.tight .wrap{display:flex;align-items:baseline;gap:14px}
-  .page-head.tight h1,.page-head.tight p{margin:0}
-}
+.page-head.tight h1{margin:0}
 
 /* ══ 메인 — 왼쪽 캘린더 + 오른쪽 위젯 서랍 ══
    달력이 넓게 서고, 업무 위젯은 오른쪽에 세로로 쌓입니다.
@@ -761,9 +756,8 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 
 /* ── 오른쪽 ── */
-.feed-head{text-align:center;padding:4px 0 20px}
+.feed-head{text-align:center;padding:4px 0 18px}
 .feed-head h1{margin:0;font-size:clamp(26px,3.2vw,36px);font-weight:900;letter-spacing:-.04em;line-height:1.2}
-.feed-head p{margin:9px 0 0;font-size:14.5px;color:var(--ink-2)}
 
 .feed-act{display:flex;justify-content:flex-end;margin-bottom:16px}
 .btn-primary{
