@@ -415,28 +415,29 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
    오른쪽 위 단추를 누르면 같은 묶음이 서랍으로 옮겨 옵니다.
    두 벌을 만들지 않고 하나를 옮겨 다니게 했습니다. */
 /* 폭을 다 쓰면 날짜 칸이 200x78 로 납작해집니다.
-   가로를 잡고 칸 높이를 올려 한 칸이 네모에 가깝게 둡니다.
-   옆 레일은 달력 오른쪽에 붙어 무엇을 깔지 고릅니다. */
+   가로를 잡고 칸 높이를 올려 한 칸이 네모에 가깝게 둡니다. */
 .hub{
   max-width:1340px;
   display:grid;grid-template-columns:1fr;gap:16px;align-items:start;
   padding-top:22px;padding-bottom:48px;
 }
-.hub-main,.hub-now,.hub-dock{min-width:0}
-.hub-now[hidden],.hub-dock[hidden]{display:none}
+.hub-main,.hub-aside,.hub-dock{min-width:0}
+.hub-aside[hidden],.hub-dock[hidden]{display:none}
+.hub-aside{display:flex;flex-direction:column;gap:16px}
 
-/* 달력 오른쪽에 '지금 해야 할 일', 그 아래 폭 전체에 일간·주간·월간.
+/* 달력 오른쪽에 '지금 해야 할 일'과 '메모 & 스크랩',
+   그 아래 폭 전체에 일간·주간·월간.
    무엇을 놓을지는 오른쪽 아래 단추 안에서 고릅니다. */
 @media (min-width:1100px){
   .hub{grid-template-columns:minmax(0,1fr) 340px;gap:18px}
   .hub-main{grid-column:1}
-  .hub-now{grid-column:2;position:sticky;top:calc(var(--gnb) + 22px)}
+  .hub-aside{grid-column:2}
   .hub-dock{grid-column:1 / -1}
   /* 세 칸을 고정합니다. auto-fit 로 두면 하나만 놓았을 때
-     그 카드가 1300px 로 늘어나 속이 텀 빈 판이 됩니다. */
+     그 카드가 1300px 로 늘어나 속이 텅 빈 판이 됩니다. */
   .hub-side{grid-template-columns:repeat(3,minmax(0,1fr))}
   /* 옆자리를 비우면 달력이 폭을 다 먹어 날짜 칸이 200x98 로 납작해집니다 */
-  .hub.now-off{max-width:1160px;grid-template-columns:minmax(0,1fr)}
+  .hub.aside-off{max-width:1160px;grid-template-columns:minmax(0,1fr)}
 }
 
 /* ── 위젯 묶음 — 달력 아래에 나란히 ── */
@@ -472,6 +473,53 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 /* 칸은 내용만큼. 최대 높이도 안쪽 스크롤도 두지 않습니다. */
 .hub .card{height:auto}
 .hub .card > .card-body{max-height:none;overflow:visible}
+
+/* ── 메모 & 스크랩 ──
+   일정이 아닌 것을 담습니다. 적는 칸을 맨 위에 두어 들어오자마자
+   바로 적을 수 있게 하고, 담은 것은 새것부터 아래로 쌓입니다. */
+.note-new{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.note-new textarea{
+  width:100%;min-height:58px;max-height:132px;resize:none;overflow:auto;
+  font-family:var(--fs);font-size:13.5px;line-height:1.6;letter-spacing:-.02em;
+  color:var(--ink);background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:10px;padding:10px 12px;
+}
+.note-new textarea::placeholder{color:var(--ink-3)}
+.note-new textarea:focus{outline:0;border-color:var(--ink-3);background:var(--paper)}
+.note-save{
+  align-self:flex-end;flex:none;
+  font-family:var(--fs);font-size:12px;font-weight:800;letter-spacing:-.02em;
+  color:var(--on-ink);background:var(--ink);border:0;border-radius:999px;
+  padding:7px 16px;cursor:pointer;transition:opacity .15s ease;
+}
+.note-save:hover{opacity:.86}
+.note-save:disabled{opacity:.4;cursor:default}
+.note-msg{margin:0 0 10px;font-size:12px;color:var(--ink-2);line-height:1.5}
+.note-msg[hidden]{display:none}
+
+.note-list{display:flex;flex-direction:column}
+.note{border-top:1px solid var(--rule);padding:11px 2px;transition:opacity .15s ease}
+.note.busy{opacity:.45;pointer-events:none}
+.note-b{
+  margin:0;font-size:13.5px;line-height:1.6;letter-spacing:-.02em;
+  color:var(--ink);word-break:break-word;
+}
+.note-link{
+  color:var(--ink);text-decoration:underline;text-underline-offset:3px;
+  text-decoration-thickness:1px;text-decoration-color:var(--ink-3);
+}
+.note-link:hover{text-decoration-color:var(--ink)}
+.note-foot{display:flex;align-items:center;gap:8px;margin-top:7px}
+.note-foot time{flex:1;min-width:0;font-family:var(--fs-num);font-size:11px;color:var(--ink-3)}
+.note-acts{flex:none;display:flex;gap:5px;opacity:0;transition:opacity .15s ease}
+.note:hover .note-acts,.note:focus-within .note-acts{opacity:1}
+@media (hover:none){
+  /* 손가락으로 쓰는 기기에는 hover 가 없으니 늘 보입니다 */
+  .note-acts{opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  .note,.note-acts,.note-save{transition:none}
+}
 
 /* 위젯 칸은 340~430px 로 좁습니다. '3일 뒤'·'다음 주'가 자리를 미리
    차지하면 제목이 서너 줄로 접히므로, 마우스를 올릴 때만 위에 띄웁니다. */

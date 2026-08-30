@@ -84,6 +84,21 @@ create index if not exists improvements_status_idx on public.improvements (statu
 create index if not exists improvements_cat_idx    on public.improvements (category);
 
 
+-- ══ 메모 & 스크랩 ═════════════════════════════════════════
+-- 일정이 아닌 것. 떠오른 생각, 링크, 이따 볼 임시 메모를 그대로 담습니다.
+-- 날짜 칸을 두지 않습니다. 날짜를 물으면 적기가 귀찮아지고,
+-- 귀찮으면 안 적게 되어 결국 잊습니다. 정말 할 일이 되면 tasks 로 옮깁니다.
+create table if not exists public.notes (
+  id         uuid        primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+
+  body       text        not null check (char_length(body) between 1 and 2000),
+  writer     text                 check (writer is null or char_length(writer) <= 60)
+);
+
+create index if not exists notes_created_idx on public.notes (created_at desc);
+
+
 -- ══ 레퍼런스 ══════════════════════════════════════════════
 -- 참고한 것과 참고할 것. (references 는 SQL 예약어라 refs 로 씁니다)
 create table if not exists public.refs (
@@ -120,6 +135,13 @@ create trigger improvements_touch before update on public.improvements
 alter table public.tasks        enable row level security;
 alter table public.improvements enable row level security;
 alter table public.refs         enable row level security;
+alter table public.notes        enable row level security;
+
+drop policy if exists "team reads and writes notes" on public.notes;
+create policy "team reads and writes notes"
+  on public.notes for all
+  to authenticated
+  using (true) with check (true);
 
 drop policy if exists "team reads and writes refs" on public.refs;
 create policy "team reads and writes refs"

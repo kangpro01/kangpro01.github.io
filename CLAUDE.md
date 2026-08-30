@@ -14,7 +14,7 @@
 ## 폴더 구조
 
 ```
-index.html        메인 — 다섯 칸(캘린더·당장 할 일·일간·주간·월간) + 후속/방치/지난주
+index.html        메인 — 달력 + 옆자리(지금 해야 할 일·메모&스크랩) + 아래(일간·주간·월간)
 issues.html       문제 & 개선 — 불편한 점 → 개선 아이디어 → 축적, 레퍼런스
 tools.html        업무Tools — 도구 목록. 여기서 골라서 연다
 tool-*.html       도구 하나. 자기완결형이라 디자인 체계가 달라도 된다
@@ -33,6 +33,7 @@ assets/
   home.js         메인 화면의 리마인더 블록
   cal.js          홈 달력
   notify.js       일간·주간·월간 알림 켜고 끄기
+  note.js         메모 & 스크랩. 담고, 링크로 만들고, 업무로 옮긴다
   tasks.js        일반적인 총무 반복 업무 목록 (개인 업무 아님)
   tools.js        업무Tools 목록. 도구를 만들면 여기에 한 줄 더한다
   favicon.svg / kang.png
@@ -103,7 +104,12 @@ CSS·JS·이미지를 한 파일에 밀어 넣은 생성물이다. 원본을 고
 
 ## Supabase (로그인과 데이터)
 
-표는 `tasks`(업무)와 `improvements`(불편사항·개선) 둘이다. 정의는 `supabase/schema.sql`.
+표는 넷이다 — `tasks`(업무), `improvements`(불편사항·개선), `refs`(레퍼런스),
+`notes`(메모 & 스크랩). 정의는 `supabase/schema.sql`.
+
+**표를 늘렸으면 대시보드 SQL Editor에서 `schema.sql`을 다시 실행한다.**
+정적 사이트라 마이그레이션이 없다. 파일만 고치고 실행을 빠뜨리면
+그 칸이 "표가 아직 없어요" 상태로 남는다.
 
 **로그인한 사람만 읽고 쓴다.** 팀이 공유하는 계정 하나로 로그인한다.
 화면에서는 암호 한 칸만 묻고, 계정 주소는 `assets/supabase.js`의 `teamEmail`에서 가져온다.

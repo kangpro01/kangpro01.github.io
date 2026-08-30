@@ -272,29 +272,31 @@
   /* ── 화면에 무엇을 놓을지 ──
      오른쪽 아래 단추 안에서 고릅니다. 화면 옆에 레일을 붙여 두면
      늘 눈에 걸리는데, 자리를 정하는 일은 자주 하는 일이 아닙니다.
-     '지금 해야 할 일'은 달력 옆, 나머지는 달력 아래로 갑니다. */
+     '지금 해야 할 일'과 '메모 & 스크랩'은 달력 옆,
+     일간·주간·월간은 달력 아래로 갑니다. */
   (function(){
-    const pick = document.getElementById('widgetPick');
-    const hub  = document.querySelector('.hub');
-    const nowB = document.getElementById('hubNow');
-    const side = document.getElementById('hubSide');
-    const dock = document.getElementById('hubDock');
-    if(!pick || !hub || !nowB || !side || !dock) return;
+    const pick  = document.getElementById('widgetPick');
+    const hub   = document.querySelector('.hub');
+    const aside = document.getElementById('hubAside');
+    const side  = document.getElementById('hubSide');
+    const dock  = document.getElementById('hubDock');
+    if(!pick || !hub || !aside || !side || !dock) return;
 
     const get = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
     const set = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
 
     const KEY = 'kp.widgets';
     /* 고르는 차례는 화면 배치와 상관없이 늘 같아야 헷갈리지 않습니다 */
-    const ORDER = ['now','daily','weekly','monthly'];
+    const ORDER = ['now','note','daily','weekly','monthly'];
+    const ASIDE = ['now','note'];        // 달력 옆에 서는 것들
     const elOf = w => document.querySelector('.widget[data-w="' + w + '"]');
     const nameOf = el => el.querySelector('h2').textContent.trim();
 
-    /* 처음 오면 '지금 해야 할 일' 하나만 놓아 둡니다.
-       넷을 다 놓으면 첫 화면이 무겁고, 아무것도 없으면 뭘 하는 곳인지 안 보입니다. */
+    /* 처음 오면 달력 옆의 둘만 놓아 둡니다. 다섯을 다 놓으면 첫 화면이
+       무겁고, 아무것도 없으면 뭘 하는 곳인지 안 보입니다. */
     function shown(){
       const saved = get(KEY);
-      return saved === null ? ['now'] : saved.split(',').filter(Boolean);
+      return saved === null ? ASIDE.slice() : saved.split(',').filter(Boolean);
     }
 
     /* 칩은 처음 한 번만 만듭니다. 누를 때마다 다시 그리면 눌린 단추가
@@ -311,9 +313,9 @@
       const on = shown();
       ORDER.forEach(w => { const el = elOf(w); if(el) el.hidden = !on.includes(w); });
 
-      nowB.hidden = !on.includes('now');
+      aside.hidden = !ASIDE.some(w => on.includes(w));
       /* 옆자리를 비우면 달력이 폭을 다 먹어 날짜 칸이 납작해집니다 */
-      hub.classList.toggle('now-off', nowB.hidden);
+      hub.classList.toggle('aside-off', aside.hidden);
       dock.hidden = !['daily','weekly','monthly'].some(w => on.includes(w));
 
       pick.querySelectorAll('[data-pick]').forEach(b => {
@@ -359,6 +361,7 @@
   document.addEventListener('tasks:changed', load);
   DB.gate(() => {
     load();
+    if(typeof NOTE !== 'undefined') NOTE.load();
     /* 다른 페이지에서 '＋ 업무추가'를 누르고 넘어온 경우.
        로그인을 지난 뒤에 엽니다. */
     if(location.hash === '#new'){
