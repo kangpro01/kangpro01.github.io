@@ -8,9 +8,9 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/style.css?v=20260831h">
+<link rel="stylesheet" href="assets/style.css?v=20260901a">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
-<script src="assets/theme.js?v=20260831h"></script>
+<script src="assets/theme.js?v=20260901a"></script>
 </head>
 <body>
 
@@ -23,59 +23,56 @@
       <div class="card-head"><h2>캘린더</h2></div>
       <div class="card-body"><div class="cal" id="homeCal"></div></div>
     </section>
-
-    <!-- 레일에서 고른 것이 여기 깔립니다 -->
-    <div class="hub-dock" id="hubDock">
-      <div class="hub-side" id="hubSide" aria-label="업무 위젯">
-
-    <section class="card widget" id="now" data-w="now">
-      <div class="card-head">
-        <button type="button" class="w-grip" aria-label="지금 해야 할 일 순서 바꾸기">⋮⋮</button>
-        <h2>지금 해야 할 일</h2>
-        <span class="card-hint" id="nowCount"></span>
-        <button type="button" class="card-fold" data-fold
-                aria-expanded="true" aria-controls="nowList" aria-label="접기"></button>
-      </div>
-      <div class="card-body" id="nowList"></div>
-    </section>
-    <section class="card widget" id="daily" data-w="daily">
-      <div class="card-head">
-        <button type="button" class="w-grip" aria-label="일간 업무 순서 바꾸기">⋮⋮</button>
-        <h2>일간 업무</h2>
-        <button type="button" class="card-add" data-newtask data-when="매일" aria-label="일간 업무 담기">＋</button>
-        <button type="button" class="card-fold" data-fold
-                aria-expanded="true" aria-controls="dailyList" aria-label="접기"></button>
-      </div>
-      <div class="card-body" id="dailyList"></div>
-    </section>
-    <section class="card widget" id="weekly" data-w="weekly">
-      <div class="card-head">
-        <button type="button" class="w-grip" aria-label="주간 업무 순서 바꾸기">⋮⋮</button>
-        <h2>주간 업무</h2>
-        <button type="button" class="card-add" data-newtask data-when="매주 금요일" aria-label="주간 업무 담기">＋</button>
-        <button type="button" class="card-fold" data-fold
-                aria-expanded="true" aria-controls="weeklyList" aria-label="접기"></button>
-      </div>
-      <div class="card-body" id="weeklyList"></div>
-    </section>
-    <section class="card widget" id="monthly" data-w="monthly">
-      <div class="card-head">
-        <button type="button" class="w-grip" aria-label="월간 업무 순서 바꾸기">⋮⋮</button>
-        <h2>월간 업무</h2>
-        <button type="button" class="card-add" data-newtask data-when="매달 25일" aria-label="월간 업무 담기">＋</button>
-        <button type="button" class="card-fold" data-fold
-                aria-expanded="true" aria-controls="monthlyList" aria-label="접기"></button>
-      </div>
-      <div class="card-body" id="monthlyList"></div>
-    </section>
-    
-    
-      </div>
-    </div>
   </main>
 
-  <!-- 옆 레일 — 무엇을 깔지 고릅니다 -->
-  <nav class="hub-rail" id="hubRail" aria-label="업무 위젯 고르기"></nav>
+  <!-- 달력 옆자리 -->
+  <aside class="hub-now" id="hubNow">
+  <section class="card widget" id="now" data-w="now">
+    <div class="card-head">
+      <h2>지금 해야 할 일</h2>
+      <span class="card-hint" id="nowCount"></span>
+      <button type="button" class="card-fold" data-fold
+              aria-expanded="true" aria-controls="nowList" aria-label="접기"></button>
+    </div>
+    <div class="card-body" id="nowList"></div>
+  </section>
+  </aside>
+
+  <!-- 달력 아래 -->
+  <div class="hub-dock" id="hubDock">
+    <div class="hub-side" id="hubSide" aria-label="업무 위젯">
+      <section class="card widget" id="daily" data-w="daily">
+        <div class="card-head">
+          <button type="button" class="w-grip" aria-label="일간 업무 순서 바꾸기">⋮⋮</button>
+          <h2>일간 업무</h2>
+          <button type="button" class="card-add" data-newtask data-when="매일" aria-label="일간 업무 담기">＋</button>
+          <button type="button" class="card-fold" data-fold
+                  aria-expanded="true" aria-controls="dailyList" aria-label="접기"></button>
+        </div>
+        <div class="card-body" id="dailyList"></div>
+      </section>
+      <section class="card widget" id="weekly" data-w="weekly">
+        <div class="card-head">
+          <button type="button" class="w-grip" aria-label="주간 업무 순서 바꾸기">⋮⋮</button>
+          <h2>주간 업무</h2>
+          <button type="button" class="card-add" data-newtask data-when="매주 금요일" aria-label="주간 업무 담기">＋</button>
+          <button type="button" class="card-fold" data-fold
+                  aria-expanded="true" aria-controls="weeklyList" aria-label="접기"></button>
+        </div>
+        <div class="card-body" id="weeklyList"></div>
+      </section>
+      <section class="card widget" id="monthly" data-w="monthly">
+        <div class="card-head">
+          <button type="button" class="w-grip" aria-label="월간 업무 순서 바꾸기">⋮⋮</button>
+          <h2>월간 업무</h2>
+          <button type="button" class="card-add" data-newtask data-when="매달 25일" aria-label="월간 업무 담기">＋</button>
+          <button type="button" class="card-fold" data-fold
+                  aria-expanded="true" aria-controls="monthlyList" aria-label="접기"></button>
+        </div>
+        <div class="card-body" id="monthlyList"></div>
+      </section>
+    </div>
+  </div>
 
 </div>
 
@@ -87,13 +84,18 @@
       <button class="btn" type="button" data-newtask>＋ 업무추가</button>
     </div>
     <div class="fab-sec">
+      <b>화면에 놓기</b>
+      <p class="fab-note">고른 것만 메인 화면에 놓여요.</p>
+      <div class="fab-picks" id="widgetPick" aria-label="화면에 놓을 것 고르기"></div>
+    </div>
+    <div class="fab-sec">
       <b>알림 받기</b>
       <p class="fab-note">켜두면 들어왔을 때 알려드려요.</p>
       <div class="switches" id="notifySwitches"></div>
     </div>
   </div>
   <button type="button" class="fab" id="fabBtn" aria-expanded="false" aria-controls="fabPop"
-          aria-label="업무추가와 알림 설정 열기">
+          aria-label="업무추가·화면 구성·알림 열기">
     <img src="assets/kang.png" alt="" width="252" height="340">
     <i class="fab-x" aria-hidden="true"></i>
   </button>
@@ -101,15 +103,15 @@
 
 <div id="site-footer"></div>
 
-<script src="assets/site.js?v=20260831h"></script>
-<script src="assets/supabase.js?v=20260831h"></script>
-<script src="assets/db.js?v=20260831h"></script>
-<script src="assets/when.js?v=20260831h"></script>
-<script src="assets/task-form.js?v=20260831h"></script>
-<script src="assets/holidays.js?v=20260831h"></script>
-<script src="assets/cal.js?v=20260831h"></script>
-<script src="assets/notify.js?v=20260831h"></script>
-<script src="assets/home.js?v=20260831h"></script>
-<script src="assets/fab.js?v=20260831h"></script>
+<script src="assets/site.js?v=20260901a"></script>
+<script src="assets/supabase.js?v=20260901a"></script>
+<script src="assets/db.js?v=20260901a"></script>
+<script src="assets/when.js?v=20260901a"></script>
+<script src="assets/task-form.js?v=20260901a"></script>
+<script src="assets/holidays.js?v=20260901a"></script>
+<script src="assets/cal.js?v=20260901a"></script>
+<script src="assets/notify.js?v=20260901a"></script>
+<script src="assets/home.js?v=20260901a"></script>
+<script src="assets/fab.js?v=20260901a"></script>
 </body>
 </html>

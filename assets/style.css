@@ -422,31 +422,21 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   display:grid;grid-template-columns:1fr;gap:16px;align-items:start;
   padding-top:22px;padding-bottom:48px;
 }
-@media (min-width:1040px){
-  .hub{grid-template-columns:minmax(0,1fr) 152px;gap:18px}
-  .hub-rail{position:sticky;top:calc(var(--gnb) + 22px)}
-}
-.hub-main{min-width:0}
-.hub-dock{margin-top:16px}
-.hub-dock[hidden]{display:none}
+.hub-main,.hub-now,.hub-dock{min-width:0}
+.hub-now[hidden],.hub-dock[hidden]{display:none}
 
-/* ── 옆 레일 ── */
-.hub-rail{
-  display:flex;flex-direction:column;gap:6px;
-  background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:10px;
-  box-shadow:0 1px 2px rgba(51,49,50,.04), 0 8px 20px rgba(51,49,50,.05);
-}
-.rail-item{
-  font-family:var(--fs);font-size:12px;font-weight:700;letter-spacing:-.03em;
-  color:var(--ink-2);background:var(--paper);border:1px solid var(--rule);
-  border-radius:999px;padding:7px 10px;cursor:pointer;text-align:center;white-space:nowrap;
-  transition:border-color .15s ease,background .15s ease,color .15s ease;
-}
-.rail-item:hover{border-color:var(--ink-3);color:var(--ink)}
-.rail-item.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
-@media (max-width:1039px){
-  .hub-rail{flex-direction:row;flex-wrap:wrap}
-  .rail-item{flex:1 1 auto}
+/* 달력 오른쪽에 '지금 해야 할 일', 그 아래 폭 전체에 일간·주간·월간.
+   무엇을 놓을지는 오른쪽 아래 단추 안에서 고릅니다. */
+@media (min-width:1100px){
+  .hub{grid-template-columns:minmax(0,1fr) 340px;gap:18px}
+  .hub-main{grid-column:1}
+  .hub-now{grid-column:2;position:sticky;top:calc(var(--gnb) + 22px)}
+  .hub-dock{grid-column:1 / -1}
+  /* 세 칸을 고정합니다. auto-fit 로 두면 하나만 놓았을 때
+     그 카드가 1300px 로 늘어나 속이 텀 빈 판이 됩니다. */
+  .hub-side{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* 옆자리를 비우면 달력이 폭을 다 먹어 날짜 칸이 200x98 로 납작해집니다 */
+  .hub.now-off{max-width:1160px;grid-template-columns:minmax(0,1fr)}
 }
 
 /* ── 위젯 묶음 — 달력 아래에 나란히 ── */
@@ -454,14 +444,13 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
   gap:12px;align-items:start;min-width:0;
 }
-.hub-side .widget{padding:16px 18px}
-.hub-side .widget[hidden]{display:none}
-.hub-side .card-head{gap:8px}
-.hub-side .card-head h2{font-size:15px}
+.hub .widget{padding:16px 18px}
+.hub .widget[hidden]{display:none}
+.hub .widget .card-head h2{font-size:15px}
 
 /* 손잡이 */
 .w-grip{
-  flex:none;order:-1;width:22px;height:24px;padding:0;
+  flex:none;margin-left:-4px;width:20px;height:24px;padding:0;
   border:0;background:none;cursor:grab;
   color:var(--ink-3);font-size:13px;line-height:1;letter-spacing:-2px;
   display:grid;place-items:center;border-radius:6px;
@@ -484,21 +473,40 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .hub .card{height:auto}
 .hub .card > .card-body{max-height:none;overflow:visible}
 
-/* 서랍은 좁습니다. '3일 뒤'·'다음 주'가 자리를 미리 차지하면
-   제목이 서너 줄로 접히므로, 마우스를 올릴 때만 위에 띄웁니다. */
-.hub-side .tk-title{word-break:keep-all}
+/* 위젯 칸은 340~430px 로 좁습니다. '3일 뒤'·'다음 주'가 자리를 미리
+   차지하면 제목이 서너 줄로 접히므로, 마우스를 올릴 때만 위에 띄웁니다. */
+.hub .tk{position:relative;flex-wrap:wrap;padding:13px 2px;gap:11px}
+.hub .tk-title{font-size:14.5px;line-height:1.55;word-break:keep-all}
+.hub .tk-body p{font-size:12.5px}
+.hub .tk-acts{
+  position:absolute;right:0;bottom:8px;z-index:2;
+  padding-left:10px;border-radius:8px;
+  background:var(--paper);box-shadow:-12px 0 10px 2px var(--paper);
+}
+@media (hover:none){
+  /* 손가락으로 쓰는 기기에는 hover 가 없으니 아예 한 줄을 내줍니다 */
+  .hub .tk-acts{
+    position:static;opacity:1;flex-basis:100%;margin-left:31px;
+    box-shadow:none;padding-left:0;background:none;
+  }
+}
 
 
 .card{
   border:1px solid var(--rule);border-radius:14px;padding:18px 20px 16px;
   background:var(--paper);min-width:0;
 }
+/* 제목이 남는 폭을 다 가져가야 단추들이 오른쪽 끝에 나란히 붙습니다.
+   space-between 으로 두면 넷이 고르게 흩어져 제목이 가운데로 밀립니다. */
 .card-head{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  display:flex;align-items:center;gap:6px;
   margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--rule);flex:none;
 }
-.card-head h2{margin:0;font-size:16.5px;font-weight:800;letter-spacing:-.035em}
-.card-hint{font-family:var(--fs-num);font-size:12px;font-weight:700;color:var(--ink-2)}
+.card-head h2{
+  margin:0;flex:1;min-width:0;
+  font-size:16.5px;font-weight:800;letter-spacing:-.035em;
+}
+.card-hint{flex:none;font-family:var(--fs-num);font-size:12px;font-weight:700;color:var(--ink-2)}
 .card-add{
   width:28px;height:28px;line-height:1;flex:none;
   border:1px solid var(--rule);border-radius:8px;background:var(--paper);
@@ -507,7 +515,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 .card-add:hover{border-color:var(--ink);color:var(--ink)}
 /* 접기·펴기 — 화살표 하나로 방향만 바꿉니다 */
-.card-hint{margin-left:auto}
 .card-fold{
   width:26px;height:26px;flex:none;padding:0;
   border:1px solid var(--rule);border-radius:8px;background:var(--paper);
@@ -533,7 +540,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 @media (max-width:900px){
   /* 좁을 때는 달력이 잘리지 않게 칸 안에서 다 보여줍니다 */
-  .hub > .card-cal > .card-body{max-height:none;overflow:visible}
+  .hub .card-cal > .card-body{max-height:none;overflow:visible}
 }
 .card-empty{margin:12px 2px;font-size:13.5px;color:var(--ink-3);line-height:1.65}
 .card-empty.bad{color:var(--ink-2)}
@@ -596,6 +603,17 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .fab-note{margin:0 0 9px;font-size:12px;color:var(--ink-3);line-height:1.5}
 /* 판 안에서는 알림 설정을 세로로 좁게 */
 .fab-pop{max-height:calc(100vh - 150px);overflow-y:auto}
+/* 화면에 무엇을 놓을지 고르는 칩 */
+.fab-picks{display:flex;flex-wrap:wrap;gap:6px}
+.fab-pick{
+  font-family:var(--fs);font-size:12px;font-weight:700;letter-spacing:-.03em;
+  color:var(--ink-2);background:var(--paper);border:1px solid var(--rule);
+  border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap;
+  transition:border-color .15s ease,background .15s ease,color .15s ease;
+}
+.fab-pick:hover{border-color:var(--ink-3);color:var(--ink)}
+.fab-pick.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+
 .fab-pop .switches{display:block}
 .fab-pop .switches .ics{font-size:11px;padding:5px 10px}
 .fab-pop .switch-state{font-size:11.5px;line-height:1.5}

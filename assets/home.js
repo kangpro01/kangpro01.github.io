@@ -152,8 +152,37 @@
     }
   });
 
-  /* ── 오른쪽 서랍의 위젯 ──
-     접기와 순서 바꾸기. 둘 다 고른 대로 남습니다.
+  /* ── 접기 ──
+     '지금 해야 할 일'은 달력 옆에, 나머지는 달력 아래에 있습니다.
+     자리가 다르니 문서 전체에서 잡습니다. 접은 것은 남습니다. */
+  (function(){
+    const get = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+    const set = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
+
+    function paintFold(card, folded){
+      const btn = card.querySelector('[data-fold]');
+      card.classList.toggle('folded', folded);
+      if(btn){
+        btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
+        btn.setAttribute('aria-label', folded ? '펴기' : '접기');
+      }
+    }
+    document.querySelectorAll('.widget').forEach(card => {
+      paintFold(card, get('kp.fold.' + card.dataset.w) === '1');
+    });
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('[data-fold]');
+      if(!btn) return;
+      const card = btn.closest('.widget');
+      if(!card) return;
+      const next = !card.classList.contains('folded');
+      set('kp.fold.' + card.dataset.w, next ? '1' : '0');
+      paintFold(card, next);
+    });
+  })();
+
+  /* ── 순서 바꾸기 ──
+     달력 아래에 깔린 셋끼리만 자리를 바꿉니다.
      끌기는 마우스에서만 되므로, 손잡이를 눌러 고르고
      옮길 자리를 눌러 놓는 방법을 함께 둡니다. */
   (function(){
@@ -163,28 +192,6 @@
     const get = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
     const set = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
 
-    /* ── 접기 ── */
-    function paintFold(card, folded){
-      const btn = card.querySelector('[data-fold]');
-      card.classList.toggle('folded', folded);
-      if(btn){
-        btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
-        btn.setAttribute('aria-label', folded ? '펴기' : '접기');
-      }
-    }
-    side.querySelectorAll('.widget').forEach(card => {
-      paintFold(card, get('kp.fold.' + card.dataset.w) === '1');
-    });
-    side.addEventListener('click', e => {
-      const btn = e.target.closest('[data-fold]');
-      if(!btn) return;
-      const card = btn.closest('.widget');
-      const next = !card.classList.contains('folded');
-      set('kp.fold.' + card.dataset.w, next ? '1' : '0');
-      paintFold(card, next);
-    });
-
-    /* ── 순서 ── */
     const ORDER = 'kp.sideOrder';
     function apply(){
       const saved = (get(ORDER) || '').split(',').filter(Boolean);
@@ -262,24 +269,29 @@
     });
   })();
 
-  /* ── 옆 레일 ──
-     달력 옆의 단추를 누르면 그 위젯이 달력 아래에 깔립니다.
-     다시 누르면 내려갑니다. 고른 것은 남습니다. */
+  /* ── 화면에 무엇을 놓을지 ──
+     오른쪽 아래 단추 안에서 고릅니다. 화면 옆에 레일을 붙여 두면
+     늘 눈에 걸리는데, 자리를 정하는 일은 자주 하는 일이 아닙니다.
+     '지금 해야 할 일'은 달력 옆, 나머지는 달력 아래로 갑니다. */
   (function(){
-    const rail = document.getElementById('hubRail');
+    const pick = document.getElementById('widgetPick');
+    const hub  = document.querySelector('.hub');
+    const nowB = document.getElementById('hubNow');
     const side = document.getElementById('hubSide');
     const dock = document.getElementById('hubDock');
-    if(!rail || !side || !dock) return;
+    if(!pick || !hub || !nowB || !side || !dock) return;
 
     const get = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
     const set = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
 
     const KEY = 'kp.widgets';
-    const all = [...side.querySelectorAll('.widget')];
+    /* 고르는 차례는 화면 배치와 상관없이 늘 같아야 헷갈리지 않습니다 */
+    const ORDER = ['now','daily','weekly','monthly'];
+    const elOf = w => document.querySelector('.widget[data-w="' + w + '"]');
     const nameOf = el => el.querySelector('h2').textContent.trim();
 
-    /* 처음 오면 '지금 해야 할 일' 하나만 깔아 둡니다.
-       넷을 다 깔면 첫 화면이 무거워지고, 아무것도 없으면 뭘 하는 곳인지 안 보입니다. */
+    /* 처음 오면 '지금 해야 할 일' 하나만 놓아 둡니다.
+       넷을 다 놓으면 첫 화면이 무겁고, 아무것도 없으면 뭘 하는 곳인지 안 보입니다. */
     function shown(){
       const saved = get(KEY);
       return saved === null ? ['now'] : saved.split(',').filter(Boolean);
@@ -287,22 +299,29 @@
 
     function paint(){
       const on = shown();
-      all.forEach(el => { el.hidden = !on.includes(el.dataset.w); });
-      dock.hidden = !on.length;
-      rail.innerHTML = all.map(el => {
-        const isOn = on.includes(el.dataset.w);
-        return '<button type="button" class="rail-item' + (isOn ? ' on' : '') + '"'
-             + ' data-pick="' + el.dataset.w + '" aria-pressed="' + isOn + '">'
+      ORDER.forEach(w => { const el = elOf(w); if(el) el.hidden = !on.includes(w); });
+
+      nowB.hidden = !on.includes('now');
+      /* 옆자리를 비우면 달력이 폭을 다 먹어 날짜 칸이 납작해집니다 */
+      hub.classList.toggle('now-off', nowB.hidden);
+      dock.hidden = !['daily','weekly','monthly'].some(w => on.includes(w));
+
+      pick.innerHTML = ORDER.map(w => {
+        const el = elOf(w);
+        if(!el) return '';
+        const isOn = on.includes(w);
+        return '<button type="button" class="fab-pick' + (isOn ? ' on' : '') + '"'
+             + ' data-pick="' + w + '" aria-pressed="' + isOn + '">'
              + nameOf(el) + '</button>';
       }).join('');
     }
 
-    rail.addEventListener('click', e => {
+    pick.addEventListener('click', e => {
       const b = e.target.closest('[data-pick]');
       if(!b) return;
       const w = b.dataset.pick;
       const on = shown();
-      set(KEY, (on.includes(w) ? on.filter(x => x !== w) : on.concat(w)).join(','));
+      set(KEY, ORDER.filter(x => on.includes(x) !== (x === w)).join(','));
       paint();
     });
 
