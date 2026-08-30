@@ -419,37 +419,75 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .page-head.tight h1,.page-head.tight p{margin:0}
 }
 
-/* ══ 메인 다섯 칸 ══
-   위: 캘린더(넓게) + 지금 해야 할 일
-   아래: 일간 · 주간 · 월간
-
-   가로 배치는 그대로 두되 높이는 묶지 않습니다.
-   전에는 화면 하나에 욱여넣느라 칸 안에서만 스크롤해서
-   업무가 늘면 서너 줄만 보이고 나머지가 숨었습니다.
-   이제 줄 높이는 그 줄에서 가장 긴 칸을 따라가고,
-   넘치면 화면 전체를 굴려 봅니다. */
+/* ══ 메인 — 왼쪽 캘린더 + 오른쪽 위젯 서랍 ══
+   달력이 넓게 서고, 업무 위젯은 오른쪽에 세로로 쌓입니다.
+   위젯은 접을 수 있고 손잡이(⋮⋮)로 순서를 바꿉니다. */
 .hub{
   max-width:var(--wrap-wide);
-  display:grid;grid-template-columns:repeat(12,1fr);gap:16px;
+  display:grid;grid-template-columns:1fr;gap:18px;
   padding-top:24px;padding-bottom:44px;
-  /* 칸마다 제 높이만 갖습니다. 늘어나게 두면 목록이 긴 칸을 따라
-     옆 칸까지 길어져 빈 자리가 크게 남습니다. */
-  align-items:start;
 }
-.card-cal{grid-column:span 9}
-.card-now{grid-column:span 3}
-.hub > .card:nth-child(n+3){grid-column:span 4}
-@media (max-width:900px){
-  .card-cal,.card-now,.hub > .card:nth-child(n+3){grid-column:span 12}
+@media (min-width:1000px){
+  .hub{grid-template-columns:minmax(0,1fr) 344px;gap:22px;align-items:start}
+  /* 달력을 보면서 굴릴 수 있게 서랍만 따로 굴립니다 */
+  .hub-side{
+    position:sticky;top:calc(var(--gnb) + 20px);
+    max-height:calc(100vh - var(--gnb) - 40px);
+    max-height:calc(100dvh - var(--gnb) - 40px);
+    overflow-y:auto;
+  }
 }
-/* 칸은 내용만큼. 최대 높이도 안쪽 스크롤도 두지 않습니다. */
-.hub > .card{height:auto}
-.hub > .card > .card-body{max-height:none;overflow:visible}
+.hub-main{min-width:0}
 
-/* 접힌 칸은 제목 줄만 남습니다 */
-.card-now.folded{padding-bottom:10px}
-.card-now.folded > .card-head{margin-bottom:0;padding-bottom:0;border-bottom:0}
-.card-now.folded > .card-body{display:none}
+/* ── 오른쪽 서랍 ── */
+.hub-side{
+  display:flex;flex-direction:column;gap:12px;min-width:0;
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:16px;padding:12px;
+}
+.hub-side .widget{padding:16px 18px}
+.hub-side .card-head{gap:8px}
+.hub-side .card-head h2{font-size:15px}
+
+/* 손잡이 */
+.w-grip{
+  flex:none;order:-1;width:22px;height:24px;padding:0;
+  border:0;background:none;cursor:grab;
+  color:var(--ink-3);font-size:13px;line-height:1;letter-spacing:-2px;
+  display:grid;place-items:center;border-radius:6px;
+  transition:color .15s ease,background .15s ease;
+}
+.w-grip:hover{color:var(--ink);background:var(--paper-2)}
+.w-grip:active{cursor:grabbing}
+.widget.dragging{opacity:.45}
+.widget.over,.widget.picked{box-shadow:0 0 0 2px var(--ink)}
+.widget.picked .w-grip{color:var(--ink)}
+.picking .widget:not(.picked){cursor:pointer}
+.picking .widget:not(.picked):hover{box-shadow:0 0 0 2px var(--rule)}
+
+/* 접힌 위젯은 제목 줄만 남습니다 */
+.widget.folded{padding-bottom:12px}
+.widget.folded > .card-head{margin-bottom:0;padding-bottom:0;border-bottom:0}
+.widget.folded > .card-body{display:none}
+
+/* 칸은 내용만큼. 최대 높이도 안쪽 스크롤도 두지 않습니다. */
+.hub .card{height:auto}
+.hub .card > .card-body{max-height:none;overflow:visible}
+
+/* 서랍은 좁습니다. '3일 뒤'·'다음 주'가 자리를 미리 차지하면
+   제목이 서너 줄로 접히므로, 마우스를 올릴 때만 위에 띄웁니다. */
+.hub-side .tk{position:relative;flex-wrap:wrap;padding:13px 2px;gap:10px}
+.hub-side .tk-title{font-size:13.5px;line-height:1.5;word-break:keep-all}
+.hub-side .tk-body p{font-size:12.5px}
+.hub-side .tk-acts{
+  position:absolute;right:0;bottom:8px;z-index:2;
+  padding-left:10px;border-radius:8px;
+  background:var(--paper);box-shadow:-12px 0 10px 2px var(--paper);
+}
+@media (hover:none){
+  /* 손가락으로 쓰는 기기에는 hover 가 없으니 아예 한 줄을 내줍니다 */
+  .hub-side .tk-acts{position:static;opacity:1;flex-basis:100%;margin-left:32px;
+    box-shadow:none;padding-left:0;background:none}
+}
 
 .card{
   border:1px solid var(--rule);border-radius:14px;padding:18px 20px 16px;
@@ -489,7 +527,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
 /* 높이가 정해진 칸 안에서는 날짜 줄이 남는 높이를 정확히 나눠 갖습니다.
    하한을 두면 화면이 낮을 때 넘쳐 스크롤 막대가 생깁니다. */
-.card-cal .cal-grid{grid-auto-rows:minmax(76px,auto)}
+.card-cal .cal-grid{grid-auto-rows:minmax(78px,auto)}
 @media (max-width:760px){
   .card-cal .cal-grid{grid-auto-rows:minmax(56px,auto)}
 }

@@ -152,32 +152,113 @@
     }
   });
 
-  /* ── '지금 해야 할 일' 접기 ──
-     접으면 달력이 화면 폭을 다 씁니다. 급한 것이 없는 날에는
-     달력을 크게 보는 편이 낫다는 뜻입니다. 고른 상태는 남겨둡니다. */
+  /* ── 오른쪽 서랍의 위젯 ──
+     접기와 순서 바꾸기. 둘 다 고른 대로 남습니다.
+     끌기는 마우스에서만 되므로, 손잡이를 눌러 고르고
+     옮길 자리를 눌러 놓는 방법을 함께 둡니다. */
   (function(){
-    const board = document.querySelector('.hub');
-    const card  = document.querySelector('.card-now');
-    const btn   = document.getElementById('nowFold');
-    if(!board || !card || !btn) return;
+    const side = document.getElementById('hubSide');
+    if(!side) return;
 
-    const KEY = 'kp.nowFold';
-    const read = () => { try{ return localStorage.getItem(KEY) === '1'; }catch(e){ return false; } };
-    const write = v => { try{ localStorage.setItem(KEY, v ? '1' : '0'); }catch(e){} };
+    const get = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+    const set = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
 
-    function paint(folded){
+    /* ── 접기 ── */
+    function paintFold(card, folded){
+      const btn = card.querySelector('[data-fold]');
       card.classList.toggle('folded', folded);
-      btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
-      btn.setAttribute('aria-label', folded ? '펴기' : '접기');
-      /* 칸 크기가 바뀌었으니 달력이 몇 줄까지 적을지 다시 잽니다 */
-      if(typeof CAL !== 'undefined') dispatchEvent(new Event('resize'));
+      if(btn){
+        btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
+        btn.setAttribute('aria-label', folded ? '펴기' : '접기');
+      }
+    }
+    side.querySelectorAll('.widget').forEach(card => {
+      paintFold(card, get('kp.fold.' + card.dataset.w) === '1');
+    });
+    side.addEventListener('click', e => {
+      const btn = e.target.closest('[data-fold]');
+      if(!btn) return;
+      const card = btn.closest('.widget');
+      const next = !card.classList.contains('folded');
+      set('kp.fold.' + card.dataset.w, next ? '1' : '0');
+      paintFold(card, next);
+    });
+
+    /* ── 순서 ── */
+    const ORDER = 'kp.sideOrder';
+    function apply(){
+      const saved = (get(ORDER) || '').split(',').filter(Boolean);
+      saved.forEach(w => {
+        const el = side.querySelector('.widget[data-w="' + w + '"]');
+        if(el) side.appendChild(el);
+      });
+    }
+    const save = () => set(ORDER,
+      [...side.querySelectorAll('.widget')].map(el => el.dataset.w).join(','));
+    apply();
+
+    let picked = null;                       // 손잡이를 눌러 고른 위젯
+
+    function place(target){
+      if(!picked || picked === target) return;
+      const list = [...side.querySelectorAll('.widget')];
+      /* 아래쪽으로 옮기면 그 뒤에, 위쪽이면 그 앞에 넣습니다 */
+      const after = list.indexOf(picked) < list.indexOf(target);
+      target.insertAdjacentElement(after ? 'afterend' : 'beforebegin', picked);
+      save();
+    }
+    function clearPick(){
+      side.querySelectorAll('.picked').forEach(el => el.classList.remove('picked'));
+      side.classList.remove('picking');
+      picked = null;
     }
 
-    paint(read());
-    btn.addEventListener('click', () => {
-      const next = !card.classList.contains('folded');
-      write(next);
-      paint(next);
+    side.querySelectorAll('.w-grip').forEach(grip => {
+      const card = grip.closest('.widget');
+
+      grip.draggable = true;
+      grip.addEventListener('dragstart', e => {
+        picked = card;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', card.dataset.w);   // Firefox 호환
+      });
+      grip.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        clearPick();
+      });
+
+      /* 끌지 않고 눌러서 고르기 */
+      grip.addEventListener('click', () => {
+        if(picked === card){ clearPick(); return; }
+        if(picked){ place(card); clearPick(); return; }
+        picked = card;
+        card.classList.add('picked');
+        side.classList.add('picking');
+      });
+    });
+
+    side.querySelectorAll('.widget').forEach(card => {
+      card.addEventListener('dragover', e => {
+        if(!picked) return;
+        e.preventDefault();
+        card.classList.add('over');
+      });
+      card.addEventListener('dragleave', () => card.classList.remove('over'));
+      card.addEventListener('drop', e => {
+        card.classList.remove('over');
+        if(!picked) return;
+        e.preventDefault();
+        place(card);
+        clearPick();
+      });
+      /* 고른 상태에서 다른 위젯을 누르면 그 자리로 */
+      card.addEventListener('click', e => {
+        if(!picked || picked === card) return;
+        if(e.target.closest('button, input, a')) return;
+        place(card);
+        clearPick();
+      });
     });
   })();
 
