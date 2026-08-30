@@ -16,11 +16,11 @@
 ```
 index.html        메인 — 다섯 칸(캘린더·당장 할 일·일간·주간·월간) + 후속/방치/지난주
 issues.html       문제 & 개선 — 불편한 점 → 개선 아이디어 → 축적, 레퍼런스
-tools.html        업무 Tools — 도구 목록. 여기서 골라서 연다
+tools.html        업무Tools — 도구 목록. 여기서 골라서 연다
 tool-*.html       도구 하나. 자기완결형이라 디자인 체계가 달라도 된다
 reminder.html     반복 업무 — 월별 할 일, 알림 켜기, 캘린더(.ics) 내려받기
 files.html        자료실 — 서식·템플릿
-attic.html        딴짓 창고 — 게임. 잠깐 쉬고 돌아오는 정도로만 둔다
+attic.html        딴짓창고 — 게임. 잠깐 쉬고 돌아오는 정도로만 둔다
 game.html         피지컬 120s (단일 파일, 자기완결형)
 assets/
   style.css       모든 페이지의 디자인
@@ -34,7 +34,7 @@ assets/
   cal.js          홈 달력
   notify.js       일간·주간·월간 알림 켜고 끄기
   tasks.js        일반적인 총무 반복 업무 목록 (개인 업무 아님)
-  tools.js        업무 Tools 목록. 도구를 만들면 여기에 한 줄 더한다
+  tools.js        업무Tools 목록. 도구를 만들면 여기에 한 줄 더한다
   favicon.svg / kang.png
 supabase/
   schema.sql      표와 보안 정책. 대시보드 SQL Editor에서 실행한다
@@ -155,7 +155,7 @@ curl "<프로젝트 URL>/rest/v1/tasks?select=*" -H "apikey: <공개 키>"
 - **메뉴 추가** → `assets/site.js`의 `SITE.menu`
 - **도구 추가** → `tool-이름.html`을 만들고 `assets/tools.js`와 `site.js`의 하위 메뉴에 한 줄씩.
   도구는 자기완결형으로 만든다. 사이트 디자인에 억지로 맞추지 않아도 된다.
-  대신 맨 위에 `← 업무 Tools`로 돌아가는 링크를 반드시 둔다
+  대신 맨 위에 `← 업무Tools`로 돌아가는 링크를 반드시 둔다
 - **방치 기준일 바꾸기** → `assets/home.js`의 `STALE` (기본 14일)
 
 **`assets/` 안의 파일을 고쳤으면 HTML의 `?v=` 날짜를 함께 올린다.**

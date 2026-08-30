@@ -22,12 +22,12 @@ const SITE = {
       { file:'issues.html#ref',   name:'레퍼런스' }
     ]},
     /* 도구를 늘리면 assets/tools.js 와 여기 두 곳에 적습니다 */
-    { file:'tools.html', name:'업무 Tools', sub:[
+    { file:'tools.html', name:'업무Tools', sub:[
       { file:'tool-lounge.html',  name:'라운지 운영 체크리스트' },
       { file:'tool-receipt.html', name:'영수증 한번에 정리' },
       { file:'tool-qr.html',      name:'QR 코드 생성기' }
     ]},
-    { file:'attic.html',  name:'딴짓 창고', sub:[
+    { file:'attic.html',  name:'딴짓창고', sub:[
       { file:'game.html', name:'피지컬 120s' }
     ]}
   ]
@@ -141,7 +141,7 @@ const SITE = {
   }
 
   /* 업무 등록 창은 메인과 '문제 & 개선'에만 실려 있습니다.
-     도구 목록이나 딴짓 창고에서 누르면 메인으로 보내 거기서 열리게 합니다. */
+     도구 목록이나 딴짓창고에서 누르면 메인으로 보내 거기서 열리게 합니다. */
   document.addEventListener('click', e => {
     if(!e.target.closest('[data-newtask]')) return;
     if(typeof TaskForm !== 'undefined') return;

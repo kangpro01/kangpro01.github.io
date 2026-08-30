@@ -406,9 +406,9 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 /* ══ 머리말 (얇은 형) ══ */
 .page-head.slim{padding:34px 0 26px}
 .page-head.slim h1{font-size:clamp(24px,5vw,34px)}
-/* 제목 한 줄만 둡니다 */
-.page-head.tight{padding:22px 0 18px}
-.page-head.tight h1{margin:0}
+/* 제목 한 줄만 둡니다. 띠와 밑줄을 걷어 내용이 위로 올라옵니다. */
+.page-head.tight{padding:18px 0 6px;border-bottom:0}
+.page-head.tight h1{margin:0;font-size:clamp(20px,2.4vw,24px);font-weight:800;letter-spacing:-.035em}
 
 /* ══ 메인 — 캘린더 전폭 + 업무 위젯 ══
    달력이 화면 폭을 다 씁니다. 위젯은 그 아래에 놓이고,
@@ -761,7 +761,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 /* ══ 문제 & 개선 — 왼쪽 메뉴 + 오른쪽 피드 ══ */
 .split{
-  max-width:1560px;margin:0 auto;padding:0 24px 40px;
+  max-width:1560px;margin:0 auto;padding:16px 24px 40px;
   display:grid;grid-template-columns:1fr;gap:22px;
 }
 @media (min-width:1000px){
@@ -792,8 +792,16 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 
 /* ── 오른쪽 ── */
-.feed-head{max-width:1560px;margin:0 auto;padding:20px 24px 16px;text-align:center}
-.feed-head h1{margin:0;font-size:clamp(26px,3.2vw,36px);font-weight:900;letter-spacing:-.04em;line-height:1.2}
+/* 제목·단추를 한 줄에, 그 아래 설명 한 줄 */
+.feed-head{margin:0 0 14px}
+.feed-head-row{display:flex;align-items:center;gap:12px}
+.feed-head h1{
+  flex:1;min-width:0;margin:0;
+  font-size:clamp(20px,2.4vw,24px);font-weight:800;letter-spacing:-.035em;line-height:1.3;
+}
+.feed-head p{margin:5px 0 0;font-size:12.5px;color:var(--ink-2)}
+.feed-head .btn{flex:none;border:0;cursor:pointer;font-family:var(--fs)}
+.btn.sm{padding:8px 15px;font-size:12.5px}
 
 .feed-card{
   background:var(--paper);border:1px solid var(--rule);border-radius:16px;
@@ -909,7 +917,7 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .ref-n{margin:6px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.6}
 
 /* ══ 업무 Tools 목록 ══ */
-.tools-sec{padding:44px 0 64px}
+.tools-sec{padding:22px 0 56px}
 /* 넓으면 세 개씩. 카드가 늘어도 줄이 흐트러지지 않습니다. */
 .tool-grid{display:grid;grid-template-columns:1fr;gap:16px}
 @media (min-width:600px){ .tool-grid{grid-template-columns:repeat(2,1fr)} }
