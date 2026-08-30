@@ -419,14 +419,28 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .page-head.tight h1,.page-head.tight p{margin:0}
 }
 
-/* ══ 메인 — 세로로 쌓는 피드 ══
-   전에는 다섯 칸을 한 화면에 욱여넣고 칸 안에서만 스크롤했습니다.
-   업무가 늘면 서너 줄만 보이고 나머지는 칸 안에 숨었습니다.
-   이제 칸은 내용만큼 길어지고, 넘치면 화면 전체를 굴려 봅니다. */
+/* ══ 메인 다섯 칸 ══
+   위: 캘린더(넓게) + 지금 해야 할 일
+   아래: 일간 · 주간 · 월간
+
+   가로 배치는 그대로 두되 높이는 묶지 않습니다.
+   전에는 화면 하나에 욱여넣느라 칸 안에서만 스크롤해서
+   업무가 늘면 서너 줄만 보이고 나머지가 숨었습니다.
+   이제 줄 높이는 그 줄에서 가장 긴 칸을 따라가고,
+   넘치면 화면 전체를 굴려 봅니다. */
 .hub{
   max-width:var(--wrap-wide);
-  display:flex;flex-direction:column;gap:16px;
+  display:grid;grid-template-columns:repeat(12,1fr);gap:16px;
   padding-top:24px;padding-bottom:44px;
+  /* 칸마다 제 높이만 갖습니다. 늘어나게 두면 목록이 긴 칸을 따라
+     옆 칸까지 길어져 빈 자리가 크게 남습니다. */
+  align-items:start;
+}
+.card-cal{grid-column:span 9}
+.card-now{grid-column:span 3}
+.hub > .card:nth-child(n+3){grid-column:span 4}
+@media (max-width:900px){
+  .card-cal,.card-now,.hub > .card:nth-child(n+3){grid-column:span 12}
 }
 /* 칸은 내용만큼. 최대 높이도 안쪽 스크롤도 두지 않습니다. */
 .hub > .card{height:auto}
@@ -475,7 +489,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
 /* 높이가 정해진 칸 안에서는 날짜 줄이 남는 높이를 정확히 나눠 갖습니다.
    하한을 두면 화면이 낮을 때 넘쳐 스크롤 막대가 생깁니다. */
-.card-cal .cal-grid{grid-auto-rows:minmax(88px,auto)}
+.card-cal .cal-grid{grid-auto-rows:minmax(76px,auto)}
 @media (max-width:760px){
   .card-cal .cal-grid{grid-auto-rows:minmax(56px,auto)}
 }
