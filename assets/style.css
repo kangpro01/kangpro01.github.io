@@ -414,8 +414,10 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
    달력이 화면 폭을 다 씁니다. 위젯은 그 아래에 놓이고,
    오른쪽 위 단추를 누르면 같은 묶음이 서랍으로 옮겨 옵니다.
    두 벌을 만들지 않고 하나를 옮겨 다니게 했습니다. */
+/* 폭을 다 쓰면 날짜 칸이 200x78 로 납작해집니다.
+   가로를 잡고 칸 높이를 올려 한 칸이 네모에 가깝게 둡니다. */
 .hub{
-  max-width:var(--wrap-wide);
+  max-width:1160px;
   padding-top:22px;padding-bottom:48px;
 }
 .hub-main{min-width:0}
@@ -563,7 +565,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
 /* 높이가 정해진 칸 안에서는 날짜 줄이 남는 높이를 정확히 나눠 갖습니다.
    하한을 두면 화면이 낮을 때 넘쳐 스크롤 막대가 생깁니다. */
-.card-cal .cal-grid{grid-auto-rows:minmax(78px,auto)}
+.card-cal .cal-grid{grid-auto-rows:minmax(98px,auto)}
 @media (max-width:760px){
   .card-cal .cal-grid{grid-auto-rows:minmax(56px,auto)}
 }
