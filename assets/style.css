@@ -740,17 +740,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 
 /* ── 왼쪽 ── */
-.side-brand{
-  display:flex;align-items:center;gap:10px;
-  padding:0 12px 15px;margin-bottom:14px;border-bottom:1px solid var(--rule);
-}
-.side-logo{
-  flex:none;font-family:var(--fs-num);font-size:10.5px;font-weight:800;letter-spacing:.02em;
-  background:var(--ink);color:var(--on-ink);border-radius:8px;padding:6px 8px;
-}
-.side-brand b{font-size:14.5px;font-weight:800;letter-spacing:-.035em}
-.side-brand:hover b{text-decoration:underline;text-underline-offset:3px}
-
 .side-nav{display:flex;flex-direction:column;gap:3px}
 .side-item{
   display:flex;align-items:center;gap:10px;
