@@ -297,6 +297,16 @@
       return saved === null ? ['now'] : saved.split(',').filter(Boolean);
     }
 
+    /* 칩은 처음 한 번만 만듭니다. 누를 때마다 다시 그리면 눌린 단추가
+       문서에서 빠지고, 뒤이어 올라온 클릭을 fab.js 가 '판 바깥'으로 보아
+       판을 닫아버립니다. */
+    pick.innerHTML = ORDER.map(w => {
+      const el = elOf(w);
+      if(!el) return '';
+      return '<button type="button" class="fab-pick" data-pick="' + w + '"'
+           + ' aria-pressed="false">' + nameOf(el) + '</button>';
+    }).join('');
+
     function paint(){
       const on = shown();
       ORDER.forEach(w => { const el = elOf(w); if(el) el.hidden = !on.includes(w); });
@@ -306,14 +316,11 @@
       hub.classList.toggle('now-off', nowB.hidden);
       dock.hidden = !['daily','weekly','monthly'].some(w => on.includes(w));
 
-      pick.innerHTML = ORDER.map(w => {
-        const el = elOf(w);
-        if(!el) return '';
-        const isOn = on.includes(w);
-        return '<button type="button" class="fab-pick' + (isOn ? ' on' : '') + '"'
-             + ' data-pick="' + w + '" aria-pressed="' + isOn + '">'
-             + nameOf(el) + '</button>';
-      }).join('');
+      pick.querySelectorAll('[data-pick]').forEach(b => {
+        const isOn = on.includes(b.dataset.pick);
+        b.classList.toggle('on', isOn);
+        b.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+      });
     }
 
     pick.addEventListener('click', e => {
