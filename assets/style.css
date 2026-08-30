@@ -220,10 +220,6 @@ h1{margin:0;font-size:clamp(38px,8.4vw,72px);font-weight:900;letter-spacing:-.02
 
 /* ══ 섹션 공통 ══ */
 section{padding:78px 0}
-.sec-head{text-align:center;margin-bottom:40px}
-.sec-head .tag{font-family:var(--fs-num);font-size:11.5px;letter-spacing:.18em;color:var(--ink-3);font-weight:700}
-.sec-head h2{margin:10px 0 0;font-size:clamp(24px,5.6vw,34px);font-weight:900;letter-spacing:-.045em;line-height:1.25}
-.sec-head p{margin:12px 0 0;font-size:14.5px;color:var(--ink-2)}
 
 /* ══ 이런 분께 ══ */
 .needs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -339,7 +335,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 /* ══ 서브페이지 머리말 ══ */
 .page-head{border-bottom:1px solid var(--rule);padding:56px 0 40px}
-.page-head .tag{font-family:var(--fs-num);font-size:11.5px;letter-spacing:.18em;color:var(--ink-3);font-weight:700}
 .page-head h1{margin:10px 0 0;font-size:clamp(30px,6.4vw,46px);letter-spacing:-.035em;line-height:1.15}
 .page-head p{margin:14px 0 0;font-size:15.5px;color:var(--ink-2);max-width:34em}
 
@@ -382,12 +377,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .days b{font-family:var(--fs-num);font-size:11px;color:#918F90;font-weight:600;margin-left:8px}
 @media (max-width:620px){.week{grid-template-columns:1fr;gap:16px}}
 
-/* ══ 좌우 배치 섹션 머리 ══ */
-.sec-head.row{
-  display:flex;justify-content:space-between;align-items:flex-end;
-  text-align:left;gap:16px;flex-wrap:wrap;
-}
-.sec-head.row > div{flex:1 1 auto}
 .more-link{font-size:13.5px;font-weight:800;white-space:nowrap;border-bottom:2px solid var(--ink);padding-bottom:1px}
 
 /* ══ 한 줄 목록 ══ */
