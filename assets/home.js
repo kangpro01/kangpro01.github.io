@@ -152,6 +152,36 @@
     }
   });
 
+  /* ── '지금 해야 할 일' 접기 ──
+     접으면 달력이 화면 폭을 다 씁니다. 급한 것이 없는 날에는
+     달력을 크게 보는 편이 낫다는 뜻입니다. 고른 상태는 남겨둡니다. */
+  (function(){
+    const board = document.querySelector('.hub');
+    const card  = document.querySelector('.card-now');
+    const btn   = document.getElementById('nowFold');
+    if(!board || !card || !btn) return;
+
+    const KEY = 'kp.nowFold';
+    const read = () => { try{ return localStorage.getItem(KEY) === '1'; }catch(e){ return false; } };
+    const write = v => { try{ localStorage.setItem(KEY, v ? '1' : '0'); }catch(e){} };
+
+    function paint(folded){
+      card.classList.toggle('folded', folded);
+      board.classList.toggle('now-off', folded);
+      btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
+      btn.setAttribute('aria-label', folded ? '펴기' : '접기');
+      /* 칸 크기가 바뀌었으니 달력이 몇 줄까지 적을지 다시 잽니다 */
+      if(typeof CAL !== 'undefined') dispatchEvent(new Event('resize'));
+    }
+
+    paint(read());
+    btn.addEventListener('click', () => {
+      const next = !card.classList.contains('folded');
+      write(next);
+      paint(next);
+    });
+  })();
+
   /* ── 한 칸만 펼쳐 보기 ──
      메뉴에서 '일간 업무'를 고르면 #daily 로 옵니다.
      그 칸의 높이 제한을 풀어 담아둔 것을 끝까지 보여줍니다.

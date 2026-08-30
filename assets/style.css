@@ -423,8 +423,8 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   display:grid;grid-template-columns:repeat(12,1fr);gap:16px;
   padding-top:24px;padding-bottom:8px;
 }
-.card-cal{grid-column:span 8}
-.card-now{grid-column:span 4}
+.card-cal{grid-column:span 9}
+.card-now{grid-column:span 3}
 .hub > .card:nth-child(n+3){grid-column:span 4}
 
 /* 넓은 화면에서는 다섯 칸이 한 화면에 들어갑니다.
@@ -433,7 +433,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media (min-width:901px){
   .hub{
     /* 날짜 칸 안에 일정을 적으므로 첫 줄을 넉넉히 줍니다 */
-    grid-template-rows:1.45fr 0.55fr;
+    grid-template-rows:1.55fr 0.45fr;
     height:calc(100vh - var(--gnb) - 40px);
     height:calc(100dvh - var(--gnb) - 40px);
     min-height:600px;max-height:980px;
@@ -441,10 +441,23 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .hub > .card{display:flex;flex-direction:column;overflow:hidden}
   .hub > .card > .card-body{flex:1;min-height:0;overflow-y:auto;max-height:none}
 }
+@media (min-width:901px){
+  /* 접으면 달력이 한 줄을 통째로 씁니다 */
+  /* 접힌 머리 줄(약 58px)만큼은 어디선가 빼야 합니다.
+     달력 높이를 지키려고 아래 세 칸에서 가져옵니다.
+     세 칸은 안에서 스크롤하므로 낮아져도 못 볼 것이 없습니다. */
+  .hub.now-off{grid-template-rows:1.85fr auto 0.4fr}
+  .hub.now-off .card-cal,
+  .hub.now-off .card-now{grid-column:span 12}
+}
 @media (max-width:900px){
   .card-cal,.card-now,.hub > .card:nth-child(n+3){grid-column:span 12}
   .hub > .card > .card-body{max-height:300px;overflow-y:auto}
 }
+/* 접힌 칸은 제목 줄만 남습니다 */
+.card-now.folded{padding-bottom:10px}
+.card-now.folded > .card-head{margin-bottom:0;padding-bottom:0;border-bottom:0}
+.card-now.folded > .card-body{display:none}
 
 .card{
   border:1px solid var(--rule);border-radius:14px;padding:18px 20px 16px;
@@ -463,6 +476,22 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   transition:border-color .15s ease,color .15s ease;
 }
 .card-add:hover{border-color:var(--ink);color:var(--ink)}
+/* 접기·펴기 — 화살표 하나로 방향만 바꿉니다 */
+.card-hint{margin-left:auto}
+.card-fold{
+  width:26px;height:26px;flex:none;padding:0;
+  border:1px solid var(--rule);border-radius:8px;background:var(--paper);
+  color:var(--ink-2);cursor:pointer;display:grid;place-items:center;
+  transition:border-color .15s ease,color .15s ease;
+}
+.card-fold:hover{border-color:var(--ink);color:var(--ink)}
+.card-fold::before{
+  content:'';width:7px;height:7px;margin-top:-3px;
+  border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
+  transform:rotate(-135deg);transition:transform .18s ease;
+}
+.card-fold[aria-expanded="false"]::before{transform:rotate(45deg);margin-top:-6px}
+@media (prefers-reduced-motion:reduce){.card-fold::before{transition:none}}
 /* 캘린더 칸 — 달력이 칸 전체를 씁니다.
    날짜 줄이 남는 높이를 나눠 가져 화면이 낮아도 넘치지 않습니다. */
 .card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
