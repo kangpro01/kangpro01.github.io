@@ -8,9 +8,9 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/style.css?v=20260831g">
+<link rel="stylesheet" href="assets/style.css?v=20260831h">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
-<script src="assets/theme.js?v=20260831g"></script>
+<script src="assets/theme.js?v=20260831h"></script>
 </head>
 <body>
 
@@ -20,36 +20,14 @@
 
   <main class="hub-main">
     <section class="card card-cal">
-      <div class="card-head"><h2>캘린더</h2>
-        <button type="button" class="side-toggle" id="sideOpen"
-                aria-controls="sideDrawer" aria-expanded="false" aria-label="업무 위젯 서랍 열기">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/>
-          </svg>
-          <span>업무 위젯</span>
-        </button>
-      </div>
+      <div class="card-head"><h2>캘린더</h2></div>
       <div class="card-body"><div class="cal" id="homeCal"></div></div>
     </section>
-  </main>
 
+    <!-- 레일에서 고른 것이 여기 깔립니다 -->
+    <div class="hub-dock" id="hubDock">
+      <div class="hub-side" id="hubSide" aria-label="업무 위젯">
 
-</div>
-
-<!-- ══ 오른쪽 서랍 — 위젯 묶음이 여기로 옮겨 왔다 돌아갑니다 ══ -->
-<div class="drawer-scrim" id="sideScrim"></div>
-<aside class="side-drawer" id="sideDrawer" aria-label="업무 위젯" aria-hidden="true">
-  <div class="side-drawer-head">
-    <b>업무 위젯</b>
-    <button type="button" class="side-drawer-x" id="sideClose" aria-label="닫기">×</button>
-  </div>
-
-  <!-- 무엇을 볼지 고릅니다. 끈 것은 판에서 사라집니다. -->
-  <div class="side-pick" id="sidePick" aria-label="볼 위젯 고르기"></div>
-
-  <div class="side-drawer-body" id="sideDrawerBody">
-    <div class="hub-side" id="hubSide" aria-label="업무 위젯">
     <section class="card widget" id="now" data-w="now">
       <div class="card-head">
         <button type="button" class="w-grip" aria-label="지금 해야 할 일 순서 바꾸기">⋮⋮</button>
@@ -91,9 +69,15 @@
       <div class="card-body" id="monthlyList"></div>
     </section>
     
+    
+      </div>
     </div>
-  </div>
-</aside>
+  </main>
+
+  <!-- 옆 레일 — 무엇을 깔지 고릅니다 -->
+  <nav class="hub-rail" id="hubRail" aria-label="업무 위젯 고르기"></nav>
+
+</div>
 
 <!-- ══ 떠 있는 단추 — 누르면 업무 담기와 알림 설정이 열립니다 ══ -->
 <div class="fab-wrap">
@@ -117,15 +101,15 @@
 
 <div id="site-footer"></div>
 
-<script src="assets/site.js?v=20260831g"></script>
-<script src="assets/supabase.js?v=20260831g"></script>
-<script src="assets/db.js?v=20260831g"></script>
-<script src="assets/when.js?v=20260831g"></script>
-<script src="assets/task-form.js?v=20260831g"></script>
-<script src="assets/holidays.js?v=20260831g"></script>
-<script src="assets/cal.js?v=20260831g"></script>
-<script src="assets/notify.js?v=20260831g"></script>
-<script src="assets/home.js?v=20260831g"></script>
-<script src="assets/fab.js?v=20260831g"></script>
+<script src="assets/site.js?v=20260831h"></script>
+<script src="assets/supabase.js?v=20260831h"></script>
+<script src="assets/db.js?v=20260831h"></script>
+<script src="assets/when.js?v=20260831h"></script>
+<script src="assets/task-form.js?v=20260831h"></script>
+<script src="assets/holidays.js?v=20260831h"></script>
+<script src="assets/cal.js?v=20260831h"></script>
+<script src="assets/notify.js?v=20260831h"></script>
+<script src="assets/home.js?v=20260831h"></script>
+<script src="assets/fab.js?v=20260831h"></script>
 </body>
 </html>

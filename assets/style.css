@@ -415,42 +415,47 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
    오른쪽 위 단추를 누르면 같은 묶음이 서랍으로 옮겨 옵니다.
    두 벌을 만들지 않고 하나를 옮겨 다니게 했습니다. */
 /* 폭을 다 쓰면 날짜 칸이 200x78 로 납작해집니다.
-   가로를 잡고 칸 높이를 올려 한 칸이 네모에 가깝게 둡니다. */
+   가로를 잡고 칸 높이를 올려 한 칸이 네모에 가깝게 둡니다.
+   옆 레일은 달력 오른쪽에 붙어 무엇을 깔지 고릅니다. */
 .hub{
-  max-width:1160px;
+  max-width:1340px;
+  display:grid;grid-template-columns:1fr;gap:16px;align-items:start;
   padding-top:22px;padding-bottom:48px;
 }
+@media (min-width:1040px){
+  .hub{grid-template-columns:minmax(0,1fr) 152px;gap:18px}
+  .hub-rail{position:sticky;top:calc(var(--gnb) + 22px)}
+}
 .hub-main{min-width:0}
+.hub-dock{margin-top:16px}
+.hub-dock[hidden]{display:none}
 
-/* 서랍 여는 단추 */
-.side-toggle{
-  flex:none;display:inline-flex;align-items:center;gap:7px;
-  font-family:var(--fs);font-size:12.5px;font-weight:700;letter-spacing:-.02em;
+/* ── 옆 레일 ── */
+.hub-rail{
+  display:flex;flex-direction:column;gap:6px;
+  background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:10px;
+  box-shadow:0 1px 2px rgba(51,49,50,.04), 0 8px 20px rgba(51,49,50,.05);
+}
+.rail-item{
+  font-family:var(--fs);font-size:12px;font-weight:700;letter-spacing:-.03em;
   color:var(--ink-2);background:var(--paper);border:1px solid var(--rule);
-  border-radius:999px;padding:6px 13px 6px 10px;cursor:pointer;
-  transition:border-color .15s ease,color .15s ease;
-}
-.side-toggle:hover{border-color:var(--ink);color:var(--ink)}
-.side-toggle svg{width:15px;height:15px;flex:none}
-
-/* ── 위젯 묶음 — 오른쪽 판 안에 세로로 ── */
-.hub-side{display:flex;flex-direction:column;gap:12px;min-width:0}
-.hub-side .widget{padding:16px 18px}
-.hub-side .widget[hidden]{display:none}
-
-/* 무엇을 볼지 고르는 칩 */
-.side-pick{
-  flex:none;display:flex;flex-wrap:wrap;gap:6px;
-  padding:12px 16px;border-bottom:1px solid var(--rule);
-}
-.side-chip{
-  font-family:var(--fs);font-size:11.5px;font-weight:700;letter-spacing:-.02em;
-  color:var(--ink-3);background:var(--paper);border:1px solid var(--rule);
-  border-radius:999px;padding:5px 11px;cursor:pointer;
+  border-radius:999px;padding:7px 10px;cursor:pointer;text-align:center;white-space:nowrap;
   transition:border-color .15s ease,background .15s ease,color .15s ease;
 }
-.side-chip:hover{border-color:var(--ink-3);color:var(--ink-2)}
-.side-chip.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.rail-item:hover{border-color:var(--ink-3);color:var(--ink)}
+.rail-item.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+@media (max-width:1039px){
+  .hub-rail{flex-direction:row;flex-wrap:wrap}
+  .rail-item{flex:1 1 auto}
+}
+
+/* ── 위젯 묶음 — 달력 아래에 나란히 ── */
+.hub-side{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:12px;align-items:start;min-width:0;
+}
+.hub-side .widget{padding:16px 18px}
+.hub-side .widget[hidden]{display:none}
 .hub-side .card-head{gap:8px}
 .hub-side .card-head h2{font-size:15px}
 
@@ -476,56 +481,13 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .widget.folded > .card-body{display:none}
 
 /* 칸은 내용만큼. 최대 높이도 안쪽 스크롤도 두지 않습니다. */
-.hub .card,.side-drawer .card{height:auto}
-.hub .card > .card-body,.side-drawer .card > .card-body{max-height:none;overflow:visible}
+.hub .card{height:auto}
+.hub .card > .card-body{max-height:none;overflow:visible}
 
 /* 서랍은 좁습니다. '3일 뒤'·'다음 주'가 자리를 미리 차지하면
    제목이 서너 줄로 접히므로, 마우스를 올릴 때만 위에 띄웁니다. */
-.hub-side .tk{position:relative;flex-wrap:wrap;padding:13px 2px;gap:10px}
-.hub-side .tk-title{font-size:13.5px;line-height:1.5;word-break:keep-all}
-.hub-side .tk-body p{font-size:12.5px}
-.hub-side .tk-acts{
-  position:absolute;right:0;bottom:8px;z-index:2;
-  padding-left:10px;border-radius:8px;
-  background:var(--paper);box-shadow:-12px 0 10px 2px var(--paper);
-}
-@media (hover:none){
-  /* 손가락으로 쓰는 기기에는 hover 가 없으니 아예 한 줄을 내줍니다 */
-  .hub-side .tk-acts{position:static;opacity:1;flex-basis:100%;margin-left:32px;
-    box-shadow:none;padding-left:0;background:none}
-}
+.hub-side .tk-title{word-break:keep-all}
 
-/* ── 오른쪽 서랍 ── */
-.drawer-scrim{
-  position:fixed;inset:0;z-index:80;
-  background:rgba(23,21,22,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
-  opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s;
-}
-.drawer-scrim.open{opacity:1;visibility:visible}
-.side-drawer{
-  position:fixed;top:0;right:0;bottom:0;z-index:81;
-  width:min(384px,100vw);display:flex;flex-direction:column;
-  background:var(--paper);border-left:1px solid var(--rule);
-  box-shadow:-18px 0 44px rgba(51,49,50,.2);
-  transform:translateX(100%);visibility:hidden;
-  transition:transform .22s ease,visibility .22s;
-}
-.side-drawer.open{transform:none;visibility:visible}
-.side-drawer-head{
-  flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:16px 16px 12px;border-bottom:1px solid var(--rule);
-}
-.side-drawer-head b{font-size:15px;font-weight:800;letter-spacing:-.035em}
-.side-drawer-x{
-  width:30px;height:30px;line-height:1;border:0;background:transparent;
-  color:var(--ink-3);font-size:22px;cursor:pointer;border-radius:8px;
-}
-.side-drawer-x:hover{color:var(--ink);background:var(--paper-2)}
-.side-drawer-body{flex:1;min-height:0;overflow-y:auto;padding:14px 16px 24px}
-
-@media (prefers-reduced-motion:reduce){
-  .drawer-scrim,.side-drawer{transition:none}
-}
 
 .card{
   border:1px solid var(--rule);border-radius:14px;padding:18px 20px 16px;

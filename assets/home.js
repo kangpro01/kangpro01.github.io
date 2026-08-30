@@ -262,70 +262,51 @@
     });
   })();
 
-  /* ── 오른쪽 판 ──
-     위젯은 모두 여기 있습니다. 무엇을 볼지 고르고, 순서를 바꾸고,
-     하나씩 접을 수 있습니다. 고른 것은 모두 남습니다. */
+  /* ── 옆 레일 ──
+     달력 옆의 단추를 누르면 그 위젯이 달력 아래에 깔립니다.
+     다시 누르면 내려갑니다. 고른 것은 남습니다. */
   (function(){
-    const draw  = document.getElementById('sideDrawer');
-    const scrim = document.getElementById('sideScrim');
-    const open  = document.getElementById('sideOpen');
-    const close = document.getElementById('sideClose');
-    const pick  = document.getElementById('sidePick');
-    const side  = document.getElementById('hubSide');
-    if(!draw || !scrim || !open || !close || !pick || !side) return;
+    const rail = document.getElementById('hubRail');
+    const side = document.getElementById('hubSide');
+    const dock = document.getElementById('hubDock');
+    if(!rail || !side || !dock) return;
 
     const get = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
     const set = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
 
-    /* ── 무엇을 볼지 ── */
     const KEY = 'kp.widgets';
     const all = [...side.querySelectorAll('.widget')];
     const nameOf = el => el.querySelector('h2').textContent.trim();
 
+    /* 처음 오면 '지금 해야 할 일' 하나만 깔아 둡니다.
+       넷을 다 깔면 첫 화면이 무거워지고, 아무것도 없으면 뭘 하는 곳인지 안 보입니다. */
     function shown(){
       const saved = get(KEY);
-      if(saved === null) return all.map(el => el.dataset.w);   // 처음에는 다 보여줍니다
-      return saved.split(',').filter(Boolean);
+      return saved === null ? ['now'] : saved.split(',').filter(Boolean);
     }
-    function paintPick(){
+
+    function paint(){
       const on = shown();
       all.forEach(el => { el.hidden = !on.includes(el.dataset.w); });
-      pick.innerHTML = all.map(el => {
+      dock.hidden = !on.length;
+      rail.innerHTML = all.map(el => {
         const isOn = on.includes(el.dataset.w);
-        return '<button type="button" class="side-chip' + (isOn ? ' on' : '') + '"'
+        return '<button type="button" class="rail-item' + (isOn ? ' on' : '') + '"'
              + ' data-pick="' + el.dataset.w + '" aria-pressed="' + isOn + '">'
              + nameOf(el) + '</button>';
       }).join('');
     }
-    pick.addEventListener('click', e => {
+
+    rail.addEventListener('click', e => {
       const b = e.target.closest('[data-pick]');
       if(!b) return;
       const w = b.dataset.pick;
       const on = shown();
-      const next = on.includes(w) ? on.filter(x => x !== w) : on.concat(w);
-      set(KEY, next.join(','));
-      paintPick();
+      set(KEY, (on.includes(w) ? on.filter(x => x !== w) : on.concat(w)).join(','));
+      paint();
     });
 
-    /* ── 열고 닫기 ── */
-    function setOpen(on){
-      draw.classList.toggle('open', on);
-      scrim.classList.toggle('open', on);
-      draw.setAttribute('aria-hidden', on ? 'false' : 'true');
-      open.setAttribute('aria-expanded', on ? 'true' : 'false');
-      document.body.style.overflow = on ? 'hidden' : '';
-      set('kp.sideOpen', on ? '1' : '0');
-    }
-    open.addEventListener('click', () => setOpen(true));
-    close.addEventListener('click', () => setOpen(false));
-    scrim.addEventListener('click', () => setOpen(false));
-    addEventListener('keydown', e => {
-      if(e.key === 'Escape' && draw.classList.contains('open')) setOpen(false);
-    });
-
-    paintPick();
-    /* 열어둔 채로 나갔으면 다시 열어줍니다 */
-    if(get('kp.sideOpen') === '1') setOpen(true);
+    paint();
   })();
 
   /* ── 한 칸만 펼쳐 보기 ──
