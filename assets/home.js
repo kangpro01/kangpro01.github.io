@@ -262,36 +262,70 @@
     });
   })();
 
-  /* ── 오른쪽 서랍 ──
-     위젯을 두 벌 만들지 않습니다. 묶음 하나를 아래 자리와 서랍 사이로
-     옮겨 다닙니다. 접힘·순서·끌기가 그대로 따라옵니다. */
+  /* ── 오른쪽 판 ──
+     위젯은 모두 여기 있습니다. 무엇을 볼지 고르고, 순서를 바꾸고,
+     하나씩 접을 수 있습니다. 고른 것은 모두 남습니다. */
   (function(){
-    const side  = document.getElementById('hubSide');
-    const dock  = document.getElementById('hubDock');
     const draw  = document.getElementById('sideDrawer');
-    const body  = document.getElementById('sideDrawerBody');
     const scrim = document.getElementById('sideScrim');
     const open  = document.getElementById('sideOpen');
     const close = document.getElementById('sideClose');
-    if(!side || !dock || !draw || !body || !scrim || !open) return;
+    const pick  = document.getElementById('sidePick');
+    const side  = document.getElementById('hubSide');
+    if(!draw || !scrim || !open || !close || !pick || !side) return;
 
+    const get = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+    const set = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
+
+    /* ── 무엇을 볼지 ── */
+    const KEY = 'kp.widgets';
+    const all = [...side.querySelectorAll('.widget')];
+    const nameOf = el => el.querySelector('h2').textContent.trim();
+
+    function shown(){
+      const saved = get(KEY);
+      if(saved === null) return all.map(el => el.dataset.w);   // 처음에는 다 보여줍니다
+      return saved.split(',').filter(Boolean);
+    }
+    function paintPick(){
+      const on = shown();
+      all.forEach(el => { el.hidden = !on.includes(el.dataset.w); });
+      pick.innerHTML = all.map(el => {
+        const isOn = on.includes(el.dataset.w);
+        return '<button type="button" class="side-chip' + (isOn ? ' on' : '') + '"'
+             + ' data-pick="' + el.dataset.w + '" aria-pressed="' + isOn + '">'
+             + nameOf(el) + '</button>';
+      }).join('');
+    }
+    pick.addEventListener('click', e => {
+      const b = e.target.closest('[data-pick]');
+      if(!b) return;
+      const w = b.dataset.pick;
+      const on = shown();
+      const next = on.includes(w) ? on.filter(x => x !== w) : on.concat(w);
+      set(KEY, next.join(','));
+      paintPick();
+    });
+
+    /* ── 열고 닫기 ── */
     function setOpen(on){
-      if(on) body.appendChild(side); else dock.appendChild(side);
-      side.classList.toggle('in-drawer', on);
       draw.classList.toggle('open', on);
       scrim.classList.toggle('open', on);
       draw.setAttribute('aria-hidden', on ? 'false' : 'true');
       open.setAttribute('aria-expanded', on ? 'true' : 'false');
       document.body.style.overflow = on ? 'hidden' : '';
-      if(on) close.focus(); else open.focus();
+      set('kp.sideOpen', on ? '1' : '0');
     }
-
     open.addEventListener('click', () => setOpen(true));
     close.addEventListener('click', () => setOpen(false));
     scrim.addEventListener('click', () => setOpen(false));
     addEventListener('keydown', e => {
       if(e.key === 'Escape' && draw.classList.contains('open')) setOpen(false);
     });
+
+    paintPick();
+    /* 열어둔 채로 나갔으면 다시 열어줍니다 */
+    if(get('kp.sideOpen') === '1') setOpen(true);
   })();
 
   /* ── 한 칸만 펼쳐 보기 ──

@@ -419,7 +419,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   padding-top:22px;padding-bottom:48px;
 }
 .hub-main{min-width:0}
-.hub-dock{margin-top:16px}
 
 /* 서랍 여는 단추 */
 .side-toggle{
@@ -432,18 +431,24 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .side-toggle:hover{border-color:var(--ink);color:var(--ink)}
 .side-toggle svg{width:15px;height:15px;flex:none}
 
-/* ── 위젯 묶음 ──
-   아래에 놓이면 폭에 맞춰 여러 칸으로, 서랍 안에서는 한 줄로 섭니다.
-   같은 규칙 하나로 두 자리를 다 씁니다. */
-.hub-side{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:12px;align-items:start;min-width:0;
-}
-.hub-dock .hub-side{
-  background:var(--paper-2);border:1px solid var(--rule);border-radius:16px;padding:12px;
-}
-.hub-side.in-drawer{grid-template-columns:1fr;background:none;border:0;padding:0}
+/* ── 위젯 묶음 — 오른쪽 판 안에 세로로 ── */
+.hub-side{display:flex;flex-direction:column;gap:12px;min-width:0}
 .hub-side .widget{padding:16px 18px}
+.hub-side .widget[hidden]{display:none}
+
+/* 무엇을 볼지 고르는 칩 */
+.side-pick{
+  flex:none;display:flex;flex-wrap:wrap;gap:6px;
+  padding:12px 16px;border-bottom:1px solid var(--rule);
+}
+.side-chip{
+  font-family:var(--fs);font-size:11.5px;font-weight:700;letter-spacing:-.02em;
+  color:var(--ink-3);background:var(--paper);border:1px solid var(--rule);
+  border-radius:999px;padding:5px 11px;cursor:pointer;
+  transition:border-color .15s ease,background .15s ease,color .15s ease;
+}
+.side-chip:hover{border-color:var(--ink-3);color:var(--ink-2)}
+.side-chip.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
 .hub-side .card-head{gap:8px}
 .hub-side .card-head h2{font-size:15px}
 
@@ -474,17 +479,17 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 /* 서랍은 좁습니다. '3일 뒤'·'다음 주'가 자리를 미리 차지하면
    제목이 서너 줄로 접히므로, 마우스를 올릴 때만 위에 띄웁니다. */
-.in-drawer .tk{position:relative;flex-wrap:wrap;padding:13px 2px;gap:10px}
-.in-drawer .tk-title{font-size:13.5px;line-height:1.5;word-break:keep-all}
-.in-drawer .tk-body p{font-size:12.5px}
-.in-drawer .tk-acts{
+.hub-side .tk{position:relative;flex-wrap:wrap;padding:13px 2px;gap:10px}
+.hub-side .tk-title{font-size:13.5px;line-height:1.5;word-break:keep-all}
+.hub-side .tk-body p{font-size:12.5px}
+.hub-side .tk-acts{
   position:absolute;right:0;bottom:8px;z-index:2;
   padding-left:10px;border-radius:8px;
   background:var(--paper);box-shadow:-12px 0 10px 2px var(--paper);
 }
 @media (hover:none){
   /* 손가락으로 쓰는 기기에는 hover 가 없으니 아예 한 줄을 내줍니다 */
-  .in-drawer .tk-acts{position:static;opacity:1;flex-basis:100%;margin-left:32px;
+  .hub-side .tk-acts{position:static;opacity:1;flex-basis:100%;margin-left:32px;
     box-shadow:none;padding-left:0;background:none}
 }
 
