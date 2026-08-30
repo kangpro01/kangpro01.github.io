@@ -894,7 +894,9 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .ref-n{margin:6px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.6}
 
 /* ══ 업무 Tools 목록 ══ */
-.tools-sec{padding:22px 0 56px}
+/* 제목 바로 아래에서 시작합니다. 기본 section 의 78px 을 쓰면
+   제목과 내용이 화면 하나만큼 떨어져 보입니다. */
+.page-sec{padding:22px 0 56px}
 /* 넓으면 세 개씩. 카드가 늘어도 줄이 흐트러지지 않습니다. */
 .tool-grid{display:grid;grid-template-columns:1fr;gap:16px}
 @media (min-width:600px){ .tool-grid{grid-template-columns:repeat(2,1fr)} }
