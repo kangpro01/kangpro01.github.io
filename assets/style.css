@@ -769,15 +769,6 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .side-item:hover{background:var(--paper-2);color:var(--ink)}
 .side-item.on{background:var(--marker);color:var(--ink)}
 
-/* 숫자 — 짙은 원. 왼쪽 메뉴와 카드 머리에 같은 모양으로 붙습니다 */
-.cnt{
-  flex:none;font-style:normal;font-family:var(--fs-num);
-  font-size:11px;font-weight:800;line-height:1;
-  min-width:22px;height:22px;padding:0 6px;border-radius:999px;
-  background:var(--ink);color:var(--on-ink);
-  display:inline-flex;align-items:center;justify-content:center;
-}
-
 /* ── 오른쪽 ── */
 /* 제목·단추를 한 줄에, 그 아래 설명 한 줄 */
 .feed-head{margin:0 0 14px}

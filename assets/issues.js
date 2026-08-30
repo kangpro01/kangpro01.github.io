@@ -34,12 +34,6 @@
       + '</div>';
   }
 
-  /* 왼쪽 메뉴와 카드 머리에 같은 숫자가 붙습니다 */
-  const count = (key, n) => {
-    document.querySelectorAll('[data-cnt="' + key + '"]')
-      .forEach(el => { el.textContent = n; });
-  };
-
   const CATS = ['자료 찾기','반복 입력','승인·결재','연락·응대','시설','비품','일정','기타'];
   const PRIO = { high:'긴급 업무', normal:'일반 업무', low:'보류/여유 업무' };
   const STEP = { new:'접수', doing:'개선 중', done:'개선함', dropped:'접음' };
@@ -195,10 +189,6 @@
     draw(newHost,  fresh, '아직 기록된 불편함이 없어요.<br>눌러서 한 줄 적어보세요.', 'write');
     draw(listHost, doing, '아이디어를 적으면 여기로 옮겨져요.');
     draw(doneHost, shut,  '개선을 마친 업무나 아이디어가<br>여기에 하나씩 쌓여요.');
-
-    count('new', fresh.length);
-    count('doing', doing.length);
-    count('done', shut.length);
   }
 
   /* ── 손보기 ── */
@@ -284,7 +274,6 @@
           + '<div class="isu-acts"><button type="button" class="tk-btn" data-ref="del">지우기</button></div>'
           + '</div>').join('')
       : empty('아직 담아둔 자료가 없어요.<br>참고할 글이나 아이디어를 담아두세요.', 'ref');
-    count('ref', rows.length);
   }
 
   if(refBtn){
