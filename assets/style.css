@@ -13,6 +13,8 @@
   /* 마감 칩. 한 색 규칙의 유일한 예외 — 디자인 규칙 참고 */
   --dday-over-bg:#F7E9E6;  --dday-over-ink:#8C3A2E;
   --dday-today-bg:#FAEEDF; --dday-today-ink:#8A5620;
+  /* 문제 & 개선의 '등록' 단추 하나에만 쓰는 강조색 */
+  --primary:#2563EB;  --primary-2:#1D4ED8;
   /* 달력 — 일요일·공휴일은 빨강, 토요일은 파랑 */
   --dow-sun:#E53E3E;  --dow-sat:#3182CE;
   --holi-ink:#E88A88;   /* 공휴일 이름 — 숫자보다 옅게 */
@@ -47,6 +49,7 @@
     --drawer-bg:rgba(12,11,11,.86);
     --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
     --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
+    --primary:#3B82F6;  --primary-2:#60A5FA;
     /* 어두운 바탕에서 #E53E3E · #3182CE 는 너무 어두워 읽히지 않습니다 */
     --dow-sun:#FF7B72;  --dow-sat:#6FA8DC;
     --holi-ink:#C9807C;
@@ -69,6 +72,7 @@
   --drawer-bg:rgba(12,11,11,.86);
   --dday-over-bg:#3A2724;  --dday-over-ink:#E2AFA5;
   --dday-today-bg:#382C1E; --dday-today-ink:#E0C193;
+  --primary:#3B82F6;  --primary-2:#60A5FA;
   --dow-sun:#FF7B72;  --dow-sat:#6FA8DC;
   --holi-ink:#C9807C;
   color-scheme:dark;
@@ -700,29 +704,96 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .modal-del[disabled]{opacity:.4;cursor:default}
 @media (max-width:520px){.modal-row{grid-template-columns:1fr}}
 
-/* ══ 문제 & 개선 — 네 칸 판 ══
-   불편한 점 → 개선 아이디어 → 개선한 것, 그리고 레퍼런스.
-   레퍼런스를 아래 한 줄에 혼자 두면 그 줄이 통째로 빈 공간이 됩니다. */
-.kan-sec{padding:18px 0 44px}
-.kan-wrap{max-width:1560px}
-.kan{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
-@media (min-width:700px){  .kan{grid-template-columns:repeat(2,1fr)} }
-@media (min-width:1200px){ .kan{grid-template-columns:repeat(4,1fr)} }
+/* ══ 문제 & 개선 — 왼쪽 메뉴 + 오른쪽 피드 ══ */
+.split{
+  max-width:1560px;margin:0 auto;padding:26px 24px 40px;
+  display:grid;grid-template-columns:1fr;gap:22px;
+}
+@media (min-width:1000px){
+  .split{grid-template-columns:288px minmax(0,1fr);gap:40px;align-items:start}
+  /* 굴려도 왼쪽 메뉴는 따라옵니다 */
+  .side{position:sticky;top:calc(var(--gnb) + 24px)}
+}
 
-.kan-col{
-  border:1px solid var(--rule);border-radius:14px;background:var(--paper);
-  box-shadow:0 1px 2px rgba(51,49,50,.04), 0 6px 16px rgba(51,49,50,.05);
-  padding:14px;min-width:0;
+/* ── 왼쪽 ── */
+.side-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:0 12px 15px;margin-bottom:14px;border-bottom:1px solid var(--rule);
 }
-.kan-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
-.kan-title{flex:1;min-width:0}
-.kan-title h2{margin:0;font-size:15px;font-weight:800;letter-spacing:-.035em}
-.kan-title p{margin:2px 0 0;font-size:11.5px;color:var(--ink-2);line-height:1.45;word-break:keep-all}
-.kan-count{
-  flex:none;font-family:var(--fs-num);font-size:11px;font-weight:800;
-  color:var(--ink);background:var(--paper-2);border:1px solid var(--rule);
-  border-radius:999px;padding:2px 8px;line-height:1.5;
+.side-logo{
+  flex:none;font-family:var(--fs-num);font-size:10.5px;font-weight:800;letter-spacing:.02em;
+  background:var(--ink);color:var(--on-ink);border-radius:8px;padding:6px 8px;
 }
+.side-brand b{font-size:14.5px;font-weight:800;letter-spacing:-.035em}
+.side-brand:hover b{text-decoration:underline;text-underline-offset:3px}
+
+.side-nav{display:flex;flex-direction:column;gap:3px}
+.side-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 12px;border-radius:10px;
+  font-size:14px;font-weight:700;letter-spacing:-.02em;color:var(--ink-2);
+  transition:background .15s ease,color .15s ease;
+}
+.side-item > span{flex:1;min-width:0}
+.side-item:hover{background:var(--paper-2);color:var(--ink)}
+.side-item.on{background:var(--marker);color:var(--ink)}
+
+/* 숫자 — 짙은 원. 왼쪽 메뉴와 카드 머리에 같은 모양으로 붙습니다 */
+.cnt{
+  flex:none;font-style:normal;font-family:var(--fs-num);
+  font-size:11px;font-weight:800;line-height:1;
+  min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+  background:var(--ink);color:var(--on-ink);
+  display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* ── 오른쪽 ── */
+.feed-head{text-align:center;padding:4px 0 20px}
+.feed-head h1{margin:0;font-size:clamp(26px,3.2vw,36px);font-weight:900;letter-spacing:-.04em;line-height:1.2}
+.feed-head p{margin:9px 0 0;font-size:14.5px;color:var(--ink-2)}
+
+.feed-act{display:flex;justify-content:flex-end;margin-bottom:16px}
+.btn-primary{
+  font-family:var(--fs);font-size:13.5px;font-weight:800;letter-spacing:-.02em;
+  background:var(--primary);color:#fff;border:0;border-radius:999px;
+  padding:11px 20px;cursor:pointer;white-space:nowrap;
+  box-shadow:0 6px 16px rgba(37,99,235,.2);
+  transition:background .15s ease,transform .12s ease;
+}
+.btn-primary:hover{background:var(--primary-2);transform:translateY(-1px)}
+.btn-primary:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+
+.feed-card{
+  background:var(--paper);border:1px solid var(--rule);border-radius:16px;
+  box-shadow:0 1px 2px rgba(51,49,50,.04), 0 8px 20px rgba(51,49,50,.05);
+  padding:20px 22px;margin-bottom:16px;scroll-margin-top:calc(var(--gnb) + 20px);
+}
+.feed-card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.feed-card-head h2{margin:0;font-size:15.5px;font-weight:800;letter-spacing:-.035em}
+.feed-card-head .kan-add{margin-left:auto}
+.feed-note{margin:12px 2px 0;font-size:11.5px;color:var(--ink-3);text-align:right}
+
+/* 비어 있을 때 — 점선 없이 흰 판에 안내만 */
+.feed-empty{
+  display:flex;flex-direction:column;align-items:center;gap:13px;
+  padding:26px 14px 20px;text-align:center;
+}
+.feed-empty p{
+  margin:0;font-size:14px;font-weight:500;line-height:1.7;
+  color:var(--ink-2);word-break:keep-all;
+}
+.feed-mini{
+  font-family:var(--fs);font-size:12px;font-weight:800;letter-spacing:-.02em;
+  color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);
+  border-radius:999px;padding:6px 14px;cursor:pointer;
+  transition:border-color .15s ease,background .15s ease,color .15s ease;
+}
+.feed-mini:hover{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
+
+.kan-body{display:flex;flex-direction:column;gap:10px}
+.kan-load{margin:0;padding:22px 2px;font-size:13.5px;color:var(--ink-2);text-align:center}
+.kan-load.bad{color:var(--ink)}
+
 /* 섹션마다 같은 모양의 추가 단추 */
 .kan-add{
   flex:none;font-family:var(--fs);font-size:11.5px;font-weight:800;letter-spacing:-.02em;
@@ -732,23 +803,20 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 }
 .kan-add:hover{background:var(--ink);color:var(--on-ink)}
 
-.kan-body{display:flex;flex-direction:column;gap:9px}
-.kan-load{margin:0;padding:20px 2px;font-size:13px;color:var(--ink-2);text-align:center}
-.kan-load.bad{color:var(--ink)}
+/* 피드 아래 가운데 푸터 */
+.feed footer{border-top:0;padding:8px 0 0;text-align:center}
+.feed footer .wrap{justify-content:center;padding:0}
 
-/* 비어 있는 칸 — 점선 상자. 흰 바탕이라 선이 또렷하게 보입니다. */
-.kan-empty{
-  display:block;width:100%;margin:0;
-  border:1.5px dashed var(--rule);border-radius:12px;background:var(--paper-2);
-  padding:22px 14px;text-align:center;
-  font-family:var(--fs);font-size:13.5px;font-weight:500;line-height:1.6;
-  color:var(--ink-2);word-break:keep-all;
-}
-button.kan-empty{cursor:pointer;transition:border-color .15s ease,color .15s ease}
-button.kan-empty:hover{border-color:var(--ink);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.btn-primary:hover{transform:none}}
 
 /* ══ 불편사항 ══ */
 .isu-form{max-width:none}
+#issueForm{
+  background:var(--paper);border:1px solid var(--rule);border-radius:16px;
+  box-shadow:0 1px 2px rgba(51,49,50,.04), 0 8px 20px rgba(51,49,50,.05);
+  padding:20px 22px;margin-bottom:16px;
+}
+#issueForm[hidden]{display:none}
 .isu-form label{display:block;margin-bottom:12px}
 .isu-form label > span{display:block;font-size:12.5px;font-weight:700;color:var(--ink-2);margin-bottom:5px}
 .isu-form label > span em{font-style:normal;font-weight:500;font-size:11.5px;color:var(--ink-3);margin-left:4px}
@@ -806,15 +874,6 @@ button.kan-empty:hover{border-color:var(--ink);color:var(--ink)}
 .isu-write textarea:focus{outline:none;border-color:var(--ink)}
 .isu-write-acts{display:flex;justify-content:flex-end;gap:6px;margin-top:8px}
 @media (max-width:520px){.isu-date{margin-left:0;width:100%}}
-/* 칸이 좁아 두 칸짜리 줄은 한 줄씩 세웁니다 */
-.kan-col .modal-row{grid-template-columns:1fr}
-.kan-col .isu-form{margin-bottom:12px}
-.kan-col .isu-form label > span{font-size:11.5px}
-.kan-col .isu-form input,.kan-col .isu-form textarea,.kan-col .isu-form select{font-size:13.5px;padding:9px 11px}
-.kan-col .isu-form .btn{padding:11px 18px;font-size:13.5px}
-/* 레퍼런스 목록도 판 안에서 나란히 */
-/* 회색 카드 위의 적는 칸은 흰색이라야 눈에 들어옵니다 */
-.kan-col .isu-write textarea{background:var(--paper)}
 
 /* ══ 레퍼런스 ══ */
 .ref-form{margin-bottom:18px;padding:18px 20px;border:1px solid var(--rule);border-radius:14px;background:var(--paper)}
@@ -1093,3 +1152,6 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
   .task{flex-wrap:wrap}
   .ics{margin-left:32px}
 }
+
+/* 카드 위의 적는 칸은 흰색이라야 눈에 들어옵니다 */
+.isu .isu-write textarea{background:var(--paper)}

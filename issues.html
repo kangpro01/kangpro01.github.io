@@ -8,84 +8,90 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/style.css?v=20260830s">
+<link rel="stylesheet" href="assets/style.css?v=20260830u">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
-<script src="assets/theme.js?v=20260830s"></script>
+<script src="assets/theme.js?v=20260830u"></script>
 </head>
 <body>
 
 <div id="site-header"></div>
 
-<div class="page-head slim tight">
-  <div class="wrap kan-wrap">
-    <h1>문제 &amp; 개선</h1>
-    <p>불편했던 점을 적어주세요.</p>
-  </div>
+<div class="split">
+
+  <!-- 왼쪽 — 어디에 얼마나 쌓였는지 -->
+  <aside class="side">
+    <a class="side-brand" href="index.html">
+      <span class="side-logo">ㄱㅍㄹ</span>
+      <b>일 잘하는 강프로</b>
+    </a>
+    <nav class="side-nav" aria-label="문제 &amp; 개선 안쪽 메뉴">
+      <a class="side-item on" href="#write"><span>불편한 점</span><em class="cnt" data-cnt="new">0</em></a>
+      <a class="side-item"    href="#list"><span>개선 아이디어</span><em class="cnt" data-cnt="doing">0</em></a>
+      <a class="side-item"    href="#done"><span>개선한 것</span><em class="cnt" data-cnt="done">0</em></a>
+      <a class="side-item"    href="#ref"><span>레퍼런스</span><em class="cnt" data-cnt="ref">0</em></a>
+    </nav>
+  </aside>
+
+  <!-- 오른쪽 — 피드 -->
+  <main class="feed">
+    <header class="feed-head">
+      <h1>문제 &amp; 개선</h1>
+      <p>불편했던 점을 적어주세요.</p>
+    </header>
+
+    <div class="feed-act">
+      <button class="btn-primary" type="button" id="isuToggle"
+              aria-expanded="false" aria-controls="issueForm">+ 새 문제/개선 등록</button>
+    </div>
+    <div id="issueForm" hidden></div>
+
+    <section class="feed-card" id="write">
+      <div class="feed-card-head">
+        <h2>불편한 점</h2>
+        <em class="cnt" data-cnt="new">0</em>
+      </div>
+      <div class="kan-body" id="issueNew"></div>
+      <p class="feed-note">최신순으로 표시돼요.</p>
+    </section>
+
+    <section class="feed-card" id="list">
+      <div class="feed-card-head">
+        <h2>개선 아이디어</h2>
+        <em class="cnt" data-cnt="doing">0</em>
+      </div>
+      <div class="kan-body" id="issueList"></div>
+      <p class="feed-note">최신순으로 표시돼요.</p>
+    </section>
+
+    <section class="feed-card" id="done">
+      <div class="feed-card-head">
+        <h2>개선한 것</h2>
+        <em class="cnt" data-cnt="done">0</em>
+      </div>
+      <div class="kan-body" id="issueDone"></div>
+      <p class="feed-note">최신순으로 표시돼요.</p>
+    </section>
+
+    <section class="feed-card" id="ref">
+      <div class="feed-card-head">
+        <h2>레퍼런스</h2>
+        <em class="cnt" data-cnt="ref">0</em>
+        <button class="kan-add" type="button" id="refAdd">+ 추가</button>
+      </div>
+      <div class="kan-body" id="refList"></div>
+      <p class="feed-note">최신순으로 표시돼요.</p>
+    </section>
+
+    <div id="site-footer"></div>
+  </main>
+
 </div>
 
-<section class="kan-sec">
-  <div class="wrap kan-wrap">
-
-    <div class="kan">
-      <section class="kan-col" id="write">
-        <div class="kan-head">
-          <div class="kan-title">
-            <h2>불편한 점</h2>
-            <p>불편했던 점을 적어주세요.</p>
-          </div>
-          <span class="kan-count" id="cntNew">0</span>
-          <button class="kan-add" type="button" id="isuToggle"
-                  aria-expanded="false" aria-controls="issueForm">+ 등록</button>
-        </div>
-        <div id="issueForm" hidden></div>
-        <div class="kan-body" id="issueNew"></div>
-      </section>
-
-      <section class="kan-col" id="list">
-        <div class="kan-head">
-          <div class="kan-title">
-            <h2>개선 아이디어</h2>
-            <p>고칠 방법을 적으면 여기로 와요.</p>
-          </div>
-          <span class="kan-count" id="cntDoing">0</span>
-        </div>
-        <div class="kan-body" id="issueList"></div>
-      </section>
-
-      <section class="kan-col" id="done">
-        <div class="kan-head">
-          <div class="kan-title">
-            <h2>개선한 것</h2>
-            <p>실제로 개선하거나 바꾼 내용이에요.</p>
-          </div>
-          <span class="kan-count" id="cntDone">0</span>
-        </div>
-        <div class="kan-body" id="issueDone"></div>
-      </section>
-
-      <section class="kan-col" id="ref">
-        <div class="kan-head">
-          <div class="kan-title">
-            <h2>레퍼런스</h2>
-            <p>참고하고 싶은 링크나 사례를 저장해 두세요.</p>
-          </div>
-          <span class="kan-count" id="cntRef">0</span>
-          <button class="kan-add" type="button" id="refAdd">+ 추가</button>
-        </div>
-        <div class="kan-body" id="refList"></div>
-      </section>
-    </div>
-
-  </div>
-</section>
-
-<div id="site-footer"></div>
-
-<script src="assets/site.js?v=20260830s"></script>
-<script src="assets/supabase.js?v=20260830s"></script>
-<script src="assets/db.js?v=20260830s"></script>
-<script src="assets/when.js?v=20260830s"></script>
-<script src="assets/task-form.js?v=20260830s"></script>
-<script src="assets/issues.js?v=20260830s"></script>
+<script src="assets/site.js?v=20260830u"></script>
+<script src="assets/supabase.js?v=20260830u"></script>
+<script src="assets/db.js?v=20260830u"></script>
+<script src="assets/when.js?v=20260830u"></script>
+<script src="assets/task-form.js?v=20260830u"></script>
+<script src="assets/issues.js?v=20260830u"></script>
 </body>
 </html>

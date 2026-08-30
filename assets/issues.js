@@ -1,12 +1,14 @@
 /* ══════════════════════════════════════════════════════════
    불편사항 & 개선.
 
-   세 칸짜리 판입니다. 상태에 따라 카드가 옮겨 다닙니다.
+   왼쪽에 안쪽 메뉴, 오른쪽에 피드입니다.
+   상태에 따라 카드가 옮겨 다닙니다.
 
      불편한 점(new) → 개선 아이디어(doing) → 개선한 것(done·dropped)
 
-   세로로 늘어놓으면 화면을 한참 굴려야 전체가 보였습니다.
-   나란히 두면 어디에 얼마나 쌓였는지 한눈에 들어옵니다.
+   왼쪽 메뉴의 숫자로 어디에 얼마나 쌓였는지 먼저 보이고,
+   오른쪽에서 실제 내용을 봅니다. 지금 보고 있는 자리는
+   화면에 들어온 칸을 따라 저절로 표시됩니다.
 
    적는 칸은 기본으로 접혀 있습니다. 대개는 쌓인 것을 보러 오지
    새로 적으러 오는 것이 아니라서, 펴 두면 목록이 아래로 밀립니다.
@@ -21,15 +23,21 @@
   const doneHost  = document.getElementById('issueDone');
   if(!listHost) return;
 
-  /* 비어 있는 칸 — 점선 상자. 누를 데가 있으면 단추로 만듭니다. */
+  /* 비어 있는 칸 — 점선 상자 대신 흰 판에 안내만 둡니다.
+     넣을 데가 있는 칸에만 작은 등록 단추를 답니다. */
   function empty(text, action){
-    return action
-      ? '<button type="button" class="kan-empty" data-empty="' + action + '">' + text + '</button>'
-      : '<p class="kan-empty">' + text + '</p>';
+    return '<div class="feed-empty">'
+      + '<p>' + text + '</p>'
+      + (action
+          ? '<button type="button" class="feed-mini" data-empty="' + action + '">+ 등록</button>'
+          : '')
+      + '</div>';
   }
-  const count = (id, n) => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = n;
+
+  /* 왼쪽 메뉴와 카드 머리에 같은 숫자가 붙습니다 */
+  const count = (key, n) => {
+    document.querySelectorAll('[data-cnt="' + key + '"]')
+      .forEach(el => { el.textContent = n; });
   };
 
   const CATS = ['자료 찾기','반복 입력','승인·결재','연락·응대','시설','비품','일정','기타'];
@@ -70,7 +78,7 @@
       writeHost.hidden = !open;
       if(toggle){
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.textContent = open ? '접기' : '+ 등록';
+        toggle.textContent = open ? '접기' : '+ 새 문제/개선 등록';
       }
       if(open) writeHost.querySelector('textarea').focus();
     }
@@ -188,9 +196,9 @@
     draw(listHost, doing, '아이디어를 적으면 여기로 옮겨져요.');
     draw(doneHost, shut,  '개선을 마친 업무나 아이디어가<br>여기에 하나씩 쌓여요.');
 
-    count('cntNew', fresh.length);
-    count('cntDoing', doing.length);
-    count('cntDone', shut.length);
+    count('new', fresh.length);
+    count('doing', doing.length);
+    count('done', shut.length);
   }
 
   /* ── 손보기 ── */
@@ -276,7 +284,7 @@
           + '<div class="isu-acts"><button type="button" class="tk-btn" data-ref="del">지우기</button></div>'
           + '</div>').join('')
       : empty('아직 담아둔 자료가 없어요.<br>참고할 글이나 아이디어를 담아두세요.', 'ref');
-    count('cntRef', rows.length);
+    count('ref', rows.length);
   }
 
   if(refBtn){
@@ -332,6 +340,34 @@
     try{ await DB.remove('refs', 'id=eq.' + card.dataset.id); loadRefs(); }
     catch(err){ alert('지우지 못했어요. ' + err.message); }
   });
+
+  /* ── 왼쪽 메뉴의 '지금 보는 곳' ──
+     누르면 그 칸으로 가고, 굴려서 다른 칸이 들어오면 저절로 옮겨갑니다. */
+  (function(){
+    const items = [...document.querySelectorAll('.side-item')];
+    if(!items.length) return;
+
+    const mark = id => items.forEach(a =>
+      a.classList.toggle('on', a.getAttribute('href') === '#' + id));
+
+    items.forEach(a => a.addEventListener('click', () => {
+      mark(a.getAttribute('href').slice(1));
+    }));
+
+    if(!('IntersectionObserver' in window)) return;
+    const seen = new Map();
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => seen.set(e.target.id, e.intersectionRatio));
+      let best = null, top = 0;
+      seen.forEach((v, k) => { if(v > top){ top = v; best = k; } });
+      if(best) mark(best);
+    }, { rootMargin: '-30% 0px -55% 0px', threshold: [0, .25, .5, 1] });
+
+    items.forEach(a => {
+      const el = document.getElementById(a.getAttribute('href').slice(1));
+      if(el) io.observe(el);
+    });
+  })();
 
   DB.gate(() => { load(); loadRefs(); });
 })();
