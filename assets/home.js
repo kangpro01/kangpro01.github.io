@@ -262,6 +262,38 @@
     });
   })();
 
+  /* ── 오른쪽 서랍 ──
+     위젯을 두 벌 만들지 않습니다. 묶음 하나를 아래 자리와 서랍 사이로
+     옮겨 다닙니다. 접힘·순서·끌기가 그대로 따라옵니다. */
+  (function(){
+    const side  = document.getElementById('hubSide');
+    const dock  = document.getElementById('hubDock');
+    const draw  = document.getElementById('sideDrawer');
+    const body  = document.getElementById('sideDrawerBody');
+    const scrim = document.getElementById('sideScrim');
+    const open  = document.getElementById('sideOpen');
+    const close = document.getElementById('sideClose');
+    if(!side || !dock || !draw || !body || !scrim || !open) return;
+
+    function setOpen(on){
+      if(on) body.appendChild(side); else dock.appendChild(side);
+      side.classList.toggle('in-drawer', on);
+      draw.classList.toggle('open', on);
+      scrim.classList.toggle('open', on);
+      draw.setAttribute('aria-hidden', on ? 'false' : 'true');
+      open.setAttribute('aria-expanded', on ? 'true' : 'false');
+      document.body.style.overflow = on ? 'hidden' : '';
+      if(on) close.focus(); else open.focus();
+    }
+
+    open.addEventListener('click', () => setOpen(true));
+    close.addEventListener('click', () => setOpen(false));
+    scrim.addEventListener('click', () => setOpen(false));
+    addEventListener('keydown', e => {
+      if(e.key === 'Escape' && draw.classList.contains('open')) setOpen(false);
+    });
+  })();
+
   /* ── 한 칸만 펼쳐 보기 ──
      메뉴에서 '일간 업무'를 고르면 #daily 로 옵니다.
      그 칸의 높이 제한을 풀어 담아둔 것을 끝까지 보여줍니다.
