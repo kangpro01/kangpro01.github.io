@@ -167,7 +167,6 @@
 
     function paint(folded){
       card.classList.toggle('folded', folded);
-      board.classList.toggle('now-off', folded);
       btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
       btn.setAttribute('aria-label', folded ? '펴기' : '접기');
       /* 칸 크기가 바뀌었으니 달력이 몇 줄까지 적을지 다시 잽니다 */
@@ -194,10 +193,9 @@
 
     const id = (location.hash || '').slice(1);
     const el = id ? document.getElementById(id) : null;
-    if(!el || !hub.contains(el)){ hub.classList.remove('has-focus'); return; }
+    if(!el || !hub.contains(el)) return;
 
     el.classList.add('focused');
-    hub.classList.add('has-focus');
     el.scrollIntoView({ block:'start', behavior:'smooth' });
   }
 

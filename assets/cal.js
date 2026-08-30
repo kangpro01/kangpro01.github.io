@@ -18,7 +18,7 @@ const CAL = (function(){
   const NOW = new Date();
   const TY = NOW.getFullYear(), TM = NOW.getMonth() + 1, TD = NOW.getDate();
   const DOW = ['일','월','화','수','목','금','토'];
-  const SHOW_MAX = 2;                  // 한 칸에 적어 넣을 최대 건수. 넘으면 +N
+  const SHOW_MAX = 3;                  // 한 칸에 적어 넣을 최대 건수. 넘으면 +N
   let show = SHOW_MAX;                 // 칸 높이에 맞춰 실제로 적는 줄 수
 
   let y = TY, m = TM;

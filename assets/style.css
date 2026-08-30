@@ -419,45 +419,19 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .page-head.tight h1,.page-head.tight p{margin:0}
 }
 
-/* ══ 메인 다섯 칸 ══
-   위: 캘린더(넓게) + 지금 해야 할 일
-   아래: 일간 · 주간 · 월간 */
+/* ══ 메인 — 세로로 쌓는 피드 ══
+   전에는 다섯 칸을 한 화면에 욱여넣고 칸 안에서만 스크롤했습니다.
+   업무가 늘면 서너 줄만 보이고 나머지는 칸 안에 숨었습니다.
+   이제 칸은 내용만큼 길어지고, 넘치면 화면 전체를 굴려 봅니다. */
 .hub{
   max-width:var(--wrap-wide);
-  display:grid;grid-template-columns:repeat(12,1fr);gap:16px;
-  padding-top:24px;padding-bottom:8px;
+  display:flex;flex-direction:column;gap:16px;
+  padding-top:24px;padding-bottom:44px;
 }
-.card-cal{grid-column:span 9}
-.card-now{grid-column:span 3}
-.hub > .card:nth-child(n+3){grid-column:span 4}
+/* 칸은 내용만큼. 최대 높이도 안쪽 스크롤도 두지 않습니다. */
+.hub > .card{height:auto}
+.hub > .card > .card-body{max-height:none;overflow:visible}
 
-/* 넓은 화면에서는 다섯 칸이 한 화면에 들어갑니다.
-   칸 높이를 맞추고, 넘치는 내용은 페이지가 아니라 칸 안에서 스크롤합니다.
-   이래야 페이지가 세로로 길어지지 않습니다. */
-@media (min-width:901px){
-  .hub{
-    /* 날짜 칸 안에 일정을 적으므로 첫 줄을 넉넉히 줍니다 */
-    grid-template-rows:1.55fr 0.45fr;
-    height:calc(100vh - var(--gnb) - 40px);
-    height:calc(100dvh - var(--gnb) - 40px);
-    min-height:600px;max-height:980px;
-  }
-  .hub > .card{display:flex;flex-direction:column;overflow:hidden}
-  .hub > .card > .card-body{flex:1;min-height:0;overflow-y:auto;max-height:none}
-}
-@media (min-width:901px){
-  /* 접으면 달력이 한 줄을 통째로 씁니다 */
-  /* 접힌 머리 줄(약 58px)만큼은 어디선가 빼야 합니다.
-     달력 높이를 지키려고 아래 세 칸에서 가져옵니다.
-     세 칸은 안에서 스크롤하므로 낮아져도 못 볼 것이 없습니다. */
-  .hub.now-off{grid-template-rows:1.85fr auto 0.4fr}
-  .hub.now-off .card-cal,
-  .hub.now-off .card-now{grid-column:span 12}
-}
-@media (max-width:900px){
-  .card-cal,.card-now,.hub > .card:nth-child(n+3){grid-column:span 12}
-  .hub > .card > .card-body{max-height:300px;overflow-y:auto}
-}
 /* 접힌 칸은 제목 줄만 남습니다 */
 .card-now.folded{padding-bottom:10px}
 .card-now.folded > .card-head{margin-bottom:0;padding-bottom:0;border-bottom:0}
@@ -501,9 +475,9 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
 /* 높이가 정해진 칸 안에서는 날짜 줄이 남는 높이를 정확히 나눠 갖습니다.
    하한을 두면 화면이 낮을 때 넘쳐 스크롤 막대가 생깁니다. */
-.card-cal .cal-grid{flex:1;min-height:0;align-content:stretch}
-@media (min-width:901px){
-  .card-cal .cal-grid{grid-auto-rows:minmax(0,1fr)}
+.card-cal .cal-grid{grid-auto-rows:minmax(88px,auto)}
+@media (max-width:760px){
+  .card-cal .cal-grid{grid-auto-rows:minmax(56px,auto)}
 }
 @media (max-width:900px){
   /* 좁을 때는 달력이 잘리지 않게 칸 안에서 다 보여줍니다 */
@@ -512,17 +486,15 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card-empty{margin:12px 2px;font-size:13.5px;color:var(--ink-3);line-height:1.65}
 .card-empty.bad{color:var(--ink-2)}
 .card .tks{border-top:0}
-.card .tk{padding:12px 2px;gap:11px}
+.card .tk{padding:15px 2px;gap:12px}
 .card .tk:first-child{padding-top:2px}
 .card .tk:last-child{border-bottom:0}
 .card .tk-title{font-size:14.5px;line-height:1.55}
 .card .tk-acts{gap:4px}
 
-/* 메뉴에서 골라 온 칸 — 높이 제한을 풀어 목록을 끝까지 보여줍니다.
-   격자 행까지 같이 풀어야 합니다. 안 그러면 칸만 커지고 목록은 그대로 잘립니다. */
-.hub.has-focus{height:auto;max-height:none;grid-template-rows:auto auto}
-.hub .card.focused{box-shadow:0 0 0 1.5px var(--ink);overflow:visible}
-.hub .card.focused > .card-body{flex:none;max-height:none;overflow:visible}
+/* 메뉴에서 골라 온 칸 — 어디를 보고 있는지 테두리로만 알려줍니다.
+   칸이 이미 내용만큼 길어지므로 따로 풀어줄 것이 없습니다. */
+.hub .card.focused{box-shadow:0 0 0 1.5px var(--ink)}
 
 /* ══ 떠 있는 단추 ══ */
 .fab-wrap{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
