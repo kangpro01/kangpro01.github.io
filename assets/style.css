@@ -417,7 +417,7 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 /* 폭을 다 쓰면 날짜 칸이 200x78 로 납작해집니다.
    가로를 잡고 칸 높이를 올려 한 칸이 네모에 가깝게 둡니다. */
 .hub{
-  max-width:1340px;
+  max-width:1560px;
   display:grid;grid-template-columns:1fr;gap:16px;align-items:start;
   padding-top:22px;padding-bottom:48px;
 }
@@ -429,14 +429,16 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
    그 아래 폭 전체에 일간·주간·월간.
    무엇을 놓을지는 오른쪽 아래 단추 안에서 고릅니다. */
 @media (min-width:1100px){
-  .hub{grid-template-columns:minmax(0,1fr) 340px;gap:18px}
+  /* 옆자리는 화면이 넓어지는 만큼 같이 넓어집니다. 340px 로 못박아 두면
+     넓은 화면에서 양옆만 비고 메모 한 줄이 세 줄로 접힙니다. */
+  .hub{grid-template-columns:minmax(0,1fr) clamp(340px,26vw,440px);gap:18px}
   .hub-main{grid-column:1}
   .hub-aside{grid-column:2}
   .hub-dock{grid-column:1 / -1}
   /* 세 칸을 고정합니다. auto-fit 로 두면 하나만 놓았을 때
      그 카드가 1300px 로 늘어나 속이 텅 빈 판이 됩니다. */
   .hub-side{grid-template-columns:repeat(3,minmax(0,1fr))}
-  /* 옆자리를 비우면 달력이 폭을 다 먹어 날짜 칸이 200x98 로 납작해집니다 */
+  /* 옆자리를 비우면 달력이 폭을 다 먹어 날짜 칸이 납작해집니다 */
   .hub.aside-off{max-width:1160px;grid-template-columns:minmax(0,1fr)}
 }
 
@@ -582,7 +584,10 @@ a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .card-cal .cal{border:0;border-radius:0;padding:0;display:flex;flex-direction:column;height:100%}
 /* 높이가 정해진 칸 안에서는 날짜 줄이 남는 높이를 정확히 나눠 갖습니다.
    하한을 두면 화면이 낮을 때 넘쳐 스크롤 막대가 생깁니다. */
-.card-cal .cal-grid{grid-auto-rows:minmax(98px,auto)}
+/* 칸 높이가 폭을 따라갑니다. 한 값으로 못박으면 넓은 화면에서는
+   납작해지고 좁은 화면에서는 세로로 길쭉해집니다. 어느 폭에서나
+   가로세로 1.3 쯤을 유지합니다. */
+.card-cal .cal-grid{grid-auto-rows:minmax(clamp(88px,7.2vw,118px),auto)}
 @media (max-width:760px){
   .card-cal .cal-grid{grid-auto-rows:minmax(56px,auto)}
 }
@@ -1039,6 +1044,18 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
   background:transparent;padding:4px 5px 4px;
   border:0;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
 }
+/* 칸을 누르면 아래에 그 날 판이 열립니다.
+   고른 칸과 마우스를 올린 칸은 같은 --marker 로 칠하고,
+   고른 칸에만 테두리를 둘러 구분합니다. 오늘 칸은 제 색을 지킵니다. */
+.cal-day[data-day]{cursor:pointer;transition:background .12s ease}
+.cal-day[data-day]:hover,.cal-day.picked{background:var(--marker)}
+.cal-day.today[data-day]:hover,.cal-day.picked.today{background:var(--dday-today-bg)}
+.cal-day[data-day]:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.cal-day.picked::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 0 2px var(--ink);
+}
+@media (prefers-reduced-motion:reduce){.cal-day[data-day]{transition:none}}
 /* 이번 달이 아닌 칸 — 칸은 그대로 두고 안만 비웁니다 */
 .cal-day.off{background:var(--paper-2);opacity:.45}
 /* 날짜 숫자 줄 — 오른쪽에 못 적은 건수 */
@@ -1074,22 +1091,59 @@ a.ref-t:hover{text-decoration:underline;text-underline-offset:3px}
 .cal-ev:hover{border-color:var(--ink)}
 .cal-ev:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
 .cal-more{
-  font-family:var(--fs-num);font-size:10px;font-weight:700;
-  color:var(--ink-2);line-height:1.3;flex:none;cursor:pointer;
-  background:none;border:0;padding:0 2px;border-radius:4px;
+  font-style:normal;font-family:var(--fs-num);font-size:10px;font-weight:700;
+  color:var(--ink-2);line-height:1.3;flex:none;padding:0 2px;
 }
-.cal-more:hover{color:var(--ink);background:var(--marker)}
 
-/* +N 을 눌러 펼친 칸 — 아래 칸 위로 떠올라 그 날 것을 전부 보여줍니다 */
-.cal-day.open{
-  overflow:visible;z-index:5;
-  background:var(--paper);border-radius:6px;
-  box-shadow:0 0 0 1.5px var(--ink), 0 10px 24px rgba(51,49,50,.18);
+/* ── 그 날 판 ──
+   달력 아래에 펼칩니다. 좁은 화면에서는 칸에 제목이 안 들어가고,
+   넓은 화면에서도 칸에 다 못 담은 것이 있습니다. 둘 다 여기서 봅니다. */
+.cal-panel{
+  flex:none;margin-top:12px;
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:12px;
+  padding:12px 14px 13px;
+}
+.cal-panel-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cal-panel-head b{
+  flex:1;min-width:0;font-size:13.5px;font-weight:800;letter-spacing:-.03em;color:var(--ink);
+}
+.cal-panel-x{
+  flex:none;width:26px;height:26px;padding:0;line-height:1;
+  font-size:17px;color:var(--ink-3);
+  background:var(--paper);border:1px solid var(--rule);border-radius:8px;cursor:pointer;
+  transition:border-color .15s ease,color .15s ease;
+}
+.cal-panel-x:hover{border-color:var(--ink);color:var(--ink)}
+.cal-panel-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.cal-row{
+  display:flex;align-items:baseline;gap:9px;width:100%;text-align:left;cursor:pointer;
+  font-family:var(--fs);font-size:13px;font-weight:700;letter-spacing:-.025em;
+  color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:9px;padding:9px 12px;
+  transition:border-color .15s ease;
+}
+.cal-row:hover{border-color:var(--ink)}
+.cal-row:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.cal-row > span{flex:1;min-width:0;line-height:1.5;word-break:keep-all}
+.cal-row > em{
+  flex:none;font-style:normal;font-family:var(--fs);
+  font-size:11px;font-weight:700;color:var(--ink-3);
+}
+.cal-panel-none{margin:0 0 10px;font-size:12.5px;color:var(--ink-3);line-height:1.6}
+.cal-panel-add{
+  width:100%;font-family:var(--fs);font-size:12.5px;font-weight:800;letter-spacing:-.02em;
+  color:var(--ink-2);background:none;border:1.5px dashed var(--rule);border-radius:9px;
+  padding:9px;cursor:pointer;transition:border-color .15s ease,color .15s ease;
+}
+.cal-panel-add:hover{border-color:var(--ink);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){
+  .cal-row,.cal-panel-x,.cal-panel-add{transition:none}
 }
 /* 좁은 화면용 건수. 넓을 때는 제목을 적으므로 숨겨둡니다 */
 .cal-count{display:none}
 @media (max-width:760px){
   .cal-ev,.cal-more{display:none}
+  .cal-panel{margin-top:10px;padding:11px 12px 12px}
   .cal-count{
     display:block;font-style:normal;font-family:var(--fs-num);
     font-size:10px;font-weight:700;line-height:1.4;

@@ -7,7 +7,10 @@
 
    제목을 누르면 고치는 창이 열립니다. 이것이 없으면 오늘 이후로 잡힌
    한 번짜리 업무는 마감일이 올 때까지 손댈 방법이 없습니다.
-   칸에 다 못 담은 것은 +N 을 눌러 펼칩니다.
+
+   날짜 칸을 누르면 아래에 그 날 판이 열립니다. 좁은 화면에서는 칸이
+   42x56 이라 제목을 적을 자리가 없어 건수만 뜨는데, 그때 무엇이
+   걸려 있는지 볼 방법이 이것뿐입니다. 넓은 화면에서도 같게 둡니다.
 
    업무를 불러온 뒤 CAL.setTasks(rows) 를 부르면 다시 그립니다.
    ══════════════════════════════════════════════════════════ */
@@ -23,7 +26,7 @@ const CAL = (function(){
 
   let y = TY, m = TM;
   let mine = [];                       // 직접 담은 업무 (로그인 뒤 채워집니다)
-  let openDay = null;                  // +N 을 눌러 펼쳐둔 날 (YYYY-MM-DD)
+  let dayOpen = null;                  // 아래 판에 펼쳐둔 날 (YYYY-MM-DD)
 
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
@@ -45,28 +48,23 @@ const CAL = (function(){
     for(let d = 1; d <= last; d++){
       const key = keyOf(y, m, d);
       const list = itemsOn(key);
-      const wide = openDay === key;                 // 펼쳐둔 날은 전부 보여줍니다
       const wd = (lead + d - 1) % 7;                // 0=일 … 6=토
       const holi = (typeof HOLIDAY !== 'undefined') ? HOLIDAY.on(key) : null;
 
       let cls = 'cal-day';
       if(list.length) cls += ' has';
       if(y === TY && m === TM && d === TD) cls += ' today';
-      if(wide) cls += ' open';
+      if(dayOpen === key) cls += ' picked';
 
       /* 일요일과 공휴일은 빨강, 토요일은 파랑 */
       const nCls = 'cal-n' + (wd === 0 || holi ? ' sun' : wd === 6 ? ' sat' : '');
 
-      /* 넘치는 건수는 줄을 하나 더 쓰지 않도록 날짜 숫자 옆에 적습니다 */
+      /* 넘치는 건수는 줄을 하나 더 쓰지 않도록 날짜 숫자 옆에 적습니다.
+         누르는 것이 아니라 표시입니다. 칸을 누르면 아래 판에 다 보입니다. */
       const hidden = list.length - show;
-      const more = (!wide && hidden > 0)
-        ? '<button type="button" class="cal-more" data-more="' + key + '"'
-          + ' aria-label="이 날 업무 모두 보기">+' + hidden + '</button>'
-        : (wide && hidden > 0
-            ? '<button type="button" class="cal-more" data-more="" aria-label="접기">접기</button>'
-            : '');
+      const more = hidden > 0 ? '<em class="cal-more">+' + hidden + '</em>' : '';
 
-      const evs = (wide ? list : list.slice(0, show)).map(t =>
+      const evs = list.slice(0, show).map(t =>
         '<button type="button" class="cal-ev" data-task="' + t.id + '"'
         + ' title="' + esc(t.title) + '">' + esc(t.title) + '</button>').join('');
 
@@ -75,7 +73,11 @@ const CAL = (function(){
       const count = list.length
         ? '<em class="cal-count">' + list.length + '</em>' : '';
 
-      cells += '<div class="' + cls + '">'
+      const label = m + '월 ' + d + '일'
+                  + (list.length ? ', 업무 ' + list.length + '건' : ', 담아둔 업무 없음');
+
+      cells += '<div class="' + cls + '" data-day="' + key + '"'
+             +   ' role="button" tabindex="0" aria-label="' + label + '">'
              +   '<div class="cal-top">'
              +     '<i class="' + nCls + '">' + d + '</i>' + more + count
              +   '</div>'
@@ -105,6 +107,35 @@ const CAL = (function(){
           '<span class="cal-dow' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">'
           + d + '</span>').join('')
       + cells
+      + '</div>'
+      + dayHtml();
+  }
+
+  /* ── 그 날 판 ──
+     칸 아래에 펼칩니다. 칸 안에서 펼치면 달력 줄 높이가 들쭉날쭉해지고,
+     따로 띄우면 달력이 가려져 앞뒤 날을 못 봅니다. */
+  function dayHtml(){
+    if(!dayOpen) return '';
+    const d = new Date(dayOpen + 'T00:00:00');
+    if(isNaN(d)) return '';
+    const list = itemsOn(dayOpen);
+    const holi = (typeof HOLIDAY !== 'undefined') ? HOLIDAY.on(dayOpen) : null;
+    const label = (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ('
+                + DOW[d.getDay()] + ')' + (holi ? ' · ' + holi : '');
+
+    return '<div class="cal-panel" role="group" aria-label="' + esc(label) + ' 업무">'
+      +   '<div class="cal-panel-head">'
+      +     '<b>' + esc(label) + '</b>'
+      +     '<button type="button" class="cal-panel-x" data-dayclose aria-label="닫기">×</button>'
+      +   '</div>'
+      +   (list.length
+            ? '<div class="cal-panel-list">' + list.map(t =>
+                '<button type="button" class="cal-row" data-task="' + t.id + '">'
+                + '<span>' + esc(t.title) + '</span>'
+                + (t.owner ? '<em>' + esc(t.owner) + '</em>' : '')
+                + '</button>').join('') + '</div>'
+            : '<p class="cal-panel-none">이 날 담아둔 업무가 없어요.</p>')
+      +   '<button type="button" class="cal-panel-add" data-dayadd>＋ 이 날 업무 담기</button>'
       + '</div>';
   }
 
@@ -153,16 +184,33 @@ const CAL = (function(){
       return;
     }
 
-    /* +N / 접기 */
-    const more = e.target.closest('[data-more]');
-    if(more){
-      openDay = more.dataset.more || null;
+    /* 그 날 판 — 닫기 · 이 날로 담기 */
+    if(e.target.closest('[data-dayclose]')){
+      dayOpen = null; render();
+      return;
+    }
+    const add = e.target.closest('[data-dayadd]');
+    if(add && dayOpen){
+      /* 연도까지 넘깁니다. '9/10' 처럼 적으면 그 날이 이미 지났을 때
+         parseWhen 이 내년으로 미뤄서 엉뚱한 날에 담깁니다. */
+      TaskForm.open({ when: dayOpen });
+      return;
+    }
+
+    /* 날짜 칸 — 다시 누르면 닫힙니다 */
+    const cell = e.target.closest('.cal-day[data-day]');
+    if(cell){
+      dayOpen = (dayOpen === cell.dataset.day) ? null : cell.dataset.day;
       render();
+      if(dayOpen){
+        const p = host.querySelector('.cal-panel');
+        if(p) p.scrollIntoView({ block:'nearest', behavior:'smooth' });
+      }
       return;
     }
 
     if(e.target.closest('[data-today]')){
-      y = TY; m = TM; openDay = null; render();
+      y = TY; m = TM; dayOpen = null; render();
       return;
     }
     const nav = e.target.closest('.cal-nav');
@@ -170,8 +218,17 @@ const CAL = (function(){
     m += Number(nav.dataset.go);
     if(m < 1){ m = 12; y--; }
     if(m > 12){ m = 1; y++; }
-    openDay = null;
+    dayOpen = null;
     render();
+  });
+
+  /* 칸은 div 라 키보드가 저절로 눌리지 않습니다 */
+  host.addEventListener('keydown', e => {
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    const cell = e.target.closest('.cal-day[data-day]');
+    if(!cell || e.target !== cell) return;
+    e.preventDefault();
+    cell.click();
   });
 
   render();

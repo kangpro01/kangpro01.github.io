@@ -4,6 +4,10 @@
    [data-newtask] 를 누르면 새로 담는 창이,
    open({ task: 행 }) 으로 열면 고치는 창이 됩니다.
 
+   open({ title, note, category, when, onSaved }) 로 미리 채워 열 수도
+   있습니다. '문제 & 개선'에서 개선안을 업무로 옮길 때 쓰는 길입니다.
+   날짜를 코드에 못박지 않고 이 창에서 고르게 하려는 것입니다.
+
    날짜는 "3일 뒤", "매주 금요일"처럼 사람 말로 적으면
    아래에 해석 결과가 바로 보입니다.
    ══════════════════════════════════════════════════════════ */
@@ -48,7 +52,7 @@ const TaskForm = (function(){
       + '<label><span>업무 내용 입력</span>'
       +   '<textarea name="title" rows="2" maxlength="300" required '
       +   'placeholder="예: 소화기 유효기간 확인하고 대장에 기록">'
-      +   (task ? esc(task.title) : '') + '</textarea></label>'
+      +   esc(task ? task.title : (preset.title || '')) + '</textarea></label>'
 
       + '<label><span>일정</span>'
       +   '<input name="when" maxlength="60" autocomplete="off" '
@@ -62,7 +66,7 @@ const TaskForm = (function(){
       +     'value="' + esc(task && task.owner) + '"></label>'
       +   '<label><span>분류</span>'
       +     '<input name="category" maxlength="40" list="catList" autocomplete="off" placeholder="고르거나 직접 입력" '
-      +     'value="' + esc(task && task.category) + '"></label>'
+      +     'value="' + esc(task ? task.category : (preset.category || '')) + '"></label>'
       + '</div>'
       + '<datalist id="catList">' + CATS.map(c => '<option value="'+c+'">').join('') + '</datalist>'
       + '<datalist id="ownerList"></datalist>'
@@ -70,7 +74,7 @@ const TaskForm = (function(){
       + '<label><span>메모</span>'
       +   '<textarea name="note" rows="2" maxlength="2000" '
       +   'placeholder="다음에 볼 때 도움이 될 내용">'
-      +   (task ? esc(task.note) : '') + '</textarea></label>'
+      +   esc(task ? task.note : (preset.note || '')) + '</textarea></label>'
 
       + '<div class="modal-foot">'
       +   (task ? '<button type="button" class="modal-del" id="taskDel">지우기</button>' : '')
@@ -176,7 +180,10 @@ const TaskForm = (function(){
           common.due_on = w ? w.due_on : null;
           common.repeat_rule = w ? w.repeat : null;
           common.follow_up_of = preset.follow_up_of || null;
-          await DB.insert('tasks', common);
+          const made = await DB.insert('tasks', common);
+          /* 부른 쪽이 뒷정리를 합니다. 개선안이라면 '개선 아이디어'로
+             옮기고 이 업무와 이어 붙입니다. */
+          if(preset.onSaved) await preset.onSaved((made && made[0]) || null);
         }
         close();
         document.dispatchEvent(new CustomEvent('tasks:changed'));

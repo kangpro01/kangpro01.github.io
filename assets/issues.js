@@ -218,17 +218,23 @@
       }
       else if(act === 'task'){
         const cur = (await DB.q('improvements', 'select=*&id=eq.' + id))[0];
-        /* 마감을 일주일 뒤로 잡으면 이번 달 달력 밖으로 나가 아무 데도 안 보입니다.
-           오늘로 잡아야 '지금 해야 할 일'과 달력 오늘 칸에 바로 뜹니다. */
-        const t = await DB.insert('tasks', {
-          title: (cur.idea || cur.body).slice(0,300),
+        if(!cur) return;
+        /* 날짜를 여기서 못박지 않고 등록 창에서 고르게 합니다.
+           오늘로 잡아두면 급하지 않은 개선안까지 오늘 할 일로 밀려들고,
+           일주일 뒤로 잡아두면 이번 달 달력 밖으로 나가 안 보입니다.
+           언제 손댈지는 적은 사람이 압니다. 기본값만 오늘로 둡니다. */
+        TaskForm.open({
+          title: (cur.idea || cur.body).slice(0, 300),
           note: cur.idea ? ('불편사항: ' + cur.body) : null,
           category: cur.category || null,
-          due_on: WHEN.ymd(WHEN.midnight())
+          when: WHEN.ymd(WHEN.midnight()),
+          onSaved: async t => {
+            if(t) await DB.update('improvements', 'id=eq.' + id,
+                                  { status:'doing', task_id: t.id });
+            load();
+          }
         });
-        await DB.update('improvements', 'id=eq.' + id,
-                        { status:'doing', task_id: t[0].id });
-        alert('업무로 담았어요. 메인 화면 \'지금 해야 할 일\'에 오늘 날짜로 들어갔어요.');
+        return;
       }
       else if(act === 'reopen'){
         await DB.update('improvements', 'id=eq.' + id, { status:'new' });
