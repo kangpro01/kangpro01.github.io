@@ -43,11 +43,23 @@ const DB = (function(){
 
   /* ── 로그인 ── */
   async function login(password){
-    const res = await fetch(AUTH + '/token?grant_type=password', {
-      method:'POST',
-      headers:{ 'apikey':KEY, 'Content-Type':'application/json' },
-      body: JSON.stringify({ email: SUPABASE.teamEmail, password: password })
-    });
+    let res;
+    try{
+      res = await fetch(AUTH + '/token?grant_type=password', {
+        method:'POST',
+        headers:{ 'apikey':KEY, 'Content-Type':'application/json' },
+        body: JSON.stringify({ email: SUPABASE.teamEmail, password: password })
+      });
+    }catch(e){
+      /* 서버가 응답조차 안 한 경우. 인터넷이 끊겼거나, Supabase 프로젝트가
+         멈춘 것입니다. 무료 요금제는 한동안 안 쓰면 일시정지되고, 지우면
+         주소 자체가 사라집니다. 암호 문제가 아닌데 암호 탓을 하게 되므로
+         무엇을 봐야 하는지 알려줍니다. */
+      throw new Error(navigator.onLine === false
+        ? '인터넷이 끊겨 있어요. 연결을 확인해 주세요.'
+        : 'Supabase에 닿지 않아요. 프로젝트가 일시정지됐거나 지워졌을 수 있어요. '
+          + '대시보드(supabase.com)에서 프로젝트 상태를 확인해 주세요.');
+    }
     if(!res.ok){
       const e = await res.json().catch(()=>({}));
       const raw = (e.error_description || e.msg || e.message || '').toLowerCase();
@@ -55,7 +67,6 @@ const DB = (function(){
         raw.includes('invalid login')   ? '암호가 맞지 않아요.'
       : raw.includes('email not confirmed') ? '계정이 아직 확인되지 않았어요. 대시보드에서 Auto Confirm을 켜주세요.'
       : raw.includes('too many')       ? '시도가 너무 잦아요. 잠시 뒤 다시 해주세요.'
-      : raw.includes('failed to fetch')? '연결하지 못했어요. 인터넷을 확인해 주세요.'
       : '들어가지 못했어요. 잠시 뒤 다시 해주세요.'
       );
     }
