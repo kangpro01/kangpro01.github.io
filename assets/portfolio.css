@@ -167,3 +167,16 @@ img,svg{display:block}
 .pf-login-box .msg.bad{color:#D93025}
 .pf-login-box a{font-size:13px;color:var(--ink-3);text-align:center}
 @media print{.pf-bar,.pf-login{display:none}}
+
+/* ══ 기본 정보 · 주요 성과 (줄글 없이 사실만) ══ */
+.info{display:grid;grid-template-columns:1fr 1fr;border-top:2px solid var(--ink)}
+.info div{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid var(--rule)}
+.info div:nth-child(odd){padding-right:20px}
+.info dt{font-size:13px;color:var(--ink-3);font-weight:600}
+.info dd{font-size:14.5px;font-weight:600}
+@media (max-width:640px){.info{grid-template-columns:1fr}.info div:nth-child(odd){padding-right:0}}
+.results{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.results li{display:grid;gap:4px;padding:16px 18px;background:var(--card);border-radius:var(--r);border-left:3px solid var(--accent)}
+.results b{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--accent);line-height:1.3}
+.results span{font-size:13.5px;color:var(--ink-2)}
+@media (max-width:520px){.results{grid-template-columns:1fr}}

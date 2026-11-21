@@ -133,7 +133,7 @@
       /* 붙여넣기는 글자만 받습니다 (서식·그림이 섞여 들어오지 않게) */
       el.addEventListener('paste', e => { e.preventDefault(); const t = (e.clipboardData || window.clipboardData).getData('text'); document.execCommand('insertText', false, t); });
       /* 한 줄짜리 자리에서는 Enter 로 줄을 바꾸지 않습니다 */
-      if(!el.matches('p, span[data-k^="s"], [data-k="about"], [data-k="about2"]'))
+      if(!el.matches('p'))
         el.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.isComposing){ e.preventDefault(); el.blur(); } });
     });
     /* 카드·연락처가 링크라서 누르면 이동해 버립니다. 관리자 화면에서는 막습니다 */
