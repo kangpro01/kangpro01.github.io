@@ -11,10 +11,10 @@ const SITE = {
      서랍 맨 아래와 모바일 하단 고정 자리에 놓습니다. */
   cta: { name: '＋ 업무추가', newtask: true },
   menu: [
-    { file:'index.html', name:'업무 리마인더', sub:[
-      { file:'index.html#daily',   name:'일간 업무' },
-      { file:'index.html#weekly',  name:'주간 업무' },
-      { file:'index.html#monthly', name:'월간 업무' }
+    { file:'work.html', name:'업무 리마인더', sub:[
+      { file:'work.html#daily',   name:'일간 업무' },
+      { file:'work.html#weekly',  name:'주간 업무' },
+      { file:'work.html#monthly', name:'월간 업무' }
     ]},
     { file:'issues.html', name:'문제 & 개선', sub:[
       { file:'issues.html#write', name:'불편한 점' },
@@ -45,7 +45,7 @@ const SITE = {
 
   /* ── 상단 바 ── */
   let nav = '<nav class="gnb"><div class="wrap">'
-    + '<a class="logo" href="index.html" aria-label="' + esc(SITE.title) + ' — 홈으로">'
+    + '<a class="logo" href="work.html" aria-label="' + esc(SITE.title) + ' — 홈으로">'
     +   '<span>' + esc(SITE.title) + '</span>'
     + '</a>'
     + '<ul class="menu">';
@@ -146,6 +146,6 @@ const SITE = {
     if(!e.target.closest('[data-newtask]')) return;
     if(typeof TaskForm !== 'undefined') return;
     e.preventDefault();
-    location.href = 'index.html#new';
+    location.href = 'work.html#new';
   });
 })();

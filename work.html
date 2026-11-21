@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>일 잘하는 강프로</title>
+<meta name="description" content="잊기 쉬운 업무를 다시 떠올리게 하는 팀 업무 보조 도구.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css?v=20261121a">
+<!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
+<script src="assets/theme.js?v=20261121a"></script>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<div class="wrap hub">
+
+  <main class="hub-main">
+    <section class="card card-cal">
+      <div class="card-head"><h2>캘린더</h2></div>
+      <div class="card-body"><div class="cal" id="homeCal"></div></div>
+    </section>
+  </main>
+
+  <!-- 달력 옆자리 -->
+  <aside class="hub-aside" id="hubAside">
+    <section class="card widget" id="now" data-w="now">
+      <div class="card-head">
+        <h2>지금 해야 할 일</h2>
+        <span class="card-hint" id="nowCount"></span>
+        <button type="button" class="card-fold" data-fold
+                aria-expanded="true" aria-controls="nowList" aria-label="접기"></button>
+      </div>
+      <div class="card-body" id="nowList"></div>
+    </section>
+
+    <section class="card widget" id="note" data-w="note">
+      <div class="card-head">
+        <h2>메모 &amp; 스크랩</h2>
+        <button type="button" class="card-fold" data-fold
+                aria-expanded="true" aria-controls="noteBody" aria-label="접기"></button>
+      </div>
+      <div class="card-body" id="noteBody">
+        <form class="note-new" id="noteForm">
+          <textarea id="noteText" rows="2" maxlength="2000"
+                    placeholder="떠오른 것, 링크, 이따 볼 메모…" aria-label="메모 적기"></textarea>
+          <button class="note-save" type="submit">담기</button>
+        </form>
+        <p class="note-msg" id="noteMsg" role="status" aria-live="polite" hidden></p>
+        <div class="note-list" id="noteList"></div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- 달력 아래 -->
+  <div class="hub-dock" id="hubDock">
+    <div class="hub-side" id="hubSide" aria-label="업무 위젯">
+      <section class="card widget" id="daily" data-w="daily">
+        <div class="card-head">
+          <button type="button" class="w-grip" aria-label="일간 업무 순서 바꾸기">⋮⋮</button>
+          <h2>일간 업무</h2>
+          <button type="button" class="card-add" data-newtask data-when="매일" aria-label="일간 업무 담기">＋</button>
+          <button type="button" class="card-fold" data-fold
+                  aria-expanded="true" aria-controls="dailyList" aria-label="접기"></button>
+        </div>
+        <div class="card-body" id="dailyList"></div>
+      </section>
+      <section class="card widget" id="weekly" data-w="weekly">
+        <div class="card-head">
+          <button type="button" class="w-grip" aria-label="주간 업무 순서 바꾸기">⋮⋮</button>
+          <h2>주간 업무</h2>
+          <button type="button" class="card-add" data-newtask data-when="매주 금요일" aria-label="주간 업무 담기">＋</button>
+          <button type="button" class="card-fold" data-fold
+                  aria-expanded="true" aria-controls="weeklyList" aria-label="접기"></button>
+        </div>
+        <div class="card-body" id="weeklyList"></div>
+      </section>
+      <section class="card widget" id="monthly" data-w="monthly">
+        <div class="card-head">
+          <button type="button" class="w-grip" aria-label="월간 업무 순서 바꾸기">⋮⋮</button>
+          <h2>월간 업무</h2>
+          <button type="button" class="card-add" data-newtask data-when="매달 25일" aria-label="월간 업무 담기">＋</button>
+          <button type="button" class="card-fold" data-fold
+                  aria-expanded="true" aria-controls="monthlyList" aria-label="접기"></button>
+        </div>
+        <div class="card-body" id="monthlyList"></div>
+      </section>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ 떠 있는 단추 — 누르면 업무 담기와 알림 설정이 열립니다 ══ -->
+<div class="fab-wrap">
+  <div class="fab-pop" id="fabPop" hidden>
+    <div class="fab-sec">
+      <b>업무추가</b>
+      <button class="btn" type="button" data-newtask>＋ 업무추가</button>
+    </div>
+    <div class="fab-sec">
+      <b>화면에 놓기</b>
+      <p class="fab-note">고른 것만 메인 화면에 놓여요.</p>
+      <div class="fab-picks" id="widgetPick" aria-label="화면에 놓을 것 고르기"></div>
+    </div>
+    <div class="fab-sec">
+      <b>알림 받기</b>
+      <p class="fab-note">켜두면 들어왔을 때 알려드려요.</p>
+      <div class="switches" id="notifySwitches"></div>
+    </div>
+  </div>
+  <button type="button" class="fab" id="fabBtn" aria-expanded="false" aria-controls="fabPop"
+          aria-label="업무추가·화면 구성·알림 열기">
+    <img src="assets/kang.png" alt="" width="252" height="340">
+    <i class="fab-x" aria-hidden="true"></i>
+  </button>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="assets/site.js?v=20261121a"></script>
+<script src="assets/supabase.js?v=20261121a"></script>
+<script src="assets/db.js?v=20261121a"></script>
+<script src="assets/when.js?v=20261121a"></script>
+<script src="assets/task-form.js?v=20261121a"></script>
+<script src="assets/holidays.js?v=20261121a"></script>
+<script src="assets/cal.js?v=20261121a"></script>
+<script src="assets/notify.js?v=20261121a"></script>
+<script src="assets/note.js?v=20261121a"></script>
+<script src="assets/home.js?v=20261121a"></script>
+<script src="assets/fab.js?v=20261121a"></script>
+</body>
+</html>
