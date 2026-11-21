@@ -7,7 +7,10 @@
 <meta name="description" content="총무에서 인사로. 반복되는 일은 시스템으로, 사람의 불편은 개선으로 바꿔 온 기록.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/portfolio.css?v=20261121a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&display=swap">
+<link rel="stylesheet" href="assets/portfolio.css?v=20261121c">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
 <script src="assets/theme.js?v=20261121a"></script>
 </head>
@@ -35,6 +38,7 @@
 
 <!-- ══ 첫 화면 ══ -->
 <section class="hero">
+  <div class="art" aria-hidden="true"><i class="cube c1"></i><i class="cube c2"></i><i class="cube c3"></i><i class="cube c4"></i></div>
   <div class="wrap">
     <div class="rv">
       <span class="eyebrow">HR Portfolio · 총무 → 인사</span>
@@ -49,7 +53,7 @@
     <aside class="now rv" aria-label="지금">
       <div class="now-row"><span>지금</span><b>총무 · 경영지원</b></div>
       <div class="now-row"><span>가려는 곳</span><b>인사 (HR)</b></div>
-      <div class="now-row"><span>직접 만든 업무 도구</span><b>7개</b></div>
+      <div class="now-row"><span>직접 만든 업무 도구</span><b><span class="num">7</span>개</b></div>
       <div class="now-row"><span>일하는 방식</span><b>기록 <span class="arrow">→</span> 개선 <span class="arrow">→</span> 시스템</b></div>
     </aside>
   </div>
@@ -271,7 +275,7 @@
 <footer>
   <div class="wrap">
     <span>© 2026 일 잘하는 강프로</span>
-    <span>데모의 모든 데이터는 예시예요</span>
+    <span>데모의 모든 데이터는 예시예요 · 글꼴: 넥슨 Lv.1 고딕 (ⓒ NEXON Korea)</span>
   </div>
 </footer>
 
@@ -296,6 +300,7 @@
   const links = [...document.querySelectorAll('.gnb nav a')];
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if(e.isIntersecting) links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id));
+    else links.forEach(a => { if(a.getAttribute('href') === '#' + e.target.id) a.classList.remove('on'); });
   }), { rootMargin:'-45% 0px -50% 0px' });
   document.querySelectorAll('section[id]').forEach(s => spy.observe(s));
 })();
