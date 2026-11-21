@@ -4,16 +4,9 @@
    게임 회사 채용 페이지의 분위기를 참고했습니다 — 흑백 대비, 파란 포인트,
    첫 화면의 반짝이는 입체 도형. 다른 회사의 로고·이름·이미지는 쓰지 않습니다.
 
-   글꼴: 넥슨 Lv.1 고딕 (ⓒ NEXON Korea, 상업적 사용 무료 · 출처 표기 권장)
-         영문 라벨과 숫자는 Lato
+   글꼴: Pretendard (영문 라벨·숫자 포함 전체)
    업무 공간(style.css)의 '한 색만 쓴다' 규칙은 이 파일에 적용하지 않습니다.
    ══════════════════════════════════════════════════════════ */
-@font-face{font-family:'NexonLv1Gothic';font-weight:300;font-display:swap;
-  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF Light.woff') format('woff')}
-@font-face{font-family:'NexonLv1Gothic';font-weight:400;font-display:swap;
-  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF.woff') format('woff')}
-@font-face{font-family:'NexonLv1Gothic';font-weight:700;font-display:swap;
-  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF Bold.woff') format('woff')}
 
 :root{
   --ink:#111318; --ink-2:#51555D; --ink-3:#8C93A3;
@@ -21,8 +14,8 @@
   --accent:#0A74FF; --accent-2:#41D1FF; --on-accent:#FFFFFF;
   --dark:#000000; --dark-2:#1A1A1A; --on-dark:#FFFFFF;
   --gnb-bg:rgba(255,255,255,.84);
-  --fs:'NexonLv1Gothic','Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Malgun Gothic',sans-serif;
-  --fs-en:'Lato','NexonLv1Gothic',system-ui,sans-serif;
+  --fs:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Malgun Gothic',sans-serif;
+  --fs-en:var(--fs);
   --wrap:1160px; --gnb:64px; --r:10px;
 }
 @media (prefers-color-scheme:dark){
