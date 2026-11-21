@@ -108,7 +108,7 @@ CSS·JS·이미지를 한 파일에 밀어 넣은 생성물이다. 원본을 고
 
 ## Supabase (로그인과 데이터)
 
-표는 넷이다 — `tasks`(업무), `improvements`(불편사항·개선), `refs`(레퍼런스),
+표는 다섯이다 — `tasks`(업무), `improvements`(불편사항·개선), `refs`(레퍼런스), `portfolio`(포트폴리오 글 · 누구나 읽고 로그인해야 고침),
 `notes`(메모 & 스크랩). 정의는 `supabase/schema.sql`.
 
 **표를 늘렸으면 대시보드 SQL Editor에서 `schema.sql`을 다시 실행한다.**
@@ -159,7 +159,8 @@ curl "<프로젝트 URL>/rest/v1/tasks?select=*" -H "apikey: <공개 키>"
 
 ## 자주 하는 작업
 
-- **포트폴리오 첫 화면** → `index.html` + `assets/portfolio.css`. 한 장짜리 미디어킷 레이아웃. 썸네일은 `assets/shots/` (데모를 `?shot` 으로 열어 헤드리스 Edge 로 캡처)
+- **포트폴리오 글 고치기** → `admin.html` (팀 암호로 로그인 → 글을 눌러 바로 수정 → 저장). 저장 값은 Supabase `portfolio` 표 1행의 JSON. `index.html` 의 `data-k` 자리마다 덮어씀. 새 자리를 만들려면 요소에 `data-k="새이름"` 만 붙이면 된다
+- **포트폴리오 첫 화면** → `index.html` + `assets/portfolio.css` + `assets/portfolio.js`. 한 장짜리 미디어킷 레이아웃. 썸네일은 `assets/shots/` (데모를 `?shot` 으로 열어 헤드리스 Edge 로 캡처)
 - **메인 블록 바꾸기** → `assets/home.js`. 블록 순서가 곧 '무엇을 먼저 떠올리게 할지'다
 - **"언제" 말 늘리기** → `assets/when.js`의 `parseWhen`. 새 표현을 넣으면 등록 창에 바로 붙는다
 - **반복 업무 목록** → `assets/tasks.js`의 `TASKS` 배열에 `{ m, d, t, p }` 한 줄

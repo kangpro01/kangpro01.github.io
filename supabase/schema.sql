@@ -114,6 +114,27 @@ create table if not exists public.refs (
 create index if not exists refs_created_idx on public.refs (created_at desc);
 
 
+-- ══ 포트폴리오 글 ═════════════════════════════════════════
+-- 첫 화면(index.html)의 글과 사진을 한 행(id=1)의 JSON 으로 둡니다.
+-- 누구나 읽고, 로그인한 사람(관리자 = 팀 계정)만 고칩니다. admin.html 에서 편집합니다.
+create table if not exists public.portfolio (
+  id         int         primary key default 1 check (id = 1),
+  data       jsonb       not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+insert into public.portfolio (id, data) values (1, '{}'::jsonb) on conflict (id) do nothing;
+alter table public.portfolio enable row level security;
+drop policy if exists "anyone reads portfolio" on public.portfolio;
+create policy "anyone reads portfolio"
+  on public.portfolio for select
+  to anon, authenticated
+  using (true);
+drop policy if exists "team edits portfolio" on public.portfolio;
+create policy "team edits portfolio"
+  on public.portfolio for update
+  to authenticated
+  using (true) with check (true);
+
 -- ══ 고친 시각 자동 기록 ═══════════════════════════════════
 create or replace function public.touch_updated_at()
 returns trigger language plpgsql as $$

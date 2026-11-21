@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PORTFOLIO — 강프로</title>
+<title>PORTFOLIO</title>
 <meta name="description" content="총무에서 인사로. 반복되는 일은 시스템으로, 사람의 불편은 개선으로 바꿔 온 기록.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/portfolio.css?v=20261121j">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/portfolio.css?v=20261121k">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
 <script src="assets/theme.js?v=20261121a"></script>
 </head>
@@ -18,106 +18,106 @@
   <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
 </button>
 
-<!-- 한 장짜리 포트폴리오. 섹션은 '제목 — 오른쪽 작은 꼬리표' + 카드 세 개 구성 -->
+<!--
+  한 장짜리 포트폴리오.
+  data-k="이름" 이 붙은 글은 관리자 페이지(admin.html)에서 바로 고칠 수 있고,
+  고친 내용은 Supabase 의 portfolio 표에 저장돼 이 화면에 덮어씌워집니다.
+  여기 적힌 글은 '처음 값'이에요. DB 에 닿지 못해도 이 글이 보입니다.
+  data-ph 는 비어 있을 때 형광펜으로 보이는 안내 문구예요.
+-->
 <main class="sheet">
 
   <!-- ══ 머리 — 이름 / 사선 / 아이디 ══ -->
   <header class="mast">
     <div class="name">
-      <h1>강프로</h1>
-      <p>— 총무 · 경영지원 → 인사 (HR)</p>
+      <h1 data-k="name">강프로</h1>
+      <p data-k="role">— 총무 · 경영지원 → 인사 (HR)</p>
     </div>
     <i class="slash" aria-hidden="true"></i>
-    <p class="handle">@kangpro01</p>
+    <p class="handle" data-k="handle">@kangpro01</p>
   </header>
 
   <!-- ══ 사진 / 연락처 / 소개 ══ -->
   <section class="intro">
-    <figure class="photo">
-      <!-- 사진을 넣으려면: assets/profile.jpg 를 올리고 아래 줄의 주석을 풀어 주세요 -->
-      <!-- <img src="assets/profile.jpg" alt="강프로 프로필 사진"> -->
-      <span class="ph">프로필 사진</span>
-    </figure>
+    <figure class="photo" id="photo" data-ph="프로필 사진"></figure>
     <div class="intro-r">
       <ul class="contacts">
         <li>
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>
-          <span><span class="ph">이메일</span></span>
+          <a data-k="email" data-link="mailto" data-ph="이메일"></a>
         </li>
         <li>
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>
-          <span><span class="ph">연락처</span></span>
+          <a data-k="phone" data-link="tel" data-ph="연락처"></a>
         </li>
         <li>
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 2.6 15.2 0 18M12 3c-2.6 2.8-2.6 15.2 0 18"/></svg>
-          <span>kangpro01.github.io</span>
+          <a data-k="web" data-link="https" data-ph="웹사이트">kangpro01.github.io</a>
         </li>
       </ul>
       <div class="about">
-        <h2>About Me</h2>
-        <p>총무로 일하며 놓치기 쉬운 일과 구성원의 불편을 직접 만든 도구로 풀어 왔어요.
-          <b>반복되는 일은 시스템으로, 사람의 불편은 개선으로</b> 바꾸는 것이 일하는 방식이에요.
-          이제 그 경험을 사람이 일하는 환경 전체를 설계하는 인사 업무로 넓히려고 해요.</p>
-        <p class="ph-line"><span class="ph">왜 인사 직무인지 한두 문장 더 적어 주세요.</span></p>
+        <h2 data-k="about_t">About Me</h2>
+        <p data-k="about">총무로 일하며 놓치기 쉬운 일과 구성원의 불편을 직접 만든 도구로 풀어 왔어요. 반복되는 일은 시스템으로, 사람의 불편은 개선으로 바꾸는 것이 일하는 방식이에요. 이제 그 경험을 사람이 일하는 환경 전체를 설계하는 인사 업무로 넓히려고 해요.</p>
+        <p class="about-2" data-k="about2" data-ph="왜 인사 직무인지 한두 문장 더 적어 주세요."></p>
       </div>
     </div>
   </section>
 
   <!-- ══ 학력 / 경력 ══ -->
   <section class="block">
-    <div class="bh"><h2>Education</h2><span class="tagline">— Experiences</span></div>
+    <div class="bh"><h2 data-k="edu_h">Education</h2><span class="tagline" data-k="edu_tag">— Experiences</span></div>
     <div class="edu">
       <div>
-        <h3><span class="ph">학교 · 전공</span></h3>
-        <p class="sub"><span class="ph">학위 · 0000.00 — 0000.00</span></p>
-        <p><span class="ph">인턴십: 회사명 · 직무 · 최종발표 주제</span></p>
+        <h3 data-k="edu1_t" data-ph="학교 · 전공"></h3>
+        <p class="sub" data-k="edu1_s" data-ph="학위 · 0000.00 — 0000.00"></p>
+        <p data-k="edu1_d" data-ph="인턴십: 회사명 · 직무 · 최종발표 주제"></p>
       </div>
       <div>
-        <h3>총무 · 경영지원</h3>
-        <p class="sub"><span class="ph">회사명 · 0000.00 — 현재</span></p>
-        <p>회의실·공용 공간 운영, IT 자산 지급·회수, 팀 협업 도구 기획·제작</p>
+        <h3 data-k="edu2_t">총무 · 경영지원</h3>
+        <p class="sub" data-k="edu2_s" data-ph="회사명 · 0000.00 — 현재"></p>
+        <p data-k="edu2_d">회의실·공용 공간 운영, IT 자산 지급·회수, 팀 협업 도구 기획·제작</p>
       </div>
     </div>
   </section>
 
   <!-- ══ 프로젝트 — 카드 세 개 ══ -->
   <section class="block">
-    <div class="bh"><h2>Projects</h2><span class="tagline">— 직접 만든 업무 도구</span></div>
+    <div class="bh"><h2 data-k="pj_h">Projects</h2><span class="tagline" data-k="pj_tag">— 직접 만든 업무 도구</span></div>
     <div class="cards">
       <a class="card" href="works/lounge.html">
         <img src="assets/shots/lounge.png" alt="회의실 운영 대시보드의 월간 이용현황 화면" loading="lazy" width="1440" height="900">
-        <h3>회의실 운영 대시보드</h3>
+        <h3 data-k="p1_t">회의실 운영 대시보드</h3>
         <ul>
-          <li>월간·연간 이용현황 자동 집계</li>
-          <li>부서별·시간대별 분석</li>
-          <li>점검 체크리스트</li>
-          <li>리포트 엑셀·PPT 내보내기</li>
+          <li data-k="p1_f1">월간·연간 이용현황 자동 집계</li>
+          <li data-k="p1_f2">부서별·시간대별 분석</li>
+          <li data-k="p1_f3">점검 체크리스트</li>
+          <li data-k="p1_f4">리포트 엑셀·PPT 내보내기</li>
         </ul>
-        <div class="card-foot"><small>결과</small><b><span class="ph">보고 n시간 → n분</span></b></div>
+        <div class="card-foot"><small data-k="p1_rl">결과</small><b data-k="p1_r" data-ph="보고 n시간 → n분"></b></div>
         <span class="go">데모 열기 →</span>
       </a>
       <a class="card" href="works/assets.html">
         <img src="assets/shots/assets.png" alt="IT 자산 배치 현황의 좌석 배치도 화면" loading="lazy" width="1440" height="900">
-        <h3>IT 자산 배치 현황</h3>
+        <h3 data-k="p2_t">IT 자산 배치 현황</h3>
         <ul>
-          <li>도면 위 좌석별 배치 표시</li>
-          <li>지급·회수 이력 자동 기록</li>
-          <li>점검 90일 경과 알림</li>
-          <li>엑셀 가져오기·내보내기</li>
+          <li data-k="p2_f1">도면 위 좌석별 배치 표시</li>
+          <li data-k="p2_f2">지급·회수 이력 자동 기록</li>
+          <li data-k="p2_f3">점검 90일 경과 알림</li>
+          <li data-k="p2_f4">엑셀 가져오기·내보내기</li>
         </ul>
-        <div class="card-foot"><small>결과</small><b><span class="ph">위치 확인 n분 → 즉시</span></b></div>
+        <div class="card-foot"><small data-k="p2_rl">결과</small><b data-k="p2_r" data-ph="위치 확인 n분 → 즉시"></b></div>
         <span class="go">데모 열기 →</span>
       </a>
       <a class="card" href="works/workspace.html">
         <img src="assets/shots/workspace.png" alt="팀 워크스페이스의 캘린더 화면" loading="lazy" width="1440" height="900">
-        <h3>팀 워크스페이스</h3>
+        <h3 data-k="p3_t">팀 워크스페이스</h3>
         <ul>
-          <li>채널 대화 · 공지 확인</li>
-          <li>할 일 보드 · 업무 전달</li>
-          <li>회의록 · 인수인계 노트</li>
-          <li>아침 브리핑 · 리마인드</li>
+          <li data-k="p3_f1">채널 대화 · 공지 확인</li>
+          <li data-k="p3_f2">할 일 보드 · 업무 전달</li>
+          <li data-k="p3_f3">회의록 · 인수인계 노트</li>
+          <li data-k="p3_f4">아침 브리핑 · 리마인드</li>
         </ul>
-        <div class="card-foot"><small>결과</small><b><span class="ph">인수인계 누락 n → 0건</span></b></div>
+        <div class="card-foot"><small data-k="p3_rl">결과</small><b data-k="p3_r" data-ph="인수인계 누락 n → 0건"></b></div>
         <span class="go">데모 열기 →</span>
       </a>
     </div>
@@ -125,39 +125,44 @@
 
   <!-- ══ 숫자 ══ -->
   <section class="block">
-    <div class="bh"><h2>Insight</h2><span class="tagline">— 숫자로 보는 일</span></div>
+    <div class="bh"><h2 data-k="in_h">Insight</h2><span class="tagline" data-k="in_tag">— 숫자로 보는 일</span></div>
     <div class="stats">
       <div class="stat">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>
-        <b>7</b><span>직접 만든<br>업무 도구</span>
+        <b data-k="s1_n">7</b><span data-k="s1_l">직접 만든
+업무 도구</span>
       </div>
       <div class="stat">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        <b>3</b><span>공개한<br>데모</span>
+        <b data-k="s2_n">3</b><span data-k="s2_l">공개한
+데모</span>
       </div>
       <div class="stat">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        <b><span class="ph">n</span></b><span>시간 / 월<br>줄인 반복 업무</span>
+        <b data-k="s3_n" data-ph="n"></b><span data-k="s3_l">시간 / 월
+줄인 반복 업무</span>
       </div>
     </div>
   </section>
 
   <!-- ══ 강점 ══ -->
   <section class="block">
-    <div class="bh"><h2>Strengths</h2><span class="tagline">— 인사 업무로 가져갈 것</span></div>
+    <div class="bh"><h2 data-k="st_h">Strengths</h2><span class="tagline" data-k="st_tag">— 인사 업무로 가져갈 것</span></div>
     <div class="strengths">
-      <div class="str"><i>01</i><div><b>업무 설계</b><span>프로세스 표준화 · 체크리스트 · 인수인계</span></div></div>
-      <div class="str"><i>02</i><div><b>데이터와 보고</b><span>Excel · 대시보드 · 리포트 자동화</span></div></div>
-      <div class="str"><i>03</i><div><b>도구와 자동화</b><span>HTML · JS · AI 활용 · <span class="ph">자격증</span></span></div></div>
+      <div class="str"><i>01</i><div><b data-k="t1_t">업무 설계</b><span data-k="t1_d">프로세스 표준화 · 체크리스트 · 인수인계</span></div></div>
+      <div class="str"><i>02</i><div><b data-k="t2_t">데이터와 보고</b><span data-k="t2_d">Excel · 대시보드 · 리포트 자동화</span></div></div>
+      <div class="str"><i>03</i><div><b data-k="t3_t">도구와 자동화</b><span data-k="t3_d">HTML · JS · AI 활용</span></div></div>
     </div>
   </section>
 
   <footer class="foot">
-    <span>© 2026 강프로</span>
+    <span data-k="foot">© 2026 강프로</span>
     <span>데모의 모든 데이터는 예시예요 · 그 밖의 작업: <a href="tool-lounge.html">회의 체크리스트</a> · <a href="tool-receipt.html">영수증 정리</a></span>
   </footer>
 </main>
 
+<script src="assets/supabase.js?v=20261121a"></script>
+<script src="assets/portfolio.js?v=20261121a"></script>
 <script>
 (function(){
   const btn = document.getElementById('theme');
