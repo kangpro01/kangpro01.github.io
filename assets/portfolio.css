@@ -289,3 +289,12 @@ body{padding:28px 28px}
   @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 }
 @media (max-width:900px){.hero{margin-bottom:44px;padding-bottom:32px}}
+
+/* ══ 첫 줄 다듬기 — 담백하게: 부드러운 칩 + 균형 잡힌 두 줄 + 차분한 해시태그 ══ */
+.kicker{background:var(--marker);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em;
+  padding:6px 14px;border-radius:999px;margin-bottom:20px}
+.hero-t{font-size:clamp(28px,2.9vw,44px);font-weight:800;letter-spacing:-.035em;line-height:1.32}
+.hero-t em{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--accent);
+  font-weight:800;letter-spacing:-.03em;text-wrap:balance}
+.hero-tags{gap:6px 16px;margin-top:20px}
+.hero-tags span{font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--accent);opacity:.85}
