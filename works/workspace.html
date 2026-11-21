@@ -1147,7 +1147,7 @@ const DAY=864e5;
 function ymd(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 
 /* ---------- 데이터 모델 ---------- */
-const KEY='tw_db_v1';
+const KEY='tw_db_v2';   /* 예시 이름을 팀원A·B·C로 바꾸며 올림 — 예전 방문자의 저장본은 쓰지 않음 */
 const COLS=['channels','messages','acks','pages','tasks','spaces','notes','events','orders','qna','links','polls','pvotes','devnotes','reacts','pcomments','minutes','pens'];
 const TYPES=['text','h1','h2','bullet','num','todo','quote','callout','divider','img'];
 const SCHEMA={
@@ -1280,51 +1280,51 @@ function merge(local,remote){
 
 function seed(){
   const d=emptyDB(), t=now();
-  d.meta={wsName:'샘플오피스 워크스페이스',members:['김OO','홍OO','박팀장'],u:1};
+  d.meta={wsName:'샘플오피스 워크스페이스',members:['팀원A','팀원C','팀원D'],u:1};
   const ch=(id,name,desc)=>({id,name,desc,u:1});
   d.channels=[ch('smp_c1','일반','팀 전체 대화와 공지'),ch('smp_c2','A센터','A센터 공유오피스 운영'),ch('smp_c3','B센터-라운지','비즈니스 라운지 운영')];
   const msg=(id,c,a,text,ago,pinned)=>({id,ch:c,author:a,text,ts:t-ago,u:t-ago,pinned:!!pinned,edited:false});
   d.messages=[
-    msg('smp_m1','smp_c1','박팀장','이번 주 금요일 오후 4시에 월간 점검 회의 있습니다.\n각자 이번 달 이슈 1~2개씩 정리해 주세요.',2*DAY+36e5,true),
-    msg('smp_m2','smp_c1','김OO','네 팀장님, 정리해서 회의 전에 이 채널에 올리겠습니다.',2*DAY),
-    msg('smp_m3','smp_c2','홍OO','2번 룸 112번 좌석 모니터 전원 불량 접수됐습니다. 오늘 오후에 교체할게요.',DAY+54e5),
-    msg('smp_m4','smp_c2','홍OO','교체 완료했습니다. 기존 모니터는 창고 B 선반에 보관해 뒀어요.',DAY),
-    msg('smp_m5','smp_c3','김OO','내일 10시 대회의실 예약 건, 생수 12병 추가 요청 들어왔습니다.',5*36e5),
-    msg('smp_m6','smp_c1','박팀장','공유 폴더 경로가 바뀌었으니 다들 즐겨찾기 다시 잡아 주세요.',2*36e5,true)
+    msg('smp_m1','smp_c1','팀원D','이번 주 금요일 오후 4시에 월간 점검 회의 있습니다.\n각자 이번 달 이슈 1~2개씩 정리해 주세요.',2*DAY+36e5,true),
+    msg('smp_m2','smp_c1','팀원A','네, 정리해서 회의 전에 이 채널에 올리겠습니다.',2*DAY),
+    msg('smp_m3','smp_c2','팀원C','2번 룸 112번 좌석 모니터 전원 불량 접수됐습니다. 오늘 오후에 교체할게요.',DAY+54e5),
+    msg('smp_m4','smp_c2','팀원C','교체 완료했습니다. 기존 모니터는 창고 B 선반에 보관해 뒀어요.',DAY),
+    msg('smp_m5','smp_c3','팀원A','내일 10시 대회의실 예약 건, 생수 12병 추가 요청 들어왔습니다.',5*36e5),
+    msg('smp_m6','smp_c1','팀원D','공유 폴더 경로가 바뀌었으니 다들 즐겨찾기 다시 잡아 주세요.',2*36e5,true)
   ];
-  d.acks=[{id:'smp_k1',msg:'smp_m1',user:'김OO',on:true,u:t-2*DAY},{id:'smp_k2',msg:'smp_m1',user:'홍OO',on:true,u:t-2*DAY}];
+  d.acks=[{id:'smp_k1',msg:'smp_m1',user:'팀원A',on:true,u:t-2*DAY},{id:'smp_k2',msg:'smp_m1',user:'팀원C',on:true,u:t-2*DAY}];
   const bl=(ty,text,done)=>({id:uid(),t:ty,text,done:!!done});
   d.pages=[
-    {id:'smp_p1',title:'업무 인수인계 노트',icon:'📋',by:'김OO',u:t-DAY,blocks:[
+    {id:'smp_p1',title:'업무 인수인계 노트',icon:'📋',by:'팀원A',u:t-DAY,blocks:[
       bl('callout','자리를 비울 때 이 페이지에 진행 중인 일을 적어 두세요.'),
       bl('h2','매일 하는 일'),bl('todo','오전 9시 좌석 예약 현황 확인',true),bl('todo','라운지 BEFORE 체크리스트'),bl('todo','택배·우편물 수령 대장 정리'),
       bl('h2','이번 주 이슈'),bl('bullet','2번 룸 모니터 교체 완료 (창고 B 보관)'),bl('bullet','금요일 월간 점검 회의 자료 준비'),bl('text','')]},
-    {id:'smp_p2',title:'비품 위치 정리',icon:'📦',by:'홍OO',u:t-3*DAY,blocks:[
+    {id:'smp_p2',title:'비품 위치 정리',icon:'📦',by:'팀원C',u:t-3*DAY,blocks:[
       bl('text','자주 찾는 비품 위치를 적어 둡니다.'),bl('num','A4 용지 — 탕비실 하단 수납장'),bl('num','멀티탭·케이블 — 창고 B 2번 선반'),
       bl('num','명함 용지 — 사무실 캐비닛 3번'),bl('divider',''),bl('quote','위치가 바뀌면 바로 고쳐 주세요.')]}
   ];
   d.tasks=[
-    {id:'smp_t1',title:'월간 점검 회의 자료 준비',status:'doing',assignee:'김OO',due:ymd(t+3*DAY),note:'이번 달 이슈 1~2개 정리',by:'박팀장',ord:1,u:t-DAY},
-    {id:'smp_t2',title:'2번 룸 모니터 교체',status:'done',assignee:'홍OO',due:ymd(t-DAY),note:'',by:'홍OO',ord:2,u:t-DAY},
-    {id:'smp_t3',title:'라운지 생수 재고 확인',status:'todo',assignee:'',due:ymd(t+DAY),note:'내일 대회의실 예약 건 생수 12병',by:'김OO',ord:3,u:t-5*36e5},
-    {id:'smp_t4',title:'다음 주 소방 점검 일정 협의',status:'todo',assignee:'',due:ymd(t+2*DAY),note:'관리사무소와 일정 잡고 결과 공유 부탁드립니다.',by:'박팀장',ord:4,at:t-3*36e5,u:t-3*36e5,sp:'sp_kang'},
-    {id:'smp_t5',title:'라운지 비품 발주 목록 정리',status:'doing',assignee:'김OO',due:ymd(t+DAY),note:'생수, 종이컵, 다과 위주로 정리해 주세요.',by:'홍OO',ord:5,at:t-DAY,u:t-20*36e5,sp:'sp_kim',ackAt:t-22*36e5,ackBy:'김OO'},
-    {id:'smp_t6',title:'A센터 2번 룸 냉난방 민원 확인',status:'todo',assignee:'홍OO',due:ymd(t),note:'오전에 덥다는 문의가 두 건 들어왔습니다.',by:'박팀장',ord:6,at:t-36e5,u:t-36e5,sp:'sp_hong',prio:true}
+    {id:'smp_t1',title:'월간 점검 회의 자료 준비',status:'doing',assignee:'팀원A',due:ymd(t+3*DAY),note:'이번 달 이슈 1~2개 정리',by:'팀원D',ord:1,u:t-DAY},
+    {id:'smp_t2',title:'2번 룸 모니터 교체',status:'done',assignee:'팀원C',due:ymd(t-DAY),note:'',by:'팀원C',ord:2,u:t-DAY},
+    {id:'smp_t3',title:'라운지 생수 재고 확인',status:'todo',assignee:'',due:ymd(t+DAY),note:'내일 대회의실 예약 건 생수 12병',by:'팀원A',ord:3,u:t-5*36e5},
+    {id:'smp_t4',title:'다음 주 소방 점검 일정 협의',status:'todo',assignee:'',due:ymd(t+2*DAY),note:'관리사무소와 일정 잡고 결과 공유 부탁드립니다.',by:'팀원D',ord:4,at:t-3*36e5,u:t-3*36e5,sp:'sp_kang'},
+    {id:'smp_t5',title:'라운지 비품 발주 목록 정리',status:'doing',assignee:'팀원A',due:ymd(t+DAY),note:'생수, 종이컵, 다과 위주로 정리해 주세요.',by:'팀원C',ord:5,at:t-DAY,u:t-20*36e5,sp:'sp_kim',ackAt:t-22*36e5,ackBy:'팀원A'},
+    {id:'smp_t6',title:'A센터 2번 룸 냉난방 민원 확인',status:'todo',assignee:'팀원C',due:ymd(t),note:'오전에 덥다는 문의가 두 건 들어왔습니다.',by:'팀원D',ord:6,at:t-36e5,u:t-36e5,sp:'sp_hong',prio:true}
   ];
-  d.notes=[{id:'smp_n1',task:'smp_t5',author:'김OO',text:'내일 오전까지 정리해서 올릴게요.',ts:t-20*36e5,u:t-20*36e5}];
+  d.notes=[{id:'smp_n1',task:'smp_t5',author:'팀원A',text:'내일 오전까지 정리해서 올릴게요.',ts:t-20*36e5,u:t-20*36e5}];
   const E=(id,off,title,cat,time,etime,len,by)=>({id,date:ymd(t+off*DAY),end:len?ymd(t+(off+len)*DAY):'',time:time||'',etime:etime||'',title,cat,note:'',by,u:t-DAY});
-  d.events=[E('smp_e1',0,'라운지 대회의실 임원 회의 지원','meet','10:00','12:00',0,'김OO'),E('smp_e2',2,'A센터 소방 시설 점검','gen','14:00','',0,'박팀장'),
-    E('smp_e3',4,'월간 점검 회의','meet','16:00','17:00',0,'박팀장'),E('smp_e4',8,'홍OO 연차','off','','',1,'홍OO'),E('smp_e5',-3,'비품 입고','gen','11:00','',0,'김OO')];
+  d.events=[E('smp_e1',0,'라운지 대회의실 임원 회의 지원','meet','10:00','12:00',0,'팀원A'),E('smp_e2',2,'A센터 소방 시설 점검','gen','14:00','',0,'팀원D'),
+    E('smp_e3',4,'월간 점검 회의','meet','16:00','17:00',0,'팀원D'),E('smp_e4',8,'팀원C 연차','off','','',1,'팀원C'),E('smp_e5',-3,'비품 입고','gen','11:00','',0,'팀원A')];
   const O=(id,item,spec,code,qty,unit,price,site,need,by,ago,st,extra)=>({id,item,spec,code,qty,unit,price,site,need:need==null?'':ymd(t+need*DAY),reason:'',by,at:t-ago,u:t-ago,status:st,appBy:'',appAt:0,ordNo:'',ordAt:0,recvAt:0,rejNote:'',...(extra||{})});
   d.orders=[
-    O('smp_o1','생수 500ml','24입','','5','박스',9800,'B센터 라운지',3,'김OO',3*36e5,'req'),
-    O('smp_o2','A4 복사용지','75g 2500매','','2','박스',24000,'A센터',2,'홍OO',DAY,'ok',{appBy:'박팀장',appAt:t-20*36e5}),
-    O('smp_o3','종이컵','6.5oz 1000입','','1','박스',15000,'공통',null,'김OO',4*DAY,'ord',{appBy:'박팀장',appAt:t-3*DAY,ordNo:'MRO-2410-0153',ordAt:t-3*DAY}),
-    O('smp_o4','멀티탭','4구 3m','','6','개',8900,'A센터',null,'홍OO',9*DAY,'recv',{appBy:'박팀장',appAt:t-8*DAY,ordNo:'MRO-2410-0098',ordAt:t-8*DAY,recvAt:t-5*DAY})];
+    O('smp_o1','생수 500ml','24입','','5','박스',9800,'B센터 라운지',3,'팀원A',3*36e5,'req'),
+    O('smp_o2','A4 복사용지','75g 2500매','','2','박스',24000,'A센터',2,'팀원C',DAY,'ok',{appBy:'팀원D',appAt:t-20*36e5}),
+    O('smp_o3','종이컵','6.5oz 1000입','','1','박스',15000,'공통',null,'팀원A',4*DAY,'ord',{appBy:'팀원D',appAt:t-3*DAY,ordNo:'MRO-2410-0153',ordAt:t-3*DAY}),
+    O('smp_o4','멀티탭','4구 3m','','6','개',8900,'A센터',null,'팀원C',9*DAY,'recv',{appBy:'팀원D',appAt:t-8*DAY,ordNo:'MRO-2410-0098',ordAt:t-8*DAY,recvAt:t-5*DAY})];
   d.spaces=DEFAULT_SPACES();
   return d;
 }
-const DEFAULT_SPACES=()=>[{id:'sp_kim',label:'김',owner:'',ord:1,u:1},{id:'sp_kang',label:'강',owner:'',ord:2,u:1},{id:'sp_hong',label:'홍',owner:'',ord:3,u:1}];
+const DEFAULT_SPACES=()=>[{id:'sp_kim',label:'팀원A',owner:'',ord:1,u:1},{id:'sp_kang',label:'팀원B',owner:'',ord:2,u:1},{id:'sp_hong',label:'팀원C',owner:'',ord:3,u:1}];
 function loadLocal(){ try{const s=localStorage.getItem(KEY); if(s) return clean(JSON.parse(s));}catch(e){} return null; }
 // 공유 파일을 쓰는 PC는 브라우저에 전체 사본을 두지 않는다 (아직 공유 파일에 못 올린 변경분만 임시 보관 → 올리고 나면 지움)
 const sharedMode=()=>{ try{ return localStorage.getItem('tw_sharedMode')==='true'; }catch(e){ return false; } };
@@ -1668,8 +1668,8 @@ async function reconnect(){
 /* ---------- 공통 변경 ---------- */
 function commit(){ persist(); markDirty(); scheduleSync(300); refresh(); }
 function tomb(id){ DB.deleted[id]=now(); }
-// 예시 데이터(smp_…)와 예시 팀원(김OO·홍OO·박팀장 중 실제로 합류·작성한 적 없는 이름)을 공유 데이터에서 지움 → 다른 PC에도 삭제가 전파됨
-const SAMPLE_MEMBERS=['김OO','홍OO','박팀장'];
+// 예시 데이터(smp_…)와 예시 팀원(팀원A·팀원C·팀원D 중 실제로 합류·작성한 적 없는 이름)을 공유 데이터에서 지움 → 다른 PC에도 삭제가 전파됨
+const SAMPLE_MEMBERS=['팀원A','팀원C','팀원D'];
 function purgeSamples(d){
   let ch=false; const t=now(); d.deleted=d.deleted||{};
   for(const c of COLS){ if(!Array.isArray(d[c])) continue; const keep=d[c].filter(r=>!(r&&typeof r.id==='string'&&r.id.startsWith('smp_')));
@@ -2543,7 +2543,7 @@ const WHEEL_COL=['#f7c6c5','#f9d9b8','#f6e7a8','#cfe8c9','#bfe0f2','#cdd3f5','#e
 let wheelSpin=null;
 function renderWheel(){
   const main=$('#main'); [...main.children].forEach(c=>{ if(!c.classList.contains('topbar')) c.remove(); });
-  const ta=h('textarea',{class:'inp wta',placeholder:'한 줄에 하나씩 입력하세요\n예)\n김OO\n홍OO\n박OO'}); ta.value=LS.get('wheelItems','');
+  const ta=h('textarea',{class:'inp wta',placeholder:'한 줄에 하나씩 입력하세요\n예)\n팀원A\n팀원C\n박OO'}); ta.value=LS.get('wheelItems','');
   const cv=h('canvas',{class:'wcv',width:'720',height:'720'}); const res=h('div',{class:'wres'}), hist=h('div',{class:'whist'});
   let rot=LS.get('wheelRot',0)||0;
   const items=()=>ta.value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,40);
@@ -2577,7 +2577,7 @@ function renderWheel(){
 let ladder=null;
 function renderLadder(){
   const main=$('#main'); [...main.children].forEach(c=>{ if(!c.classList.contains('topbar')) c.remove(); });
-  const tp=h('textarea',{class:'inp lta',placeholder:'참가자 (한 줄에 한 명)\n예)\n김OO\n홍OO\n박OO'}); tp.value=LS.get('ladP','');
+  const tp=h('textarea',{class:'inp lta',placeholder:'참가자 (한 줄에 한 명)\n예)\n팀원A\n팀원C\n박OO'}); tp.value=LS.get('ladP','');
   const tr=h('textarea',{class:'inp lta',placeholder:'결과 (한 줄에 하나, 비우면 「꽝」)\n예)\n커피 쏘기\n꽝\n꽝'}); tr.value=LS.get('ladR','');
   const stage=h('div',{class:'lstage'}), out=h('div',{class:'lout'});
   const P=()=>tp.value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,12);
@@ -3053,12 +3053,12 @@ function autoHolis(y,m){
 }
 
 /* ----- 색 ----- */
-const P={bg:'#5b97cf',brand:'#fff',card:'#f0eef0',title:'#12233f',sub:'#1d2433',line:'#3f6fae',office:'#3f6fae',officeTx:'#12233f',head:'#5b93cc',headTx:'#fff',
-  body:'#6a9fd4',grid:'#c4c2c4',sun:'#b5452f',sat:'#4a86c5',num:'#6b6b6b',pill:'#ef7f86',pillTx:'#fff',note:'#1d2433'};
+const P={bg:'#111318',brand:'#fff',card:'#ffffff',title:'#111318',sub:'#51555D',line:'#0A74FF',office:'#0A74FF',officeTx:'#111318',head:'#111318',headTx:'#fff',
+  body:'#F3F5F9',grid:'#E3E6EE',sun:'#E5484D',sat:'#0A74FF',num:'#8C93A3',pill:'#0A74FF',pillTx:'#fff',note:'#111318'};
 /* ===== 양식 1: 월간 운영 캘린더 ===== */
 const CAL={id:'cal',name:'월간 운영 캘린더',icon:'📅',
   def(){ const d=new Date(); d.setMonth(d.getMonth()+1); return {y:d.getFullYear(),m:d.getMonth()+1,brand:'샘플오피스',sub:'일정을 참고하시어 이용에 착오 없으시길 바라며, 원활한 이용을 위해 사전 확인 부탁드립니다.',
-    office:'A·B센터 공유오피스',sunday:'미운영',noteHead:'※ 공유오피스 미운영 일자 (공휴일, 패밀리 데이)',offs:[],hov:{}}; },
+    office:'A·B센터 공유오피스',sunday:'미운영',noteHead:'※ 공유오피스 미운영 일자 (공휴일·사내 휴무일)',offs:[],hov:{}}; },
   days(st){ return new Date(st.y,st.m,0).getDate(); },
   // 그 달에 실제로 표시할 휴무일 = 자동 공휴일(끈 것 제외·문구 고친 것 반영) + 직접 넣은 날(패밀리 데이 등)
   list(st){ const hov=st.hov||{};
@@ -3150,112 +3150,8 @@ const CAL={id:'cal',name:'월간 운영 캘린더',icon:'📅',
   }};
 const holiYears=()=>[...new Set(Object.keys(HOLI).map(k=>+k.slice(0,4)))];   // HOLI는 이 코드보다 뒤에 정의되므로 쓸 때 계산
 
-/* ===== 공지 안내문 기본 문구 (안내 종류별) ===== */
-const GV={dark:['기본','#111'],blue:['파랑','#2033c8'],red:['빨강','#e8261d']};
-const GEN_PRE=[
- ['elec','전기설비 안전진단',{title:'전기설비 안전진단 실시 안내',intro:'○○타워 전기설비 법정 검사에 따른\n정전 작업으로 *B센터 공유오피스 미운영 안내* 드립니다.',
-   rows:[['일시','2026.09.19(토)\n*건물 전층 정전 작업 예정'],['범위','○○타워 건물 전체','blue'],['주관','건물 시설팀'],['기타 문의','건물 지원센터 (02-000-0000)']]}],
- ['pipe','배관 공사',{title:'배관 공사 안내',intro:'건물 배관 공사로 인해\n*공사 시간 동안 일부 이용이 제한*됨을 안내드립니다.',
-   rows:[['일시','○○○○.○○.○○(○) ○○:○○ ~ ○○:○○'],['범위','○층 ○○ 구역','blue'],['유의 사항','작업 중 소음 및 일시 단수가 발생할 수 있습니다'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['lights','소등의 날',{title:'소등의 날 운영 안내',intro:'에너지 절약을 위한 소등의 날 운영으로\n*지정 시간 동안 조명이 소등*됩니다.',
-   rows:[['일시','○○○○.○○.○○(○)'],['소등 시간','○○:○○ ~ ○○:○○','blue'],['협조 사항','퇴실 시 개인 조명과 전원을 꺼 주시기 바랍니다'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['park','주차장 이용 제한',{title:'주차장 이용 제한 안내',intro:'주차장 작업으로 인해\n*작업 시간 동안 주차장 이용이 제한*됩니다.',
-   rows:[['일시','○○○○.○○.○○(○) ○○:○○ ~ ○○:○○'],['제한 구역','지하 ○층 주차장 전체','blue'],['대체 주차','○○ 주차장 이용 부탁드립니다'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['fire','소방시설 작동점검',{title:'소방시설 작동점검 실시 안내',intro:'소방시설 설치 및 관리에 관한 법률에 따른\n*소방시설 작동점검*을 실시합니다.',
-   rows:[['일시','○○○○.○○.○○(○) ○○:○○ ~ ○○:○○'],['범위','○○ 건물 전체','blue'],['유의 사항','점검 중 경보·안내 방송이 울릴 수 있으니\n놀라지 마시고 안내에 따라 주시기 바랍니다'],['주관','○○ 시설팀'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['firelaw','법정 소방시설 점검',{title:'법정 소방시설 점검 안내',intro:'소방시설 설치 및 관리에 관한 법률에 따른\n*법정 소방시설 종합점검*을 실시합니다.',
-   rows:[['일시','○○○○.○○.○○(○) ~ ○○.○○(○)'],['점검 내용','소화설비·경보설비·피난설비 등 소방시설 전반','blue'],['유의 사항','점검 중 경보·안내 방송이 울릴 수 있으며\n점검자가 사무 공간에 출입할 수 있습니다'],['주관','○○ 시설팀'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['water','물탱크 청소 작업',{title:'물탱크 청소 작업 안내',intro:'위생적인 물 공급을 위한 물탱크 청소로\n*작업 시간 동안 단수*될 예정입니다.',
-   rows:[['일시','○○○○.○○.○○(○) ○○:○○ ~ ○○:○○'],['단수 범위','○○ 건물 전체','blue'],['유의 사항','청소 후 일시적으로 탁한 물이 나올 수 있으니\n잠시 흘려보낸 뒤 사용해 주시기 바랍니다'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['waterlaw','법정 물탱크 청소',{title:'법정 물탱크 청소 안내',intro:'수도법에 따른 법정 저수조(물탱크) 청소로\n*작업 시간 동안 단수*될 예정입니다.',
-   rows:[['일시','○○○○.○○.○○(○) ○○:○○ ~ ○○:○○'],['단수 범위','○○ 건물 전체','blue'],['유의 사항','청소 후 일시적으로 탁한 물이 나올 수 있으니\n잠시 흘려보낸 뒤 사용해 주시기 바랍니다'],['주관','○○ 시설팀'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['earth','지구의 날 소등행사',{title:'지구의 날 소등 행사 안내',intro:'지구의 날을 맞아 진행되는 소등 행사에 참여하여\n*행사 시간 동안 조명이 소등*됩니다.',
-   rows:[['일시','○○○○.04.22(○) 20:00 ~ 20:10'],['범위','공유오피스 전체 조명','blue'],['협조 사항','행사 시간에는 개인 조명 사용을 자제해 주시기 바랍니다'],['기타 문의','○○ (○○-○○○○-○○○○)']]}],
- ['blank','직접 작성',{title:'○○ 안내',intro:'○○ 관련하여\n*○○*을(를) 안내드립니다.',rows:[['일시','○○○○.○○.○○(○)'],['내용',''],['기타 문의','']]}],
-];
-function genRowsEditor(st,rl,upd){
-  const drawRows=()=>{ rl.textContent=''; st.rows.forEach((r,i)=>{
-        const k=h('input',{class:'inp',placeholder:'항목'}); k.value=r.k; k.addEventListener('input',()=>{ r.k=k.value; upd(); });
-        const v=h('textarea',{class:'inp',rows:String(Math.max(1,String(r.v||'').split('\n').length)),placeholder:'내용 (Enter로 줄바꿈)',style:'resize:vertical;line-height:1.5'}); v.value=r.v;
-        v.addEventListener('input',()=>{ r.v=v.value; v.rows=Math.max(1,v.value.split('\n').length); upd(); });
-        const c=h('select',{class:'inp',title:'글자색'},Object.entries(GV).map(([kk,x])=>h('option',{value:kk},x[0]))); c.value=r.c||'dark'; c.addEventListener('change',()=>{ r.c=c.value; upd(); });
-        // 날짜 넣기: 달력에서 고르면 「2026.09.19(토)」 형식으로 첫 줄에
-        const dp=h('input',{type:'date',style:'position:absolute;opacity:0;width:1px;height:1px;pointer-events:none'});
-        dp.addEventListener('change',()=>{ if(!dp.value) return; const [yy,mm,dd]=dp.value.split('-'); const t=`${yy}.${mm}.${dd}(${DOW[new Date(+yy,mm-1,+dd).getDay()]})`; const L=String(r.v||'').split('\n'); L[0]=/^\s*\S*\(.\)/.test(L[0])?L[0].replace(/^\s*\S*\(.\)/,t):(L[0].trim()?t+' '+L[0].trim():t);   /* 앞의 날짜만 바꾸고 시간은 그대로 */ r.v=L.join('\n'); v.value=r.v; upd(); });
-        const db=h('button',{class:'ib',title:'날짜 고르기 (첫 줄에 넣기)',onclick:()=>{ try{ dp.showPicker(); }catch(e){ dp.click(); } }},'📅');
-        rl.append(h('div',{class:'genrow'},k,v,h('div',{class:'genops'},c,h('span',{style:'position:relative'},db,dp),
-          i?h('button',{class:'ib',title:'위로',onclick:()=>{ [st.rows[i-1],st.rows[i]]=[st.rows[i],st.rows[i-1]]; drawRows(); upd(); }},'↑'):null,
-          h('button',{class:'ib',title:'빼기',onclick:()=>{ st.rows.splice(i,1); drawRows(); upd(); }},'×')))); }); };
-  rl._draw=drawRows; drawRows();
-}
-/* ===== 양식 2: 공지 안내문 (카드형) — 회색 머리 + 파란 바탕 카드 + (선택) 아래 걸이 안내판 ===== */
-// 안내 종류별 기본 내용: 첨부 양식(법정 물탱크 청소) + 아래 GEN_PRE를 카드형으로 옮긴 것. 안내판(note)에는 핵심 안내 문구
-const HANG_SUB={fire:'[소방시설법] 소방시설 등의 자체점검(작동점검) 규정에 따른 정기 점검',firelaw:'[소방시설법] 소방시설 등의 자체점검(종합점검) 규정에 따른 정기 점검',
-  waterlaw:'[수도법] 제 33조 및 수도시설 청소 및 위생 관리 등에 관한 규칙에 의거한 정기 청소'};
-const HANG_PRE=[
- ['waterlaw','법정 물탱크 청소',{title:"서울 공유오피스 '26년 하반기 법정 물탱크 청소 안내",sub:HANG_SUB.waterlaw,
-   rows:[['일시','2026.10.10(토) 08:00~17:00'],['내용','고가 수조 및 저수조(물탱크) 청소 작업 진행'],['영향','화장실, 캔틴, 정수기 일부 사용 제한될 수 있음'],['문의','건물 지원센터(02-000-0000)']],
-   note:'물탱크 청소 중 *단수 및 소량의 녹물*이 일시적으로\n발생 할 수 있으니 유의하여 주시길 바랍니다.'}],
- ...GEN_PRE.filter(x=>x[0]!=='waterlaw').map(([k,n,p])=>[k,n,{title:p.title,sub:HANG_SUB[k]||'',rows:p.rows,note:p.intro}]),
-];
-const hangFrom=k=>{ const p=(HANG_PRE.find(x=>x[0]===k)||HANG_PRE[0])[2]; return {title:p.title,sub:p.sub,rows:p.rows.map(r=>({k:r[0],v:r[1],c:r[2]||'dark'})),note:p.note}; };
-const HANG={id:'hang',name:'공지 안내문',icon:'📢',
-  def(){ return {pre:'waterlaw',...hangFrom('waterlaw')}; },
-  draw(st){
-    const W=730, S=2, BLUE='#3a55d0', BG='#5b6fd6';
-    const rows=(st.rows||[]).filter(r=>(r.k||'').trim()||(r.v||'').trim());
-    const VS=sc(st,'value'), LS2=28*VS, need=r=>Math.max(75,30*VS+20)+(Math.max(1,String(r.v||'').split('\n').length)-1)*LS2;
-    const RH=Math.max(75,...rows.map(need)), GAP=29;
-    const TS=sc(st,'title'), SS=sc(st,'sub'), subL=String(st.sub||'').trim()?1:0, headH=Math.round((subL?145:110)+(TS-1)*30+(subL?(SS-1)*17:0));
-    const cardT=headH+50, rowT=cardT+31, cardB=rowT+rows.length*(RH+GAP)-GAP+40;
-    const noteL=String(st.note||'').split('\n').filter(x=>x.trim());
-    const NS=sc(st,'note'), NLH=36*NS, noteT=cardB+57, noteH=noteL.length?Math.max(100,noteL.length*NLH+64):0;
-    const H=(noteL.length?noteT+noteH:cardB)+45;
-    const cv=h('canvas',{width:String(W*S),height:String(H*S)}), g=cv.getContext('2d'); g.scale(S,S);
-    g.fillStyle='#e9edf2'; g.fillRect(0,0,W,headH); g.fillStyle=BG; g.fillRect(0,headH,W,H-headH);
-    g.textAlign='center'; g.textBaseline='middle';
-    g.fillStyle='#2f55d4'; fitText(g,st.title||'',W-40,Math.round(30*TS),800); g.fillText(st.title||'',W/2,subL?52*(1+(TS-1)*.6):headH/2);
-    if(subL){ g.fillStyle='#111'; fitText(g,st.sub,W-40,Math.round(17*SS),600); g.fillText(st.sub,W/2,headH-49*(1+(SS-1)*.5)); }
-    const card=(x,y,w,hh)=>{ g.save(); g.shadowColor='rgba(0,0,0,.18)'; g.shadowBlur=8; g.shadowOffsetY=3; rr(g,x,y,w,hh,18); g.fillStyle='#fff'; g.fill(); g.restore(); };
-    card(40,cardT,650,cardB-cardT);
-    rows.forEach((r,i)=>{ const y=rowT+i*(RH+GAP);
-      rr(g,74,y+(RH-75)/2,91,75,10); g.fillStyle=BLUE; g.fill(); g.fillStyle='#fff'; g.textAlign='center'; fitText(g,r.k||'',80,Math.round(20*sc(st,'label')),600); g.fillText(r.k||'',119.5,y+RH/2+1);
-      rr(g,190,y,485,RH,14); g.fillStyle='#fff'; g.fill(); g.strokeStyle='#e6e6dc'; g.lineWidth=2; g.stroke();
-      const ls=String(r.v||'').split('\n'); g.textAlign='left'; g.fillStyle=r.c==='blue'?'#2f55d4':r.c==='red'?'#e8261d':'#111';
-      ls.forEach((l,j)=>{ fitText(g,l,455,Math.round(20*VS),500); g.fillText(l,206,y+RH/2+(j-(ls.length-1)/2)*LS2+1); }); });
-    if(noteL.length){
-      card(40,noteT,650,noteH);
-      for(const x of [76,652]){ const y1=cardB+20, y2=noteT+36;   /* 걸이: 위아래 검은 고리 + 회색 막대 (안내판 위에 겹쳐 그림) */
-        g.fillStyle='#111'; for(const y of [y1,y2]){ g.beginPath(); g.arc(x,y,10,0,Math.PI*2); g.fill(); }
-        g.fillStyle='#c4c4c4'; rr(g,x-7,y1+2,14,y2-y1-4,7); g.fill(); }
-      noteL.forEach((line,i)=>{ const segs=line.split('*').map((t,j)=>({t,red:j%2===1})).filter(s=>s.t);
-        let size=Math.round(19*NS); const meas=()=>{ g.font=`700 ${size}px ${FONT}`; return segs.reduce((a,s)=>a+g.measureText(s.t).width,0); };
-        while(meas()>590&&size>11) size--; let x=W/2-meas()/2; g.textAlign='left';
-        for(const s of segs){ g.fillStyle=s.red?'#e8261d':'#111'; g.fillText(s.t,x,noteT+noteH/2+(i-(noteL.length-1)/2)*NLH); x+=g.measureText(s.t).width; } });
-    }
-    return cv;
-  },
-  form(st,upd){
-    // 항목 입력은 genRowsEditor 공용
-    const box=h('div',{class:'ntcform'});
-    const txt=(k,ph)=>{ const i=h('input',{class:'inp',placeholder:ph||''}); i.value=st[k]||''; i.addEventListener('input',()=>{ st[k]=i.value; upd(); }); return i; };
-    const area=(k,ph,n)=>{ const i=h('textarea',{class:'inp',rows:String(n||2),placeholder:ph||'',style:'resize:vertical;line-height:1.5'}); i.value=st[k]||''; i.addEventListener('input',()=>{ st[k]=i.value; upd(); }); return i; };
-    const pre=h('select',{class:'inp',style:'width:auto'},HANG_PRE.map(([k,n])=>h('option',{value:k},n))); pre.value=HANG_PRE.some(x=>x[0]===st.pre)?st.pre:'waterlaw';
-    pre.addEventListener('change',async()=>{ if(!await confirmBox('안내 종류 바꾸기',`「${HANG_PRE.find(x=>x[0]===pre.value)[1]}」 기본 내용으로 바꿉니다.\n지금 입력한 내용은 사라집니다.`,'바꾸기')){ pre.value=st.pre; return; }
-      Object.assign(st,hangFrom(pre.value),{pre:pre.value}); upd(); NTC.render(); });
-    const rl=h('div',{class:'genrows'}); genRowsEditor(st,rl,upd);
-    box.append(h('div',{class:'ntcrow'},h('label',null,'안내 종류',pre)),
-      h('div',{class:'hint',style:'margin-top:4px'},'종류를 고르면 기본 문구가 채워집니다. ○○ 부분만 고쳐 쓰세요.'),
-      lblFs('제목 (파란 글씨)',st,'title',upd),txt('title'),
-      lblFs('제목 아래 한 줄 (법 근거 등 · 비우면 숨김)',st,'sub',upd),txt('sub'),
-      h('div',{class:'ntchd'},h('span',{class:'lbl',style:'margin:0'},'항목'),h('span',{style:'flex:1'}),h('button',{class:'btn',onclick:()=>{ st.rows.push({k:'',v:'',c:'dark'}); rl._draw(); upd(); }},'+ 항목 추가')),
-      h('div',{class:'fsrow'},h('span',{class:'hint'},'왼쪽 이름'),fsCtl(st,'label',upd),h('span',{class:'hint',style:'margin-left:12px'},'오른쪽 내용'),fsCtl(st,'value',upd)),rl,
-      lblFs('아래 걸이 안내판 문구 (*별표로 감싸면* 빨간 글씨 · 비우면 안내판이 사라짐)',st,'note',upd),area('note','',3));
-    return box;
-  }};
-
-const NTC_TPL=[CAL,HANG];
-let cur=LS.get('ntcCur','cal'); if(cur==='gen') cur='hang'; /* 예전 표형 공지 양식은 카드형으로 통합 */ const states={};
+const NTC_TPL=[CAL];
+let cur=LS.get('ntcCur','cal'); if(!NTC_TPL.some(t=>t.id===cur)) cur='cal'; const states={};
 const stOf=id=>{ if(!states[id]){ const t=NTC_TPL.find(x=>x.id===id); states[id]={...t.def(),...(LS.get('ntc:'+id,{})||{})}; } return states[id]; };
 let rt=null;
 // 입력칸 : 미리보기 비율 (왼쪽 비율 30~80%, PC별 기억). 가운데 세로 막대를 끌어서 조절
@@ -4265,7 +4161,7 @@ function noteBody(t){ const n=String(t.note||''); const ti=String(t.title||'').t
   const L=n.split('\n'); if(L[0].trim()===ti){ L.shift(); while(L.length&&!L[0].trim()) L.shift(); } return L.join('\n').trim(); }
 function DIR_ST(t){ return t.status==='done'?['완료','s-done']:t.status==='doing'?['진행','s-doing']:t.ackAt?['확인함','s-ack']:['미확인','s-new']; }
 async function addSpace(){
-  const v=await askText('새 업무 전달 공간','받는 사람의 성 또는 이름 (예: 김, 박팀장)','',''); if(!v) return;
+  const v=await askText('새 업무 전달 공간','받는 사람의 성 또는 이름 (예: 김, 팀원D)','',''); if(!v) return;
   const sp={id:uid(),label:v.replace(/^to\.?/i,'').slice(0,20),owner:'',ord:now(),u:now()}; DB.spaces.push(sp); commit(); go({type:'sp',id:sp.id});
 }
 function spaceMenu(sp,anchor){
@@ -6207,18 +6103,18 @@ function exampleData(){
   const T=now(), D=DAY, H=36e5, X=uid().slice(-5), id=k=>'ex_'+X+'_'+k;
   const at=(d,hh=9,mm=0)=>{ const x=new Date(T+d*D); x.setHours(hh,mm,0,0); return Math.min(x.getTime(),T-1000); };
   const day=d=>ymd(T+d*D);
-  const me=ME||'방문자', K='김OO', G=me, Hn='홍OO', P='박팀장';
+  const me=ME||'방문자', K='팀원A', G=me, Hn='팀원C', P='팀원D';
   const ch={all:id('c1'),bd:id('c2'),sc:id('c3'),mro:id('c4')};
   const out={channels:[],messages:[],acks:[],pages:[],tasks:[],notes:[],events:[],orders:[],qna:[],spaces:[],links:[],polls:[],pvotes:[],devnotes:[],reacts:[],pcomments:[],minutes:[]};
   [['all','일반'],['bd','A센터'],['sc','B센터-라운지'],['mro','비품-택배']].forEach(([k,n])=>{ const ex=DB.channels.find(c=>c.name===n); if(ex) ch[k]=ex.id; else out.channels.push({id:ch[k],name:n,desc:'',u:T}); }); // 같은 이름 채널이 있으면 그대로 사용
   let mi=0; const msg=(c,a,text,d,hh,mm,pin,acks)=>{ const i=id('m'+(++mi)), t=at(d,hh,mm); out.messages.push({id:i,ch:ch[c],author:a,text,ts:t,u:T,pinned:!!pin,edited:false,att:[]}); (acks||[]).forEach(u=>out.acks.push({id:ackId(i,u),msg:i,user:u,on:true,u:T})); return i; };
   msg('all',P,'11월부터 MRO 비품은 「MRO 비품신청」 메모로 모아 주세요.\n매주 목요일 오전에 한 번에 주문하겠습니다.',-6,9,10,true,[K,G,Hn]);
-  msg('all',G,`@박팀장 네 확인했습니다. 기존 요청도 이번 주 안에 옮겨 둘게요.`,-6,9,32);
+  msg('all',G,`@팀원D 네 확인했습니다. 기존 요청도 이번 주 안에 옮겨 둘게요.`,-6,9,32);
   msg('all',P,'이번 주 금요일 16시 월간 점검 회의입니다. 이슈 1~2건씩 준비해 주세요.',-3,8,50,true,[K,G]);
   msg('all',K,'회의 자료는 「월간 점검 회의 자료」 페이지에 모아 두겠습니다.',-3,9,5);
   msg('bd',Hn,'2번 룸 112번 좌석 모니터 전원 불량 접수됐습니다. 오후에 교체할게요.',-2,10,20);
   msg('bd',Hn,'교체 완료했습니다. 기존 모니터는 창고 B 2번 선반에 보관해 뒀어요.',-2,15,40);
-  msg('bd',G,'@홍OO 고생하셨어요. 자산관리 대장에도 반영해 둘게요.',-2,15,52);
+  msg('bd',G,'@팀원C 고생하셨어요. 자산관리 대장에도 반영해 둘게요.',-2,15,52);
   msg('bd',Hn,`오늘 오전에 2번 룸 덥다는 문의가 2건 들어왔습니다. @${G.slice(0,1)} 관리사무소 확인 부탁드려요.`,0,10,5);
   msg('bd',K,'몰입형좌석(119~129) 예약률이 이번 주 많이 올랐네요. 다음 주 현황 보고 때 공유드릴게요.',0,11,30);
   msg('sc',K,'내일 10시 대회의실 임원 회의 건, 생수 12병 추가 요청 들어왔습니다.',-1,14,10);
@@ -6232,12 +6128,11 @@ function exampleData(){
   page('p2','비품 위치 정리','📦',Hn,[bl('text','자주 찾는 비품 위치입니다. 바뀌면 바로 고쳐 주세요.'),bl('num','A4 용지 — 탕비실 하단 수납장'),bl('num','멀티탭·케이블 — 창고 B 2번 선반'),bl('num','명함 용지 — 사무실 캐비닛 3번'),bl('num','예비 모니터 — 창고 B 2번 선반 (2대)'),bl('divider',''),bl('quote','분기마다 재고 점검: 1·4·7·10월 첫째 주')]);
   page('p3','월간 점검 회의 자료','🗓️',K,[bl('h1','이번 달 이슈'),bl('h2','A센터'),bl('bullet','몰입형좌석 예약률 상승 — 좌석 추가 검토'),bl('bullet','2번 룸 냉난방 민원 2건'),bl('h2','B센터 라운지'),bl('bullet','임원 회의 지원 6건, 주차 도장 14건'),bl('bullet','QR 건의: 의자 높이 조절'),bl('h2','공통'),bl('todo','MRO 요청 메모로 일원화',true),bl('todo','소방 점검 일정 확정')]);
   page('p4','자주 묻는 문의 답변','💡',G,[bl('text','전화 문의가 많은 순서대로 정리했습니다.'),bl('h2','좌석 예약'),bl('bullet','예약 변경은 이용 30분 전까지 시스템에서 직접 가능'),bl('h2','주차'),bl('bullet','방문객 주차는 회의 종료 후 도장 확인'),bl('h2','분실물'),bl('bullet','안내데스크 보관 2주 후 총무팀 이관')]);
-  // To.○ 공간 (기본 공간이 없으면 만들고, 팀장님 공간 추가)
+  // To.○ 공간 (기본 공간이 없으면 만듦)
   const base=DEFAULT_SPACES(); for(const sp of base) if(!DB.spaces.some(x=>x.id===sp.id)) out.spaces.push({...sp,u:T});
-  const ldr=DB.spaces.find(x=>x.label==='팀장님')||{id:id('s1'),label:'팀장님',owner:P,ord:4,u:T}; if(!DB.spaces.includes(ldr)) out.spaces.push(ldr);
   let ti=0; const task=(title,status,asg,due,note,by,dc,sp,extra)=>{ const i=id('t'+(++ti)), t=at(dc,9,30); out.tasks.push({id:i,title,status,assignee:asg,due:due==null?'':day(due),note,by,ord:t,at:t,u:T,sp:sp||'',prio:false,ackAt:0,ackBy:'',doneAt:status==='done'?at(-1,17):0,att:[],calEv:'',...(extra||{})}); return i; };
   task('월간 점검 회의 자료 정리','doing',K,4,'이슈별로 페이지에 정리',P,-3);
-  task('2번 룸 모니터 교체','done',Hn,-2,'','홍OO',-2);
+  task('2번 룸 모니터 교체','done',Hn,-2,'','팀원C',-2);
   task('라운지 생수 재고 확인','todo','',1,'내일 대회의실 생수 12병',K,-1);
   task('자산관리 대장 모니터 이력 반영','todo',G,2,'112번 좌석 모니터 교체 건',G,-2);
   task('분기 비품 재고표 업데이트','doing',G,5,'창고 B 기준',P,-4);
@@ -6246,13 +6141,13 @@ function exampleData(){
   const t7=task('라운지 비품 발주 목록 정리','doing',K,1,'생수, 종이컵, 다과 위주로 정리해 주세요.',G,-1,'sp_kim',{ackAt:at(-1,10),ackBy:K});
   task('A센터 2번 룸 냉난방 민원 확인','todo',Hn,0,'오전에 덥다는 문의가 두 건 들어왔습니다.',P,0,'sp_hong',{prio:true});
   task('몰입형좌석 예약률 주간 보고','done',K,-1,'',P,-5,'sp_kim',{ackAt:at(-5,10),ackBy:K});
-  task('11월 휴가 일정 공유','todo',P,3,'팀원 연차 일정 캘린더에 반영 완료 — 확인 부탁드립니다.',G,0,ldr.id);
+  task('11월 휴가 일정 공유','todo',Hn,3,'팀원 연차 일정 캘린더에 반영 완료 — 확인 부탁드립니다.',G,0,'sp_hong');
   out.notes.push({id:id('n1'),task:t7,author:K,text:'내일 오전까지 정리해서 올릴게요.',ts:at(-1,13),u:T,att:[]},{id:id('n2'),task:t7,author:G,text:'다과는 지난달 수량 기준으로 부탁드려요.',ts:at(-1,14),u:T,att:[]});
   let ei=0; const ev=(title,cat,d,time,etime,len,by,note,more)=>out.events.push({id:id('e'+(++ei)),title,date:day(d),end:len?day(d+len):'',time:time||'',etime:etime||'',cat,ctag:'',note:note||'',by,u:T,rep:'',rdays:'',rmd:'',rshift:false,runtil:'',rskip:'',rtask:false,rasg:'',...(more||{})});
   ev('비품 입고 (A4·종이컵)','gen',-1,'11:00','',0,Hn); ev('라운지 임원 회의 지원','lounge',0,'10:00','12:00',0,K,'대회의실, 생수 12병');
   ev('A센터 소방 시설 점검','gen',2,'14:00','16:00',0,P); ev('월간 점검 회의','meet',4,'16:00','17:00',0,P,'이슈 1~2건씩 준비');
-  ev('라운지 정기 소독','lounge',3,'09:30','',0,G); ev('신입 안전 교육','etc',5,'14:00','15:00',0,P,'',{ctag:'교육'}); ev('홍OO 연차','off',8,'','',1,Hn);
-  ev('B센터 외근 (관리사무소 미팅)','out',6,'14:00','15:30',0,G); ev('라운지 임원 회의 지원','lounge',7,'09:00','11:00',0,K); ev('김OO 반차 (오후)','off',9,'14:00','18:00',0,K);
+  ev('라운지 정기 소독','lounge',3,'09:30','',0,G); ev('신입 안전 교육','etc',5,'14:00','15:00',0,P,'',{ctag:'교육'}); ev('팀원C 연차','off',8,'','',1,Hn);
+  ev('B센터 외근 (관리사무소 미팅)','out',6,'14:00','15:30',0,G); ev('라운지 임원 회의 지원','lounge',7,'09:00','11:00',0,K); ev('팀원A 반차 (오후)','off',9,'14:00','18:00',0,K);
   ev('라운지 BEFORE 점검','lounge',-14,'08:40','',0,G,'BEFORE 체크리스트 기준',{rep:'day',rtask:true,rasg:G});
   ev('주간 좌석 예약 현황 보고','gen',-17,'16:00','',0,P,'',{rep:'week',rdays:'5',rtask:true,rasg:K});
   ev('MRO 비품 주문','gen',-17,'10:00','',0,P,'비품신청 메모 모아서 MRO 몰 주문',{rep:'week',rdays:'4'});
@@ -6278,7 +6173,7 @@ function insertExample(){
   for(const c of COLS) if(c!=='spaces'){ for(const r of DB[c]) if(old(c,r)) tomb(r.id); DB[c]=DB[c].filter(r=>!old(c,r)); }
   const ex=exampleData();
   for(const c of Object.keys(ex)) for(const r of ex[c]){ delete DB.deleted[r.id]; const i=DB[c].findIndex(x=>x.id===r.id); if(i>=0) DB[c][i]=r; else DB[c].push(r); if(c==='pages') snap(r); }
-  ['김OO','홍OO','박팀장',ME].filter(Boolean).forEach(n=>addMember(n));
+  ['팀원A','팀원C','팀원D',ME].filter(Boolean).forEach(n=>addMember(n));
   genRecurringTasks(); commit(); renderMain();
   const n=Object.values(ex).reduce((s,a)=>s+a.length,0); toast(`예시 데이터 ${n}건을 넣었습니다`);
 }
@@ -6286,7 +6181,7 @@ async function clearSample(){ if(!await confirmBox('예시 데이터 지우기',
   const gone=(c,r)=>isSample(r.id)||(c==='tasks'&&/^rt_(ex_|smp)/.test(r.id))||(c==='acks'&&isSample(r.msg))||(c==='notes'&&isSample(r.task));
   for(const c of COLS) for(const r of DB[c]) if(gone(c,r)) tomb(r.id);
   for(const c of COLS) DB[c]=DB[c].filter(r=>!gone(c,r));
-  ['김OO','이OO','홍OO','박팀장'].forEach(n=>{ if(DB.meta.members.includes(n)&&n!==ME) removeMember(n); }); DB.meta.u=now();
+  ['팀원A','이OO','팀원C','팀원D'].forEach(n=>{ if(DB.meta.members.includes(n)&&n!==ME) removeMember(n); }); DB.meta.u=now();
   commit(); go({type:'home'}); }
 
 /* ---------- 전역 키 / 시작 ---------- */
@@ -6310,7 +6205,7 @@ window.addEventListener('storage',e=>{ if(e.key===KEY){ const d=loadLocal(); if(
   if(['총무팀 워크스페이스','우리팀 워크스페이스','E 워크센터 워크스페이스'].includes(DB.meta.wsName)){ DB.meta.wsName='샘플오피스 워크스페이스'; DB.meta.u=now(); persist(); markDirty(); renderSide(); }
   if(!LS.get('spInit',false)){ for(const sp of DEFAULT_SPACES()) if(!DB.spaces.some(x=>x.id===sp.id)&&!DB.deleted[sp.id]) DB.spaces.push(sp); LS.set('spInit',true); persist(); }
   renderSide(); renderMain(); drawFloats();
-  if(!LS.get('demoSeeded',false)){ insertExample(); LS.set('demoSeeded',true); }   // 처음 방문하면 예시 데이터를 채워 둡니다
+  if(!LS.get('demoSeeded2',false)){ insertExample(); LS.set('demoSeeded2',true); }   // 처음 방문하면 예시 데이터를 채워 둡니다
   // 굿모닝 브리핑 · 퇴근 전 리마인드: 시작 창(공유 폴더 연결)을 기다리지 않고 바로 시계를 돌림. 탭으로 돌아오거나 창을 누르면 바로 다시 확인
   setTimeout(gmTick,1500); setInterval(gmTick,20000); setTimeout(rmTick,2000); setInterval(rmTick,20000); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') rmTick(); });
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(gmTick,300); }); window.addEventListener('focus',()=>setTimeout(gmTick,300));
