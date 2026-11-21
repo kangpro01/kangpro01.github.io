@@ -3,338 +3,166 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>일 잘하는 강프로 — 포트폴리오</title>
+<title>PORTFOLIO — 강프로</title>
 <meta name="description" content="총무에서 인사로. 반복되는 일은 시스템으로, 사람의 불편은 개선으로 바꿔 온 기록.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/portfolio.css?v=20261121h">
+<link rel="stylesheet" href="assets/portfolio.css?v=20261121j">
 <!-- 화면이 그려지기 전에 밝기를 정합니다. 늦으면 흰 화면이 한 번 번쩍입니다. -->
 <script src="assets/theme.js?v=20261121a"></script>
 </head>
 <body>
 
-<!-- ══ 상단 바 ══ -->
-<header class="gnb" id="gnb">
-  <div class="wrap">
-    <a class="logo" href="#top">PORTFOLIO</a>
-    <nav aria-label="섹션">
-      <a href="#about">소개</a>
-      <a href="#works">프로젝트</a>
-      <a href="#career">경력</a>
-      <a href="#skills">역량</a>
-      <a href="#contact">연락</a>
-    </nav>
-    <button class="icon-btn" id="theme" type="button" aria-label="어둡게 보기">
-      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5"/></svg>
-      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
-    </button>
-  </div>
-</header>
+<button class="theme-btn" id="theme" type="button" aria-label="어둡게 보기">
+  <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5"/></svg>
+  <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+</button>
 
-<main id="top">
+<!-- 한 장짜리 포트폴리오. 섹션은 '제목 — 오른쪽 작은 꼬리표' + 카드 세 개 구성 -->
+<main class="sheet">
 
-<!-- ══ 첫 화면 ══ -->
-<section class="hero">
-  <div class="art" aria-hidden="true"><i class="cube c1"></i><i class="cube c2"></i><i class="cube c3"></i><i class="cube c4"></i></div>
-  <div class="wrap">
-    <div class="hero-main rv">
-      <span class="eyebrow">HR Portfolio 2026 · 총무 → 인사</span>
-      <h1>반복되는 일은 <em>시스템</em>으로,<br>사람의 불편은 <em>개선</em>으로.</h1>
-      <p class="lead">총무로 일하며 놓치기 쉬운 일과 구성원의 불편을 직접 만든 도구로 풀어 왔어요.
-        이제 그 경험을 사람이 일하는 환경 전체를 설계하는 인사 업무로 넓히려고 해요.</p>
-      <div class="cta">
-        <a class="btn pri" href="#works">프로젝트 보기 →</a>
-        <a class="btn ghost" href="#contact">연락하기</a>
+  <!-- ══ 머리 — 이름 / 사선 / 아이디 ══ -->
+  <header class="mast">
+    <div class="name">
+      <h1>강프로</h1>
+      <p>— 총무 · 경영지원 → 인사 (HR)</p>
+    </div>
+    <i class="slash" aria-hidden="true"></i>
+    <p class="handle">@kangpro01</p>
+  </header>
+
+  <!-- ══ 사진 / 연락처 / 소개 ══ -->
+  <section class="intro">
+    <figure class="photo">
+      <!-- 사진을 넣으려면: assets/profile.jpg 를 올리고 아래 줄의 주석을 풀어 주세요 -->
+      <!-- <img src="assets/profile.jpg" alt="강프로 프로필 사진"> -->
+      <span class="ph">프로필 사진</span>
+    </figure>
+    <div class="intro-r">
+      <ul class="contacts">
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>
+          <span><span class="ph">이메일</span></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>
+          <span><span class="ph">연락처</span></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 2.6 15.2 0 18M12 3c-2.6 2.8-2.6 15.2 0 18"/></svg>
+          <span>kangpro01.github.io</span>
+        </li>
+      </ul>
+      <div class="about">
+        <h2>About Me</h2>
+        <p>총무로 일하며 놓치기 쉬운 일과 구성원의 불편을 직접 만든 도구로 풀어 왔어요.
+          <b>반복되는 일은 시스템으로, 사람의 불편은 개선으로</b> 바꾸는 것이 일하는 방식이에요.
+          이제 그 경험을 사람이 일하는 환경 전체를 설계하는 인사 업무로 넓히려고 해요.</p>
+        <p class="ph-line"><span class="ph">왜 인사 직무인지 한두 문장 더 적어 주세요.</span></p>
       </div>
     </div>
+  </section>
 
-    <!-- 대표 작업 목록 — 포트폴리오의 목차 -->
-    <nav class="index rv" aria-label="대표 작업">
-      <span class="index-t">Selected Works</span>
-      <a href="#w1"><b>01</b><span>회의실 운영 대시보드</span><small>대시보드 · 리포트 자동화</small></a>
-      <a href="#w2"><b>02</b><span>IT 자산 배치 현황</span><small>자산 관리 · 도면 시각화</small></a>
-      <a href="#w3"><b>03</b><span>팀 워크스페이스</span><small>협업 · 인수인계</small></a>
-    </nav>
-  </div>
-
-  <div class="wrap stats rv">
-    <div><b>7</b><span>직접 만든 업무 도구</span></div>
-    <div><b>3</b><span>현업에서 쓰던 도구 공개 데모</span></div>
-    <div><b><span class="ph">n</span></b><span>년 총무·경영지원 경력</span></div>
-    <div><b><span class="ph">n</span></b><span>시간 / 월 줄인 반복 업무</span></div>
-  </div>
-</section>
-
-<!-- ══ 소개 ══ -->
-<section id="about">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div><span class="eyebrow">About</span><h2>이렇게 일해요</h2></div>
-      <p><span class="ph">왜 인사 직무를 택했는지 두세 문장으로 적어 주세요. 예) 총무 일을 하며 가장 보람 있던 순간이 구성원의 불편을 덜어 줄 때였어요…</span></p>
-    </div>
-    <div class="about-grid">
-      <article class="principle rv">
-        <span class="no">01</span>
-        <h3>반복되는 일은 시스템으로</h3>
-        <p>매달·매주 돌아오는 일을 사람 기억에 맡기지 않아요. 주기를 정해 두고, 도구가 먼저 알려 주게 만들어요.</p>
-      </article>
-      <article class="principle rv">
-        <span class="no">02</span>
-        <h3>불편은 기록하고 개선으로</h3>
-        <p>"불편하다"는 말을 흘려듣지 않고 적어 둬요. 쌓인 기록에서 개선할 것을 고르고, 고친 뒤 결과까지 남겨요.</p>
-      </article>
-      <article class="principle rv">
-        <span class="no">03</span>
-        <h3>누구나 쓸 수 있게 쉽게</h3>
-        <p>설치도 교육도 필요 없는 도구를 만들어요. 담당자가 바뀌어도 일이 멈추지 않는 것이 목표예요.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ══ 프로젝트 — 사례 연구 ══ -->
-<section id="works">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div><span class="eyebrow">Projects</span><h2>직접 만든 업무 도구</h2></div>
-      <p>현업에서 쓰던 도구를 예시 데이터로 채워 그대로 열어 볼 수 있게 했어요. 회사명·도면·실제 기록은 모두 뺐어요.</p>
-    </div>
-
-    <!-- 01 -->
-    <article class="case" id="w1">
-      <header class="case-head rv">
-        <span class="case-no">01</span>
-        <div class="case-title">
-          <div class="tags"><span class="tag">대시보드</span><span class="tag">리포트 자동화</span><span class="tag hr">HR 연결 · 현황 보고</span></div>
-          <h3>회의실 운영 대시보드</h3>
-          <p>예약부터 월간 보고까지, 흩어진 운영 기록을 한 화면에 모았어요.</p>
-        </div>
-        <dl class="meta">
-          <div><dt>역할</dt><dd>기획 · 디자인 · 개발 (1인)</dd></div>
-          <div><dt>기간</dt><dd><span class="ph">0000.00 — 0000.00</span></dd></div>
-          <div><dt>도구</dt><dd>HTML · JavaScript · Excel · PPT 내보내기</dd></div>
-          <div><dt>사용자</dt><dd>운영 담당 <span class="ph">n</span>명</dd></div>
-        </dl>
-      </header>
-      <a class="stage rv" href="works/lounge.html" aria-label="회의실 운영 대시보드 데모 열기">
-        <div class="browser"><div class="browser-bar"><i></i><i></i><i></i><span>월간 이용현황</span></div>
-          <img src="assets/shots/lounge.png" alt="회의실 운영 대시보드의 월간 이용현황 화면. 예약 건수·이용 인원·가동률 카드와 일별 예약 달력, 부서별 이용 표가 보입니다." loading="lazy" width="1440" height="900"></div>
-        <span class="stage-cta">데모 열기 →</span>
-      </a>
-      <dl class="pmr3">
-        <div class="rv"><dt>문제</dt><dd>예약·문의·점검 기록이 메신저와 엑셀에 흩어져, 월간 보고 때마다 다시 모아야 했어요.</dd></div>
-        <div class="rv"><dt>방법</dt><dd>예약 현황, 문의·개선, 점검 체크리스트, 히스토리를 한 화면에 모으고 월간 리포트를 엑셀·PPT로 바로 내보내게 했어요.</dd></div>
-        <div class="rv"><dt>결과</dt><dd><span class="ph">예) 월간 보고 작성 n시간 → n분</span></dd></div>
-      </dl>
-      <ul class="feats rv">
-        <li>월간·연간 이용현황 자동 집계</li><li>부서별·회의실별·시간대별 분석</li><li>회의 전·중·후 점검 체크리스트</li><li>월간 리포트 엑셀·PPT 내보내기</li>
-      </ul>
-    </article>
-
-    <!-- 02 -->
-    <article class="case" id="w2">
-      <header class="case-head rv">
-        <span class="case-no">02</span>
-        <div class="case-title">
-          <div class="tags"><span class="tag">자산 관리</span><span class="tag">도면 시각화</span><span class="tag hr">HR 연결 · 입·퇴사 장비</span></div>
-          <h3>IT 자산 배치 현황</h3>
-          <p>어느 자리에 어떤 기기가 있는지, 도면 위에서 바로 보여요.</p>
-        </div>
-        <dl class="meta">
-          <div><dt>역할</dt><dd>기획 · 디자인 · 개발 (1인)</dd></div>
-          <div><dt>기간</dt><dd><span class="ph">0000.00 — 0000.00</span></dd></div>
-          <div><dt>도구</dt><dd>HTML · JavaScript · SVG · Excel</dd></div>
-          <div><dt>관리 규모</dt><dd>기기 <span class="ph">n</span>대 · 좌석 <span class="ph">n</span>석</dd></div>
-        </dl>
-      </header>
-      <a class="stage rv" href="works/assets.html" aria-label="IT 자산 배치 현황 데모 열기">
-        <div class="browser"><div class="browser-bar"><i></i><i></i><i></i><span>좌석 배치도</span></div>
-          <img src="assets/shots/assets.png" alt="IT 자산 배치 현황 화면. 보유 대수·배치·지급 가능 수 카드와 예시 사무실 도면 위 좌석별 기기 표시가 보입니다." loading="lazy" width="1440" height="900"></div>
-        <span class="stage-cta">데모 열기 →</span>
-      </a>
-      <dl class="pmr3">
-        <div class="rv"><dt>문제</dt><dd>노트북이 어느 자리에 있는지, 마지막 점검이 언제였는지 담당자 기억에 기대고 있었어요.</dd></div>
-        <div class="rv"><dt>방법</dt><dd>도면 위에 좌석별 기기를 표시하고, 지급·회수 이력과 90일 점검 알림을 붙였어요. 엑셀로 가져오고 내보낼 수 있어요.</dd></div>
-        <div class="rv"><dt>결과</dt><dd><span class="ph">예) 장비 위치 확인 시간 n분 → 즉시</span></dd></div>
-      </dl>
-      <ul class="feats rv">
-        <li>도면 위 좌석별 배치 표시</li><li>지급·회수·교체 이력 자동 기록</li><li>점검 90일 경과 알림</li><li>엑셀 가져오기·내보내기</li>
-      </ul>
-    </article>
-
-    <!-- 03 -->
-    <article class="case" id="w3">
-      <header class="case-head rv">
-        <span class="case-no">03</span>
-        <div class="case-title">
-          <div class="tags"><span class="tag">협업 도구</span><span class="tag">인수인계</span><span class="tag hr">HR 연결 · 온보딩</span></div>
-          <h3>팀 워크스페이스</h3>
-          <p>공지·할 일·인수인계를 한곳에. 담당자가 비워도 일이 멈추지 않게.</p>
-        </div>
-        <dl class="meta">
-          <div><dt>역할</dt><dd>기획 · 디자인 · 개발 (1인)</dd></div>
-          <div><dt>기간</dt><dd><span class="ph">0000.00 — 0000.00</span></dd></div>
-          <div><dt>도구</dt><dd>HTML · JavaScript · 공유 폴더 동기화 · 암호화</dd></div>
-          <div><dt>사용자</dt><dd>팀원 <span class="ph">n</span>명</dd></div>
-        </dl>
-      </header>
-      <a class="stage rv" href="works/workspace.html" aria-label="팀 워크스페이스 데모 열기">
-        <div class="browser"><div class="browser-bar"><i></i><i></i><i></i><span>캘린더</span></div>
-          <img src="assets/shots/workspace.png" alt="팀 워크스페이스 화면. 왼쪽 메뉴에 회의록·할 일 보드·업무 전달·채널이 있고, 오른쪽에 업무·회의·휴가 일정이 들어간 월간 달력이 보입니다." loading="lazy" width="1440" height="900"></div>
-        <span class="stage-cta">데모 열기 →</span>
-      </a>
-      <dl class="pmr3">
-        <div class="rv"><dt>문제</dt><dd>공지·할 일·인수인계가 여러 곳에 흩어져, 담당자가 자리를 비우면 일이 멈췄어요.</dd></div>
-        <div class="rv"><dt>방법</dt><dd>채널·캘린더·할 일 보드·회의록·인수인계 노트·비품 신청을 한곳에 모았어요. 서버 없이 공유 폴더의 파일 하나로 팀이 함께 써요.</dd></div>
-        <div class="rv"><dt>결과</dt><dd><span class="ph">예) 팀 n명이 매일 사용 · 인수인계 누락 n건 → 0건</span></dd></div>
-      </dl>
-      <ul class="feats rv">
-        <li>채널 대화 · 공지 확인 표시</li><li>할 일 보드 · 업무 전달</li><li>회의록 · 인수인계 페이지</li><li>아침 브리핑 · 퇴근 전 리마인드</li>
-      </ul>
-    </article>
-
-    <h3 class="more-t rv">그 밖의 작업</h3>
-    <div class="more">
-      <article class="mini rv">
-        <span class="tag">이 사이트의 시작</span>
-        <h4>업무 리마인더</h4>
-        <p>일간·주간·월간으로 돌아오는 업무를 달력에 올려 두고, 방치된 일을 먼저 보여 줘요. 급여·4대보험처럼 주기가 중요한 인사 업무에도 그대로 쓸 수 있는 구조예요.</p>
-        <span class="foot">팀 내부용 · 공개하지 않아요</span>
-      </article>
-      <article class="mini rv">
-        <span class="tag">개선 프로세스</span>
-        <h4>문제 &amp; 개선 보드</h4>
-        <p>불편한 점 → 개선 아이디어 → 개선한 것으로 이어지는 보드예요. 구성원의 목소리를 모아 실제 변화로 옮기는 과정을 기록해요.</p>
-        <span class="foot">팀 내부용 · 공개하지 않아요</span>
-      </article>
-      <a class="mini rv" href="tool-lounge.html">
-        <span class="tag">체크리스트</span>
-        <h4>회의 운영 체크리스트</h4>
-        <p>회의 전·중·후로 나눠 점검하고 개선사항을 쌓아요. 입·퇴사나 온보딩 절차를 표준화할 때도 같은 방식을 써요.</p>
-        <span class="foot">열어 보기 →</span>
-      </a>
-      <a class="mini rv" href="tool-receipt.html">
-        <span class="tag">서식</span>
-        <h4>영수증 한번에 정리</h4>
-        <p>영수증 사진을 A4 한 장에 배치하고 합계를 내요. 경비 처리처럼 작은 반복 업무도 줄일 수 있으면 줄여요.</p>
-        <span class="foot">열어 보기 →</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ══ 경력 ══ -->
-<section id="career">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div><span class="eyebrow">Career</span><h2>경력과 교육</h2></div>
-      <p>회사명은 공개해도 되는 범위로만 적어 주세요.</p>
-    </div>
-    <div class="timeline">
-      <article class="tl rv">
-        <span class="when"><span class="ph">2025.00 — 현재</span></span>
-        <div>
-          <h3><span class="ph">회사명</span></h3>
-          <p class="role">총무 · 경영지원</p>
-          <ul>
-            <li>회의실·공용 공간 운영, 예약·응대·점검 관리</li>
-            <li>IT 자산 지급·회수 및 배치 관리</li>
-            <li><span class="ph">그 밖에 맡은 일</span></li>
-          </ul>
-        </div>
-      </article>
-      <article class="tl rv">
-        <span class="when"><span class="ph">0000.00 — 0000.00</span></span>
-        <div>
-          <h3><span class="ph">인턴십 회사명</span></h3>
-          <p class="role"><span class="ph">직무</span></p>
-          <ul><li><span class="ph">한 일, 최종발표 주제</span></li></ul>
-        </div>
-      </article>
-      <article class="tl rv">
-        <span class="when"><span class="ph">0000.00</span></span>
-        <div>
-          <h3><span class="ph">학교 · 전공</span></h3>
-          <p class="role"><span class="ph">학위</span></p>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ══ 역량 ══ -->
-<section id="skills">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div><span class="eyebrow">Skills</span><h2>인사 업무로 가져갈 것</h2></div>
-      <p>총무에서 쌓은 역량을 인사 업무의 언어로 정리했어요.</p>
-    </div>
-    <div class="skills">
-      <article class="skill rv">
-        <h3>업무 설계</h3>
-        <p>흩어진 일을 절차로 만들고, 담당자가 바뀌어도 이어지게 해요.</p>
-        <div class="chips"><span>프로세스 표준화</span><span>체크리스트 설계</span><span>반복 업무 주기화</span><span>인수인계 체계</span></div>
-      </article>
-      <article class="skill rv">
-        <h3>데이터와 보고</h3>
-        <p>현황을 숫자로 모으고, 보고서는 자동으로 나오게 해요.</p>
-        <div class="chips"><span>Excel</span><span>대시보드</span><span>월간 리포트 자동화</span><span>VOC 정리</span></div>
-      </article>
-      <article class="skill rv">
-        <h3>도구와 자동화</h3>
-        <p>필요한 도구가 없으면 직접 만들어 팀에 붙여요.</p>
-        <div class="chips"><span>HTML · CSS · JS</span><span>AI 활용</span><span>PowerPoint</span><span class="ph">자격증</span></div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ══ 연락 ══ -->
-<section id="contact">
-  <div class="wrap">
-    <div class="contact rv">
+  <!-- ══ 학력 / 경력 ══ -->
+  <section class="block">
+    <div class="bh"><h2>Education</h2><span class="tagline">— Experiences</span></div>
+    <div class="edu">
       <div>
-        <h2>같이 일할 사람을<br>찾고 계신가요?</h2>
-        <p>편하게 연락 주세요. 이력서와 자세한 자료도 보내 드릴게요.</p>
+        <h3><span class="ph">학교 · 전공</span></h3>
+        <p class="sub"><span class="ph">학위 · 0000.00 — 0000.00</span></p>
+        <p><span class="ph">인턴십: 회사명 · 직무 · 최종발표 주제</span></p>
       </div>
-      <div class="links">
-        <a href="#contact"><span>이메일</span><small><span class="ph">공개용 이메일</span></small></a>
-        <a href="#contact"><span>이력서 (PDF)</span><small><span class="ph">파일 연결</span></small></a>
+      <div>
+        <h3>총무 · 경영지원</h3>
+        <p class="sub"><span class="ph">회사명 · 0000.00 — 현재</span></p>
+        <p>회의실·공용 공간 운영, IT 자산 지급·회수, 팀 협업 도구 기획·제작</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
+  <!-- ══ 프로젝트 — 카드 세 개 ══ -->
+  <section class="block">
+    <div class="bh"><h2>Projects</h2><span class="tagline">— 직접 만든 업무 도구</span></div>
+    <div class="cards">
+      <a class="card" href="works/lounge.html">
+        <img src="assets/shots/lounge.png" alt="회의실 운영 대시보드의 월간 이용현황 화면" loading="lazy" width="1440" height="900">
+        <h3>회의실 운영 대시보드</h3>
+        <ul>
+          <li>월간·연간 이용현황 자동 집계</li>
+          <li>부서별·시간대별 분석</li>
+          <li>점검 체크리스트</li>
+          <li>리포트 엑셀·PPT 내보내기</li>
+        </ul>
+        <div class="card-foot"><small>결과</small><b><span class="ph">보고 n시간 → n분</span></b></div>
+        <span class="go">데모 열기 →</span>
+      </a>
+      <a class="card" href="works/assets.html">
+        <img src="assets/shots/assets.png" alt="IT 자산 배치 현황의 좌석 배치도 화면" loading="lazy" width="1440" height="900">
+        <h3>IT 자산 배치 현황</h3>
+        <ul>
+          <li>도면 위 좌석별 배치 표시</li>
+          <li>지급·회수 이력 자동 기록</li>
+          <li>점검 90일 경과 알림</li>
+          <li>엑셀 가져오기·내보내기</li>
+        </ul>
+        <div class="card-foot"><small>결과</small><b><span class="ph">위치 확인 n분 → 즉시</span></b></div>
+        <span class="go">데모 열기 →</span>
+      </a>
+      <a class="card" href="works/workspace.html">
+        <img src="assets/shots/workspace.png" alt="팀 워크스페이스의 캘린더 화면" loading="lazy" width="1440" height="900">
+        <h3>팀 워크스페이스</h3>
+        <ul>
+          <li>채널 대화 · 공지 확인</li>
+          <li>할 일 보드 · 업무 전달</li>
+          <li>회의록 · 인수인계 노트</li>
+          <li>아침 브리핑 · 리마인드</li>
+        </ul>
+        <div class="card-foot"><small>결과</small><b><span class="ph">인수인계 누락 n → 0건</span></b></div>
+        <span class="go">데모 열기 →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══ 숫자 ══ -->
+  <section class="block">
+    <div class="bh"><h2>Insight</h2><span class="tagline">— 숫자로 보는 일</span></div>
+    <div class="stats">
+      <div class="stat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>
+        <b>7</b><span>직접 만든<br>업무 도구</span>
+      </div>
+      <div class="stat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <b>3</b><span>공개한<br>데모</span>
+      </div>
+      <div class="stat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <b><span class="ph">n</span></b><span>시간 / 월<br>줄인 반복 업무</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 강점 ══ -->
+  <section class="block">
+    <div class="bh"><h2>Strengths</h2><span class="tagline">— 인사 업무로 가져갈 것</span></div>
+    <div class="strengths">
+      <div class="str"><i>01</i><div><b>업무 설계</b><span>프로세스 표준화 · 체크리스트 · 인수인계</span></div></div>
+      <div class="str"><i>02</i><div><b>데이터와 보고</b><span>Excel · 대시보드 · 리포트 자동화</span></div></div>
+      <div class="str"><i>03</i><div><b>도구와 자동화</b><span>HTML · JS · AI 활용 · <span class="ph">자격증</span></span></div></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>© 2026 강프로</span>
+    <span>데모의 모든 데이터는 예시예요 · 그 밖의 작업: <a href="tool-lounge.html">회의 체크리스트</a> · <a href="tool-receipt.html">영수증 정리</a></span>
+  </footer>
 </main>
 
-<footer>
-  <div class="wrap">
-    <span>© 2026 일 잘하는 강프로</span>
-    <span>데모의 모든 데이터는 예시예요</span>
-  </div>
-</footer>
-
 <script>
-/* 테마 단추 · 상단 바 · 지금 보는 섹션 표시 · 나타나기 */
 (function(){
   const btn = document.getElementById('theme');
   const label = () => btn.setAttribute('aria-label', THEME.now() === 'dark' ? '밝게 보기' : '어둡게 보기');
   label(); btn.addEventListener('click', () => { THEME.toggle(); label(); });
-
-  if(!('IntersectionObserver' in window)){ document.querySelectorAll('.rv').forEach(x => x.classList.add('in')); return; }
-
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-  }), { rootMargin:'0px 0px -8% 0px' });
-  document.querySelectorAll('.rv').forEach(x => io.observe(x));
-
-  const links = [...document.querySelectorAll('.gnb nav a')];
-  const spy = new IntersectionObserver(es => es.forEach(e => {
-    const a = links.find(l => l.getAttribute('href') === '#' + e.target.id); if(!a) return;
-    if(e.isIntersecting){ links.forEach(l => l.classList.remove('on')); a.classList.add('on'); }
-    else a.classList.remove('on');
-  }), { rootMargin:'-45% 0px -50% 0px' });
-  document.querySelectorAll('section[id]').forEach(s => spy.observe(s));
 })();
 </script>
 </body>
