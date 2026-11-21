@@ -298,3 +298,29 @@ body{padding:28px 28px}
   font-weight:800;letter-spacing:-.03em;text-wrap:balance}
 .hero-tags{gap:6px 16px;margin-top:20px}
 .hero-tags span{font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--accent);opacity:.85}
+
+/* ══ 글자 한 단계씩 키우기 ══ */
+.side h1{font-size:37px}
+.role{font-size:15px}
+.handle{font-size:14.5px}
+.contacts li{font-size:14.5px}
+.stats dt{font-size:14px}
+.stats dd{font-size:24px}
+.kicker{font-size:13px}
+.hero-t{font-size:clamp(30px,3.1vw,47px)}
+.hero-tags span{font-size:15px}
+.sec::before{font-size:16px}
+.sec h2{font-size:25px}
+.info dt{font-size:14px}
+.info dd{font-size:15.5px}
+.info div{grid-template-columns:92px minmax(0,1fr)}
+.ent h3{font-size:18.5px}
+.ent h3 small{font-size:14px}
+.ent p{font-size:15px}
+.chip{font-size:13px}
+.go{font-size:13.5px}
+.results b{font-size:26px}
+.results span{font-size:14px}
+.strengths b{font-size:16px}
+.strengths span{font-size:14.5px}
+.foot{font-size:13.5px}
