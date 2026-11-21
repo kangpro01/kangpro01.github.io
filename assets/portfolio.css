@@ -272,3 +272,20 @@ body{background:linear-gradient(160deg,var(--sky-1) 0%,var(--sky-2) 55%,var(--sk
 body{padding:28px 28px}
 .main{padding:64px 72px 48px 64px}
 @media (max-width:900px){body{padding:0}.main{padding:40px 18px 32px}}
+
+/* ══ 첫 줄 — 크게 한 방 ══ */
+.hero{margin-bottom:64px;padding-bottom:44px;border-bottom:1px solid var(--rule)}
+.kicker{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.18em;color:var(--paper);background:var(--ink);padding:5px 12px;border-radius:2px;margin-bottom:22px}
+.hero-t{font-size:clamp(30px,3.6vw,54px);font-weight:800;letter-spacing:-.045em;line-height:1.22}
+.hero-t span,.hero-t em{display:block}
+.hero-t em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px}
+.hero-tags span{font-size:15px;font-weight:700;color:var(--accent)}
+.hero-tags span:empty{display:none}
+.is-admin .hero-t em{color:var(--accent);background:none}
+@media (prefers-reduced-motion:no-preference){
+  .hero > *{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+  .hero .hero-t{animation-delay:.08s}.hero .hero-tags{animation-delay:.16s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+@media (max-width:900px){.hero{margin-bottom:44px;padding-bottom:32px}}
