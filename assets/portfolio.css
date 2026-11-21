@@ -228,3 +228,42 @@ img,svg{display:block}
 @media (max-width:520px){.strengths li{grid-template-columns:1fr}}
 
 @media (max-width:900px){.sheet{padding:60px 18px 32px}}
+
+/* ══ 색 톤 — 옅은 청회색 하늘 + 검정 판 + 콘플라워 파랑 · 하늘색 숫자 ══ */
+:root{--accent:#3F78D8;--accent-2:#3FC6FF;--sky-1:#E6E8F0;--sky-2:#C6D1E5;--sky-3:#A9BBDA;--panel:#000;--marker:#DDE6F7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--accent:#6E9BEA;--sky-1:#0B0D14;--sky-2:#121A2B;--sky-3:#1A2640;--marker:#1A2C4F}}
+:root[data-theme="dark"]{--accent:#6E9BEA;--sky-1:#0B0D14;--sky-2:#121A2B;--sky-3:#1A2640;--marker:#1A2C4F}
+body{background:linear-gradient(160deg,var(--sky-1) 0%,var(--sky-2) 55%,var(--sky-3) 100%) fixed;min-height:100vh}
+
+/* 종이: 왼쪽은 검정 판, 오른쪽은 흰 종이 (가운데 줄 대신 판의 경계) */
+.sheet{padding:0;grid-template-columns:300px minmax(0,1fr);gap:0;overflow:hidden;border-radius:2px}
+.rule{display:none}
+.side{position:static;align-self:stretch;background:var(--panel);color:#fff;padding:56px 32px 40px}
+.main{padding:72px 88px 48px 72px}
+.side h1{color:#fff}
+.role{color:rgba(255,255,255,.72)}
+.handle{color:var(--accent-2)}
+.photo{background-color:#15171C;background-image:linear-gradient(135deg,rgba(63,120,216,.35),rgba(63,198,255,.08) 60%,transparent)}
+.side .contacts,.side .stats{border-top-color:rgba(255,255,255,.14)}
+.side .contacts li{color:rgba(255,255,255,.78)}
+.side .contacts svg{stroke:#fff}
+.side .contacts a[href]{color:#fff;text-decoration-color:rgba(255,255,255,.3)}
+.side .stats dt{color:rgba(255,255,255,.55)}
+.side .stats dd{color:var(--accent-2)}
+.side [data-k][data-ph]:empty::before,.side .photo:empty::before{background:rgba(63,198,255,.16);color:rgba(255,255,255,.85)}
+
+/* 오른쪽 포인트 */
+.sec::before{color:var(--accent)}
+.results li{border-top:2px solid var(--accent)}
+.results b{color:var(--ink)}
+.info{border-top-color:var(--ink)}
+.chip{border-color:#C9D4EA}
+.ent h3 small b,.go{color:var(--accent)}
+
+@media (max-width:900px){
+  .sheet{grid-template-columns:minmax(0,1fr)}
+  .side{padding:48px 18px 32px}
+  .main{padding:40px 18px 32px}
+  .photo{width:140px}
+}
+@media print{body{background:#fff}.side{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
