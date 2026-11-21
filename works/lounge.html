@@ -1024,7 +1024,7 @@ snapshot();
 const TABS = [['home','홈'],['res','예약 현황'],['hist','히스토리'],['inq','문의·개선'],['check','체크리스트'],['usage','월간 이용현황'],['stats','연간 이용현황'],['report','월간 리포트'],['set','설정']];
 const ICON = { home:'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z', res:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4', usage:'M4 20V10M10 20V4M16 20v-7M21 20H3', stats:'M4 4h7v7H4zM13 4h7v4h-7zM13 11h7v9h-7zM4 14h7v6H4z', inq:'M4 5h16v11H9l-5 4z', hist:'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', check:'M4 12l5 5L20 6', report:'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7', set:'M4 7h10M18 7h2M4 17h2M10 17h10M16 5v4M8 15v4' };
 const rc = room => { const i = DB.settings.rooms.indexOf(room); return 'rc' + (i < 0 ? 3 : i % 4); };
-let tab = 'home', cur = today().slice(0, 7), selDay = null, clStage = 0, impRows = null;
+let tab = (function(){ try { const q = new URLSearchParams(location.search).get('tab'); return /^[a-z]{2,10}$/.test(q || '') ? q : 'home'; } catch (e) { return 'home'; } })(), cur = today().slice(0, 7), selDay = null, clStage = 0, impRows = null;
 
 /* ---------- 집계 ---------- */
 function daysText() {
@@ -2138,5 +2138,6 @@ render();
 })();
 </script>
 <a href="../index.html#works" style="position:fixed;left:14px;bottom:14px;z-index:99999;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:#333132;color:#fff;font:600 12.5px/1.2 'Pretendard Variable',Pretendard,system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.18)">← 포트폴리오 <span style="opacity:.6;font-weight:500">· 예시 데이터로 채운 데모예요</span></a>
+<script>/* 포트폴리오 썸네일 캡처용: ?shot 이면 안내 단추·알림을 숨깁니다 */ if(/[?&]shot(&|=|$)/.test(location.search)){var s=document.createElement("style");s.textContent="a[href=\"../index.html#works\"],#toast,.ov{display:none!important}";document.head.appendChild(s);}</script>
 </body>
 </html>
