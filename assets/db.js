@@ -1,8 +1,7 @@
 /* ══════════════════════════════════════════════════════════
    로그인과 데이터 읽기·쓰기.
 
-   팀이 공유하는 계정 하나로 로그인합니다.
-   화면에서는 암호 한 칸만 물어보고, 계정 주소는 아래 설정에서 가져옵니다.
+   ★ 2026-11-21 부터 암호 없이 씁니다. 주소를 아는 누구나 읽고 씁니다.
 
    ★ 왜 자바스크립트로 암호를 비교하지 않는가
      그렇게 하면 화면만 가릴 뿐 데이터는 못 지킵니다. 공개 키가 소스에
@@ -100,17 +99,17 @@ const DB = (function(){
   /* ── 표 다루기 ──
      q('tasks', {select, order, eq, ...})  읽기
      insert / update / remove              쓰기
-     모두 로그인 토큰을 붙입니다. 없으면 서버가 거절합니다. */
+     예전에 로그인해 둔 토큰이 있으면 붙이고, 없으면 공개 키만으로 부릅니다.
+     (2026-11-21 부터 암호 없이 씁니다. 표 정책이 anon 에게도 열려 있습니다) */
   async function call(path, opts, retried){
     const t = await token();
-    if(!t) throw new Error('로그인이 필요해요.');
+    const auth = t ? { 'Authorization': 'Bearer ' + t } : {};
 
     const res = await fetch(REST + path, Object.assign({}, opts, {
       headers: Object.assign({
         'apikey': KEY,
-        'Authorization': 'Bearer ' + t,
         'Content-Type': 'application/json'
-      }, (opts && opts.headers) || {})
+      }, auth, (opts && opts.headers) || {})
     }));
 
     if(res.ok) return res.status === 204 ? null : res.json().catch(()=>null);
@@ -123,10 +122,10 @@ const DB = (function(){
        한 번은 새 토큰을 받아 조용히 다시 시도합니다. */
     const badToken = res.status === 401 || res.status === 403
       || raw.includes('jwt') || raw.includes('token');
-    if(badToken && !retried){
+    if(badToken && !retried && t){
       if(await refresh()) return call(path, opts, true);
-      keep(null);                                  // 갱신도 안 되면 다시 로그인받습니다
-      throw new Error('로그인이 풀렸어요. 새로고침한 뒤 암호를 다시 넣어주세요.');
+      keep(null);                                  // 옛 토큰을 버리고 공개 키로 다시 부릅니다
+      return call(path, opts, true);
     }
 
     throw new Error(
@@ -149,51 +148,12 @@ const DB = (function(){
 
   const remove = (table, query) => call('/' + table + '?' + query, { method:'DELETE' });
 
-  /* ── 암호 물어보는 화면 ──
-     로그인이 필요한 페이지에서 DB.gate()를 부르면
-     로그인될 때까지 화면을 덮고, 끝나면 done()을 실행합니다. */
-  function gate(done){
-    if(isIn()){ done(); return; }
-
-    const el = document.createElement('div');
-    el.className = 'gate';
-    el.innerHTML =
-      '<form class="gate-box">'
-      + '<b>일 잘하는 강프로</b>'
-      + '<p>팀 암호를 입력해 주세요.</p>'
-      + '<input type="password" id="gatePw" autocomplete="current-password" '
-      +   'placeholder="암호" aria-label="팀 암호" required>'
-      + '<button class="btn lg" type="submit">들어가기</button>'
-      + '<span class="gate-msg" role="status" aria-live="polite"></span>'
-      + '</form>';
-    document.body.appendChild(el);
-    document.body.style.overflow = 'hidden';
-
-    const form = el.querySelector('form');
-    const pw   = el.querySelector('#gatePw');
-    const msg  = el.querySelector('.gate-msg');
-    const btn  = el.querySelector('button');
-    pw.focus();
-
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      btn.disabled = true;
-      msg.textContent = '확인 중이에요…';
-      msg.classList.remove('bad');
-      try{
-        await login(pw.value);
-        el.remove();
-        document.body.style.overflow = '';
-        done();
-      }catch(err){
-        msg.textContent = err.message;
-        msg.classList.add('bad');
-        pw.select();
-      }finally{
-        btn.disabled = false;
-      }
-    });
-  }
+  /* ── 들어가기 ──
+     예전에는 여기서 팀 암호를 물었습니다. 지금은 암호 없이 바로 엽니다.
+     부르는 쪽(home.js, issues.js)을 그대로 두려고 이름만 남겨둡니다.
+     암호를 되살리려면 git log 에서 '암호를 없앤다' 커밋 바로 앞의 gate() 를 가져오고,
+     supabase/schema.sql 의 정책을 'to authenticated' 로 되돌리십시오. */
+  function gate(done){ done(); }
 
   return { login, logout, isIn, q, insert, update, remove, gate };
 })();
