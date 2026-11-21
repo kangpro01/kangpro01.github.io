@@ -4,11 +4,11 @@
 --  Supabase 대시보드 → SQL Editor에 통째로 붙여넣고 실행하십시오.
 --  두 번 실행해도 안전합니다.
 --
---  ★ 보안 — 지금은 암호가 없습니다 (2026-11-21 부터)
---    모든 표를 로그인하지 않은 사람(anon)도 읽고 쓸 수 있습니다.
---    사이트 주소와 공개 키를 아는 누구나 내용을 보고 고치고 지울 수 있습니다.
---    암호를 되살리려면 아래 정책의 'to anon, authenticated' 를
---    'to authenticated' 로 바꿔 이 파일을 다시 실행하십시오.
+--  ★ 보안의 핵심
+--    모든 표는 "로그인한 사람만" 읽고 쓸 수 있습니다.
+--    팀이 공유하는 계정 하나로 로그인합니다.
+--    암호를 모르면 어떤 방법으로도 내용을 볼 수 없습니다.
+--    (사이트를 거치지 않고 직접 요청해도 막힙니다)
 --
 --    SQL 실행 뒤 대시보드에서 두 가지를 꼭 해주셔야 합니다.
 --    아래 맨 밑 '실행한 뒤 할 일'을 보십시오.
@@ -140,26 +140,26 @@ alter table public.notes        enable row level security;
 drop policy if exists "team reads and writes notes" on public.notes;
 create policy "team reads and writes notes"
   on public.notes for all
-  to anon, authenticated
+  to authenticated
   using (true) with check (true);
 
 drop policy if exists "team reads and writes refs" on public.refs;
 create policy "team reads and writes refs"
   on public.refs for all
-  to anon, authenticated
+  to authenticated
   using (true) with check (true);
 
--- 암호 없이 누구나 읽고 씁니다 (2026-11-21 부터).
+-- 로그인한 사람만. 로그인 안 하면 아무것도 못 봅니다.
 drop policy if exists "team reads and writes tasks" on public.tasks;
 create policy "team reads and writes tasks"
   on public.tasks for all
-  to anon, authenticated
+  to authenticated
   using (true) with check (true);
 
 drop policy if exists "team reads and writes improvements" on public.improvements;
 create policy "team reads and writes improvements"
   on public.improvements for all
-  to anon, authenticated
+  to authenticated
   using (true) with check (true);
 
 
